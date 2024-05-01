@@ -11,7 +11,7 @@
 
   <groupId>com.learning</groupId>
   <artifactId>pom</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3-SNAPSHOT</version>
   <name>pom</name>
   <description>Demo project for Spring Boot</description>
 
@@ -21,7 +21,7 @@
 
   <scm>
     <developerConnection>scm:git:https://github.com/lsampaioweb/spring-boot-tutorial.git</developerConnection>
-    <tag>pom-0.0.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
