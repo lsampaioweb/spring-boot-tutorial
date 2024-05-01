@@ -14,19 +14,19 @@ Maven commands.
 
     Before:
 
-    ![02-version-0-0-1-snapshot](/spring-boot/tutorial/documentation/images/maven/02-version-0-0-1-snapshot.png "02-version-0-0-1-snapshot")
+    ![02-version-0-0-1-snapshot](../images/maven/02-version-0-0-1-snapshot.png "02-version-0-0-1-snapshot")
 
     Enter the new version:
 
-    ![01-choose-version](/spring-boot/tutorial/documentation/images/maven/01-choose-version.png "01-choose-version")
+    ![01-choose-version](../images/maven/01-choose-version.png "01-choose-version")
 
     Maven build success message:
 
-    ![04-version-0-0-2-snapshot-build](/spring-boot/tutorial/documentation/images/maven/04-version-0-0-2-snapshot-build.png "04-version-0-0-2-snapshot-build")
+    ![04-version-0-0-2-snapshot-build](../images/maven/04-version-0-0-2-snapshot-build.png "04-version-0-0-2-snapshot-build")
 
     After:
 
-    ![03-version-0-0-2-snapshot](/spring-boot/tutorial/documentation/images/maven/03-version-0-0-2-snapshot.png "03-version-0-0-2-snapshot")
+    ![03-version-0-0-2-snapshot](../images/maven/03-version-0-0-2-snapshot.png "03-version-0-0-2-snapshot")
 
 1. Prepare the next release.
 
@@ -64,20 +64,20 @@ Maven commands.
 
     Remove the `SNAPSHOT` from the version.
 
-    ![05-new-release](/spring-boot/tutorial/documentation/images/maven/05-new-release.png "05-new-release")
+    ![05-new-release](../images/maven/05-new-release.png "05-new-release")
 
 
     Commit and push the new release to the repository.
 
-    ![06-commits](/spring-boot/tutorial/documentation/images/maven/06-commits.png "06-commits")
+    ![06-commits](../images/maven/06-commits.png "06-commits")
 
     Increase the version in the pom.xml.
 
-    ![07-commits-new-version](/spring-boot/tutorial/documentation/images/maven/07-commits-new-version.png "07-commits-new-version")
+    ![07-commits-new-version](../images/maven/07-commits-new-version.png "07-commits-new-version")
 
     Create a tag in the repository.
 
-    ![08-new-tag](/spring-boot/tutorial/documentation/images/maven/08-new-tag.png "08-new-tag")
+    ![08-new-tag](../images/maven/08-new-tag.png "08-new-tag")
 
 
 1. Install the package in the local maven repository.
