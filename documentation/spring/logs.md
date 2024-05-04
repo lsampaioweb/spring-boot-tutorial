@@ -26,10 +26,10 @@ Setup logging.
 
     ```xml
     <springProfile name="default | development">
-    <root level="INFO">
-    <appender-ref ref="Console" />
-    <appender-ref ref="File" />
-    </root>
+      <root level="INFO">
+        <appender-ref ref="Console" />
+        <appender-ref ref="File" />
+      </root>
     </springProfile>
     ```
 
