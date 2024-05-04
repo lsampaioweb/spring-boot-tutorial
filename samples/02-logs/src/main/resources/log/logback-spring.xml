@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <springProperty scope="context" name="application.name" source="spring.application.name" />
+  <property name="LOGS" value="./logs" />
+
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <Pattern>%black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable</Pattern>
+    </encoder>
+  </appender>
+
+  <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOGS}/${application.name}.log</file>
+    <encoder>
+      <Pattern>%d %p %C{1} [%t] %m%n</Pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOGS}/archived/${application.name}-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+      <!-- Each file should be at most 100MB, keep 1 day worth of history, but at most 1GB -->
+      <maxFileSize>100MB</maxFileSize>
+      <totalSizeCap>1GB</totalSizeCap>
+      <maxHistory>1</maxHistory>
+    </rollingPolicy>
+  </appender>
+
+  <appender name="File" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="RollingFile" />
+  </appender>
+
+  <springProfile name="default | development">
+    <root level="INFO">
+      <appender-ref ref="Console" />
+      <appender-ref ref="File" />
+    </root>
+  </springProfile>
+
+  <springProfile name="production">
+    <root level="TRACE">
+      <appender-ref ref="File" />
+    </root>
+  </springProfile>
+
+</configuration>

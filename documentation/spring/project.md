@@ -62,6 +62,6 @@ Create a Spring Boot project using VSCode.
     ![13-project-files-clean](../images/spring-project/13-project-files-clean.png "13-project-files-clean")
 
 #
-## Created by:
+### Created by:
 
 1. Luciano Sampaio.

@@ -35,8 +35,8 @@ Maven commands.
     <project>
       ...
       <scm>
-      <developerConnection>scm:git:https://github.com/lsampaioweb/spring-boot-tutorial.git</developerConnection>
-      <tag>HEAD</tag>
+        <developerConnection>scm:git:https://github.com/lsampaioweb/spring-boot-tutorial.git</developerConnection>
+        <tag>HEAD</tag>
       </scm>
       ...
     </project>
@@ -62,25 +62,25 @@ Maven commands.
     mvn release:prepare
     ```
 
-    Remove the `SNAPSHOT` from the version.
+    Maven will remove the `SNAPSHOT` from the version.
 
     ![05-new-release](../images/maven/05-new-release.png "05-new-release")
 
 
-    Commit and push the new release to the repository.
+    Maven will commit and push the new release to the repository.
 
     ![06-commits](../images/maven/06-commits.png "06-commits")
 
-    Increase the version in the pom.xml.
+    Maven will increase the version in the pom.xml.
 
     ![07-commits-new-version](../images/maven/07-commits-new-version.png "07-commits-new-version")
 
-    Create a tag in the repository.
+    Maven will create a tag in the repository.
 
     ![08-new-tag](../images/maven/08-new-tag.png "08-new-tag")
 
 
-1. Install the package in the local maven repository.
+1. Install the package in the local maven repository, so other applications can use it.
 
     Path: ~/.m2/repository/
     ```bash
@@ -88,6 +88,6 @@ Maven commands.
     ```
 
 #
-## Created by:
+### Created by:
 
 1. Luciano Sampaio.

@@ -47,6 +47,6 @@ VSCode extentions to work with Java and Spring Boot projects.
     ```
 
 #
-## Created by:
+### Created by:
 
 1. Luciano Sampaio.
