@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class LogsApplication {
 
-  Logger logger = LoggerFactory.getLogger(LogsApplication.class);
+  private static final Logger log = LoggerFactory.getLogger(LogsApplication.class);
 
   public static void main(String[] args) {
     SpringApplication.run(LogsApplication.class, args);
@@ -18,11 +18,11 @@ public class LogsApplication {
   }
 
   public void logMessages() {
-    logger.trace("A TRACE Message");
-    logger.debug("A DEBUG Message");
-    logger.info("An INFO Message");
-    logger.warn("A WARN Message");
-    logger.error("An ERROR Message");
+    log.trace("A TRACE Message");
+    log.debug("A DEBUG Message");
+    log.info("An INFO Message");
+    log.warn("A WARN Message");
+    log.error("An ERROR Message");
   }
 
 }

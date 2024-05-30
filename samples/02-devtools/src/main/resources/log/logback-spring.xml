@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-  <springProperty scope="context" name="application.name" source="spring.application.name" />
-  <property name="LOGS" value="./logs" />
+  <springProperty scope="context" source="spring.application.name" name="APPLICATION_NAME" />
+  <springProperty scope="context" source="logging.file.path" name="LOG_DIR" defaultValue="./logs"/>
 
   <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -11,12 +11,12 @@
   </appender>
 
   <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${LOGS}/${application.name}.log</file>
+    <file>${LOG_DIR}/${APPLICATION_NAME}.log</file>
     <encoder>
       <Pattern>%d %p %C{1} [%t] %m%n</Pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${LOGS}/archived/${application.name}-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+      <fileNamePattern>${LOG_DIR}/archived/${APPLICATION_NAME}-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
       <!-- Each file should be at most 100MB, keep 1 day worth of history, but at most 1GB -->
       <maxFileSize>100MB</maxFileSize>
       <totalSizeCap>1GB</totalSizeCap>
@@ -28,14 +28,21 @@
     <appender-ref ref="RollingFile" />
   </appender>
 
-  <springProfile name="development">
+  <springProfile name="debug">
     <root level="DEBUG">
       <appender-ref ref="Console" />
       <appender-ref ref="File" />
     </root>
   </springProfile>
 
-  <springProfile name="default | production">
+  <springProfile name="default | development">
+    <root level="INFO">
+      <appender-ref ref="Console" />
+      <appender-ref ref="File" />
+    </root>
+  </springProfile>
+
+  <springProfile name="production">
     <root level="INFO">
       <appender-ref ref="File" />
     </root>
