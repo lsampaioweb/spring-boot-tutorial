@@ -14,6 +14,8 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 
 ### Spring Boot features:
 1. [Logs.](documentation/spring/logs.md)
+1. [DevTools.](documentation/spring/devtools.md)
+1. [Lombok.](documentation/spring/lombok.md)
 
 <!-- ### Other stuff:
 1. Add the devtools dependency.
