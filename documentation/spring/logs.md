@@ -1,4 +1,4 @@
-Setup logging.
+Prepare the application to log debug, information, warning and error messages.
 
 1. No additional dependencies are required as the log library is included in the `spring-boot-starter` dependency.
 
@@ -20,17 +20,31 @@ Setup logging.
     <maxHistory>1</maxHistory>
     ```
 
-    2.2. Configuring the log level based on the profile. In this example, both the `default` and `development` profiles will have the log level set to `INFO`. They were set together, but multiple `springProfile` tags can be added.
+    2.2. Configuring the log level based on the profile.
 
-    2.3. Specifying the appenders to use. In this example, logs will be sent to both the `Console` and `File` appenders. The `File` appender will write on `asynchronous` mode.
+    In this example, both the `default` and `production` profiles will have the log level set to `INFO`, and the output will be sent to a file. On the other hand, the `development` profile will have the log level set to `DEBUG` and will send the output to the console and to a file.
+
+    The `File` appender will operate in `asynchronous` mode.
+
+    Additional `springProfile` elements can be added as needed.
 
     ```xml
-    <springProfile name="default | development">
+    <springProfile name="default | production">
       <root level="INFO">
+        <appender-ref ref="File" />
+      </root>
+    </springProfile>
+
+    <springProfile name="development">
+      <root level="DEBUG">
         <appender-ref ref="Console" />
         <appender-ref ref="File" />
       </root>
     </springProfile>
+
+    <appender name="File" class="ch.qos.logback.classic.AsyncAppender">
+      ...
+    </appender>
     ```
 
 1. Add the Java code.

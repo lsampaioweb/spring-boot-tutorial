@@ -82,10 +82,11 @@ Maven commands.
 
 1. Install the package in the local maven repository, so other applications can use it.
 
-    Path: ~/.m2/repository/
+    The path where the application will be installed is: `~/.m2/repository/`
     ```bash
     mvn install
     ```
+
 
 #
 ### Created by:

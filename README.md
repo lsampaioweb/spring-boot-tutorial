@@ -1,6 +1,6 @@
 # Java libraries and Spring Boot Projects
 
-Documentation on how to create Java libraries and Spring Boot projects.
+Documentation on how to create Java libraries and Spring Boot projects for our time.
 
 
 ### Ubuntu 22.04 environment:

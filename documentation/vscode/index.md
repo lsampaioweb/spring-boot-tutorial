@@ -14,6 +14,7 @@ VSCode extentions to work with Java and Spring Boot projects.
     Name: Maven for Java
     Name: Debugger for Java
     Name: Test Runner for Java
+    Name: Lombok Annotations Support for VS Code
     Name: Language Support for Java(TM) by Red Hat
     Name: XML
     ```
@@ -38,6 +39,7 @@ VSCode extentions to work with Java and Spring Boot projects.
     code --install-extension vscjava.vscode-maven
     code --install-extension vscjava.vscode-java-debug
     code --install-extension vscjava.vscode-java-test
+    code --install-extension vscjava.vscode-lombok
     code --install-extension redhat.java
     code --install-extension redhat.vscode-xml
     code --install-extension vscjava.vscode-spring-boot-dashboard

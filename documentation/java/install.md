@@ -41,7 +41,7 @@ java --version
 
     6.3. Reload the profile file.
 
-    The command will reload the file, but only for this terminal session. In order to make it available to all users and terminal sessions, it is necessary to logout and login again.
+    This command will reload the file, but only for this terminal session. In order to make it available to all users and terminal sessions, it is necessary to logout and login again.
 
     ```bash
     source /etc/profile

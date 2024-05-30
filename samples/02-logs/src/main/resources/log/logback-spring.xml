@@ -28,15 +28,15 @@
     <appender-ref ref="RollingFile" />
   </appender>
 
-  <springProfile name="default | development">
-    <root level="INFO">
+  <springProfile name="development">
+    <root level="DEBUG">
       <appender-ref ref="Console" />
       <appender-ref ref="File" />
     </root>
   </springProfile>
 
-  <springProfile name="production">
-    <root level="TRACE">
+  <springProfile name="default | production">
+    <root level="INFO">
       <appender-ref ref="File" />
     </root>
   </springProfile>
