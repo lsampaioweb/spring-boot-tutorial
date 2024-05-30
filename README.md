@@ -13,8 +13,8 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [Maven commands.](documentation/maven/pom.md)
 
 ### Spring Boot features:
-1. [Logs.](documentation/spring/logs.md)
 1. [DevTools.](documentation/spring/devtools.md)
+1. [Logs.](documentation/spring/logs.md)
 1. [Lombok.](documentation/spring/lombok.md)
 
 <!-- ### Other stuff:
@@ -23,15 +23,11 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
     Maven will remove the `SNAPSHOT` from the version.
 
     ![XXX](../images/maven/XXX.png "XXX")
-
-1. devtools
-1. Logs:
+1. profile
   - Trace and Span Id.
   - Actuator.
-1. profile
   dev
   prod
-1. Lombok.
 1. HTTPS:
   - SSL Certificate.
   - https2
