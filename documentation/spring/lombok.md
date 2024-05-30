@@ -42,7 +42,7 @@ Lombok is a Java library that provides annotations to simplify Java development 
     }
     ```
 
-2. @ToString.
+1. @ToString.
 
     Generate a `toString()` method that includes all fields of the class.
     ```java
@@ -55,7 +55,7 @@ Lombok is a Java library that provides annotations to simplify Java development 
     }
     ```
 
-3. @EqualsAndHashCode.
+1. @EqualsAndHashCode.
 
     Generate `equals()` and `hashCode()` methods based on the fields of the class.
     ```java
@@ -68,7 +68,7 @@ Lombok is a Java library that provides annotations to simplify Java development 
     }
     ```
 
-4. @NoArgsConstructor, @AllArgsConstructor, @RequiredArgsConstructor.
+1. @NoArgsConstructor, @AllArgsConstructor, @RequiredArgsConstructor.
 
     Generate constructors:
     - `@NoArgsConstructor`: No-argument constructor.
@@ -89,7 +89,7 @@ Lombok is a Java library that provides annotations to simplify Java development 
     }
     ```
 
-5. @Data.
+1. @Data.
 
     Combines `@Getter`, `@Setter`, `@ToString`, `@EqualsAndHashCode`, and `@RequiredArgsConstructor` into a single annotation.
     ```java
@@ -102,7 +102,7 @@ Lombok is a Java library that provides annotations to simplify Java development 
     }
     ```
 
-6. @Value.
+1. @Value.
 
     Generates an immutable class. It is a variant of `@Data` that creates all fields as `private final` and does not generate setters.
     ```java
@@ -115,7 +115,7 @@ Lombok is a Java library that provides annotations to simplify Java development 
     }
     ```
 
-7. @Builder.
+1. @Builder.
 
     Implements the Builder pattern for object creation.
     ```java
@@ -133,7 +133,7 @@ Lombok is a Java library that provides annotations to simplify Java development 
                     .build();
     ```
 
-8. @Slf4j and other logging annotations.
+1. @Slf4j and other logging annotations.
 
     Generate a log field using various logging frameworks (e.g., SLF4J, Log4j, Log4j2).
     ```java

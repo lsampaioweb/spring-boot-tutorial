@@ -2,7 +2,6 @@
 
 Documentation on how to create Java libraries and Spring Boot projects for our time.
 
-
 ### Ubuntu 22.04 environment:
 1. [Install Java.](documentation/java/install.md)
 1. [Install Maven.](documentation/maven/install.md)
@@ -16,30 +15,7 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [DevTools.](documentation/spring/devtools.md)
 1. [Logs.](documentation/spring/logs.md)
 1. [Lombok.](documentation/spring/lombok.md)
-
-<!-- ### Other stuff:
-1. Add the devtools dependency.
-
-    Maven will remove the `SNAPSHOT` from the version.
-
-    ![XXX](../images/maven/XXX.png "XXX")
-1. profile
-  - Trace and Span Id.
-  - Actuator.
-  dev
-  prod
-1. HTTPS:
-  - SSL Certificate.
-  - https2
-1. Rest:
-  - Add headers.
-1. Database:
-  - PostgreSQL.
-  - MapQuery.
-1. Docker.
-  - compose.
-1. Security.
-  - 2FA. -->
+1. [Profile.](documentation/spring/profile.md)
 
 #
 ### Links:
