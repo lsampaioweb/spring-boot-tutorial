@@ -1,17 +1,20 @@
 version: "3.8"
 services:
-  app:
-    container_name: "container-name"
+  my-app:
     build:
       context: "./"
-    image: "container-name:latest"
+    image: "container:latest"
+    container_name: "my-app"
     ports:
       - "8080:8080"
+      # - "8081:8081"
     environment:
-      - SPRING_PROFILES_ACTIVE=production
+      # - SERVER_PORT=8081
+      - SPRING_PROFILES_ACTIVE=development
+      # - SPRING_PROFILES_ACTIVE=production
     networks:
-      - "spring-boot-mysql-network"
+      - "my-app-network"
 
 networks:
-  spring-boot-mysql-network:
+  my-app-network:
     driver: "bridge"

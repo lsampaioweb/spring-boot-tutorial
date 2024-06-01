@@ -29,7 +29,7 @@
 1. Install the Docker packages.
 
     ```bash
-    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose docker-compose-plugin
     ```
 
 1. Add the permissions.

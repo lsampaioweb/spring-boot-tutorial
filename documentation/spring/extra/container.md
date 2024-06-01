@@ -21,8 +21,11 @@ Docker Compose is a tool for defining and running multi-container Docker applica
     ```bash
     docker run --name my-container -p 8080:8080 container:latest
 
-    # or -d to run in the background.
+    # -d to run in the background.
     docker run --name my-container -p 8080:8080 -d container:latest
+
+    # -e to pass extra arguments as the port.
+    docker run --name my-container -e SERVER_PORT=8081 -p 8080:8081 -d container:latest
     ```
 
 1. Test if everything is working.
@@ -35,7 +38,7 @@ Docker Compose is a tool for defining and running multi-container Docker applica
     ```bash
     docker logs my-container
 
-    # or to keep watching.
+    # -f to keep watching.
     docker logs -f my-container
     ```
 
@@ -74,9 +77,12 @@ Docker Compose is a tool for defining and running multi-container Docker applica
     ```bash
     docker-compose up -d
 
+    # -p, --project-name
+    docker-compose up -d -p my-app
+
     # Or
-    docker-compose -f docker-compose-development.yml up -d
-    docker-compose -f docker-compose-production.yml up -d
+    docker-compose -f my-container-development.yml up -d
+    docker-compose -f my-container-production.yml up -d
     ```
 
 #
