@@ -22,7 +22,7 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. RabbitMQ.
 
 ### Spring Boot extra:
-1. [Container.](documentation/spring/extra/container.md)
+1. [Docker and Docker Compose.](documentation/spring/extra/container.md)
 
 #
 ### Links:
