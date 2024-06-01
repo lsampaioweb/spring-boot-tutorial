@@ -12,9 +12,9 @@
   </parent>
 
   <groupId>com.learning</groupId>
-  <artifactId>lombok</artifactId>
+  <artifactId>container</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>lombok</name>
+  <name>container</name>
   <description>Demo project for Spring Boot</description>
 
   <properties>
@@ -43,6 +43,11 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
     <dependency>

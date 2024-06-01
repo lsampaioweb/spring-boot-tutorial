@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: "container"
+
+logging:
+  config: "classpath:log/logback-spring.xml"

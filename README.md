@@ -8,14 +8,21 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [Install VSCode extentions.](documentation/vscode/index.md)
 
 ### Spring Boot basic:
-1. [Create a basic Spring Boot project.](documentation/spring/project.md)
+1. [Create a basic Spring Boot project.](documentation/spring/basic/project.md)
 1. [Maven commands.](documentation/maven/pom.md)
+1. [DevTools.](documentation/spring/basic/devtools.md)
+1. [Logs.](documentation/spring/basic/logs.md)
+1. [Profile.](documentation/spring/basic/profile.md)
 
 ### Spring Boot features:
-1. [DevTools.](documentation/spring/devtools.md)
-1. [Logs.](documentation/spring/logs.md)
-1. [Lombok.](documentation/spring/lombok.md)
-1. [Profile.](documentation/spring/profile.md)
+1. [Lombok.](documentation/spring/features/lombok.md)
+1. Config Server.
+1. Rest.
+1. PostgreSQL.
+1. RabbitMQ.
+
+### Spring Boot extra:
+1. [Container.](documentation/spring/extra/container.md)
 
 #
 ### Links:
