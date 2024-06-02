@@ -1,0 +1,20 @@
+# My custom environment variables.
+KEY_STORE_PASSWORD: "${KEY_STORE_PASSWORD_MY_HTTPS_APP}"
+
+spring:
+  application:
+    name: "https"
+
+server:
+  port: 9443
+  ssl:
+    enabled: true
+    enabled-protocols: "TLSv1.3"
+    key-store-type: "PKCS12"
+    key-store: "classpath:ssl/my-cert.p12"
+    key-store-password: ${KEY_STORE_PASSWORD}
+  http2:
+    enabled: true
+
+logging:
+  config: "classpath:log/logback-spring.xml"
