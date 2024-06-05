@@ -15,4 +15,5 @@ pom.xml.releaseBackup
 ### VS Code ###
 .vscode/
 *.log
+*.gz
 *.p12
