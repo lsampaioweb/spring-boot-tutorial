@@ -17,7 +17,7 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 
 ### Spring Boot features:
 1. [Lombok.](documentation/spring/features/lombok.md)
-1. [Config Server.](documentation/spring/features/config-server.md)
+1. [Cloud Config.](documentation/spring/features/cloud-config.md)
 1. Rest.
 1. PostgreSQL.
 1. RabbitMQ.
