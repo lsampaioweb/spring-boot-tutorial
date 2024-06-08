@@ -1,8 +1,6 @@
 version: "3.8"
 services:
   my-app:
-    build:
-      context: "./"
     image: "container:latest"
     container_name: "my-app"
     ports:
