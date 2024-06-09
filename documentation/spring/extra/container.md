@@ -13,19 +13,19 @@ Docker Compose is a tool for defining and running multi-container Docker applica
 1. Build the Application as a Docker Image.
 
     ```bash
-    docker build --tag=container:latest .
+    docker build --tag=lsampaioweb/container:latest .
     ```
 
 1. Run the container.
 
     ```bash
-    docker run --name my-container -p 8080:8080 container:latest
+    docker run --name my-container -p 8080:8080 lsampaioweb/container:latest
 
     # -d to run in the background.
-    docker run --name my-container -p 8080:8080 -d container:latest
+    docker run --name my-container -p 8080:8080 -d lsampaioweb/container:latest
 
     # -e to pass extra arguments as the port.
-    docker run --name my-container -e SERVER_PORT=8081 -p 8080:8081 -d container:latest
+    docker run --name my-container -e SERVER_PORT=8081 -p 8080:8081 -d lsampaioweb/container:latest
     ```
 
 1. Test if everything is working.
