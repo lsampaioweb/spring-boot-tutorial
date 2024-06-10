@@ -22,10 +22,10 @@ Docker Compose is a tool for defining and running multi-container Docker applica
     docker run --name my-container -p 8080:8080 lsampaioweb/container:latest
 
     # -d to run in the background.
-    docker run --name my-container -p 8080:8080 -d lsampaioweb/container:latest
+    docker run --name my-container -p 8080:8080 -d lsampaioweb/container:1.0
 
     # -e to pass extra arguments as the port.
-    docker run --name my-container -e SERVER_PORT=8081 -p 8080:8081 -d lsampaioweb/container:latest
+    docker run --name my-container -e SERVER_PORT=8081 -p 8080:8081 -d lsampaioweb/container:1.0
     ```
 
 1. Test if everything is working.
@@ -78,7 +78,7 @@ Docker Compose is a tool for defining and running multi-container Docker applica
     docker-compose up -d
 
     # -p, --project-name
-    docker-compose up -d -p my-app
+    docker-compose -p my-app up -d
 
     # Or
     docker-compose -f my-container-development.yml up -d

@@ -13,8 +13,9 @@ public class userController {
 
   @GetMapping("/hello")
   public String sayHello() {
-    log.info("Method: sayHello");
+    String message = "Hello from Docker!!!";
+    log.info(message);
 
-    return "Hello from Docker!";
+    return message;
   }
 }

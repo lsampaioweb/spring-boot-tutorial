@@ -1,15 +1,15 @@
 version: "3.8"
 services:
   my-app:
-    image: "container:latest"
+    image: "lsampaioweb/container:1.1"
     container_name: "my-app"
     ports:
-      - "8080:8080"
-      # - "8081:8081"
+      # - "8080:8080"
+      - "8081:8081"
     environment:
-      # - SERVER_PORT=8081
-      - SPRING_PROFILES_ACTIVE=development
-      # - SPRING_PROFILES_ACTIVE=production
+      - "SERVER_PORT=8081"
+      - "SPRING_PROFILES_ACTIVE=development"
+      # - "SPRING_PROFILES_ACTIVE=production"
     networks:
       - "my-app-network"
 
