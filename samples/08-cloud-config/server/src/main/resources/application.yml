@@ -13,12 +13,12 @@ spring:
 
           # One repository per client app.
           # repos:
-          #   client1:
+          #   client-01:
           #     pattern: "cloud-config-client"
           #     search-paths: "{application}/{profile}"
-          #     uri: "file://${user.home}/git/datacenter/spring-boot/tutorial/samples/08-cloud-config/git-config"
-          #   client2:
-          #     pattern: "client-app2"
+          #     uri: "..."
+          #   client-02:
+          #     pattern: "client-02"
           #     search-paths: "{application}/{profile}"
           #     uri: "..."
   security:
