@@ -5,16 +5,37 @@ spring:
   application:
     name: "https"
 
+# Server SSL.
 server:
   port: 9443
   ssl:
     enabled: true
+    protocol: "TLS"
     enabled-protocols: "TLSv1.3"
     key-store-type: "PKCS12"
     key-store: "classpath:ssl/my-cert.p12"
     key-store-password: ${KEY_STORE_PASSWORD}
+    # Using PEM format without a passphrase for the private key.
+    # certificate: "classpath:ssl/my-cert.crt"
+    # certificate-private-key: "classpath:ssl/my-cert.key"
   http2:
     enabled: true
+
+# Client trust certificates signed by this CA.
+# *** In our case this will not be necessary because the operating system (Ubuntu) already trusts the CA.
+
+# Method 1: Using trust-certificate
+# server:
+#   ssl:
+#     enabled: false
+#     trust-certificate: "classpath:ssl/server/ca.crt"
+
+# Method 2: Using trust-store
+# server:
+#   ssl:
+#     enabled: false
+#     trust-store: classpath:ssl/server/ca.crt
+#     trust-store-type: PEM
 
 logging:
   config: "classpath:log/logback-spring.xml"

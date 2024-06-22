@@ -1,4 +1,9 @@
 version: "3.8"
+
+networks:
+  my-app-network:
+    driver: "bridge"
+
 services:
   my-app:
     image: "lsampaioweb/container:1.1"
@@ -12,7 +17,3 @@ services:
       # - "SPRING_PROFILES_ACTIVE=production"
     networks:
       - "my-app-network"
-
-networks:
-  my-app-network:
-    driver: "bridge"

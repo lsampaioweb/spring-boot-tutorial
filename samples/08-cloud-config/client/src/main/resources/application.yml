@@ -1,3 +1,11 @@
+# Part 1. Config here.
+# user:
+#   role: "Default"
+
+# server:
+#   port: 8081
+
+# Part 2. Config in remote server.
 spring:
   application:
     name: "cloud-config-client"
@@ -5,22 +13,13 @@ spring:
     # active: "default"
     active: "development"
     # active: "production"
+  cloud:
+    config:
+      username: "${USERNAME}"
+      password: "${PASSWORD}"
   config:
-    import: "configserver:http://localhost:8080"
-  # cloud:
-  #   config:
-  #     uri: "http://localhost:8080"
-      # name: "cloud-config-client"
-      # profile: "development"
-      # label: "main"
-      # username: "admin"
-      # password: "secret"
-
-  # cloud:
-  #   security:
-  #     user:
-  #       name: "root"
-  #       password: "s3cr3t"
+    # import: "configserver:http://localhost:8080"
+    import: "configserver:https://jump-server-01.homelab:9443"
 
 logging:
   config: "classpath:log/logback-spring.xml"

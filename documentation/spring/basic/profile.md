@@ -60,7 +60,13 @@ Spring Boot profiles provide a way to segregate parts of your application config
 
     This setup allows you to easily switch between different profiles and run your Spring Boot application with the desired configuration directly from VSCode.
 
-    Create the `launch.json` file inside the `.vscode` folder.
+    1. Open your project in VSCode.
+
+    1. Create a folder named `.vscode` in the root of your project if it doesn't already exist.
+
+    1. Inside the this folder, create a new file named `launch.json`.
+
+    1. Add the following configuration to the `launch.json` file:
     ```json
     {
       "version": "0.2.0",
@@ -69,17 +75,17 @@ Spring Boot profiles provide a way to segregate parts of your application config
           "type": "java",
           "name": "Profiles - Development",
           "request": "launch",
-          "mainClass": "com.learning.profiles.ProfilesApplication",
-          "args": "--spring.profiles.active=development",
-          "projectName": "profiles"
+          "mainClass": "com.example.YourSpringBootApplication",
+          "args": "--spring.profiles.active=dev",
+          "projectName": "your-project-name"
         },
         {
           "type": "java",
           "name": "Profiles - Production",
           "request": "launch",
-          "mainClass": "com.learning.profiles.ProfilesApplication",
-          "args": "--spring.profiles.active=production",
-          "projectName": "profiles"
+          "mainClass": "com.example.YourSpringBootApplication",
+          "args": "--spring.profiles.active=prod",
+          "projectName": "your-project-name"
         }
       ]
     }

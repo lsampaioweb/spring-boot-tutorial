@@ -1,6 +1,3 @@
-# My custom environment variables.
-# KEY_STORE_PASSWORD: "${KEY_STORE_PASSWORD_MY_HTTPS_APP}"
-
 spring:
   application:
     name: "cloud-config-server"
@@ -8,30 +5,47 @@ spring:
     config:
       server:
         git:
-          # uri: "https://example.com/my/repo"
+          # uri: "https://github.com/{application}"
+          # One repository for all clients apps.
           uri: "file://${user.home}/git/datacenter/spring-boot/tutorial/samples/08-cloud-config/git-config"
-          clone-on-start: true
-          searchPaths: "{application}/{profile}"
-  # security:
-  #   user:
-  #     name: "root"
-  #     password: "s3cr3t"
+          cloneOnStart: true
+          search-paths: "{application}/{profile}"
 
-# management:
-#   security:
-#     enabled: false
+          # One repository per client app.
+          # repos:
+          #   client1:
+          #     pattern: "cloud-config-client"
+          #     search-paths: "{application}/{profile}"
+          #     uri: "file://${user.home}/git/datacenter/spring-boot/tutorial/samples/08-cloud-config/git-config"
+          #   client2:
+          #     pattern: "client-app2"
+          #     search-paths: "{application}/{profile}"
+          #     uri: "..."
+  security:
+    user:
+      name: "${USERNAME}"
+      password: "${PASSWORD}"
+
+# Part 1 - Http
+# server:
+#   port: 8080
+
+# Part 1 - Https
+# My custom environment variables.
+KEY_STORE_PASSWORD: "${KEY_STORE_PASSWORD_MY_HTTPS_APP}"
 
 server:
-  # port: 9443
-  port: 8080
-  # ssl:
-  #   enabled: true
-  #   enabled-protocols: "TLSv1.3"
-  #   key-store-type: "PKCS12"
-  #   key-store: "classpath:ssl/my-cert.p12"
-  #   key-store-password: ${KEY_STORE_PASSWORD}
-  # http2:
-  #   enabled: true
+  port: 9443
+  ssl:
+    enabled: true
+    protocol: "TLS"
+    enabled-protocols: "TLSv1.3"
+    key-store-type: "PKCS12"
+    key-store: "classpath:ssl/my-cert.p12"
+    key-store-password: ${KEY_STORE_PASSWORD}
+  http2:
+    enabled: true
+
 
 logging:
   config: "classpath:log/logback-spring.xml"

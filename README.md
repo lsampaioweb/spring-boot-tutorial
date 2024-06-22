@@ -13,10 +13,11 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [DevTools.](documentation/spring/basic/devtools.md)
 1. [Logs.](documentation/spring/basic/logs.md)
 1. [Profile.](documentation/spring/basic/profile.md)
+1. [Lombok.](documentation/spring/basic/lombok.md)
+1. [Actuator.](documentation/spring/basic/actuator.md)
 1. [HTTPS.](documentation/spring/basic/https.md)
 
 ### Spring Boot features:
-1. [Lombok.](documentation/spring/features/lombok.md)
 1. [Cloud Config.](documentation/spring/features/cloud-config.md)
 1. Rest.
 1. PostgreSQL.
