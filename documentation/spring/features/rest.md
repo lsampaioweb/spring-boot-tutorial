@@ -42,8 +42,8 @@ This guide will walk you through setting up a Spring Boot application with a `RE
       private List<User> users = new ArrayList<>();
 
       public UserController() {
-        users.add(new User(1L, "Zara", "zara@example.com"));
-        users.add(new User(2L, "Malu", "malu@example.com"));
+        users.add(new User(1L, "user-01", "user-01@example.com"));
+        users.add(new User(2L, "user-02", "user-02@example.com"));
       }
 
       @GetMapping
@@ -91,12 +91,12 @@ This guide will walk you through setting up a Spring Boot application with a `RE
 
     - POST /api/v1/users - Create a new user.
     ```bash
-    curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"id":1,"name":"zara","email":"zara@example.com"}'
+    curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"id":1,"name":"user-01","email":"user-01@example.com"}'
     ```
 
     - PUT /api/v1/users/{id} - Update an existing user.
     ```bash
-    curl -X PUT http://localhost:8080/api/v1/users/1 -H "Content-Type: application/json" -d '{"name":"Malu","email":"malu@example.com"}'
+    curl -X PUT http://localhost:8080/api/v1/users/1 -H "Content-Type: application/json" -d '{"name":"user-02","email":"user-02@example.com"}'
     ```
 
     - DELETE /api/v1/users/{id} - Delete a user.

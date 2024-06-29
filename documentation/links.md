@@ -26,6 +26,13 @@
 1. [Spring Cloud Config.](https://medium.com/dev-cave/spring-cloud-config-48e423446ed8)
 1. [Securing Spring Cloud Config Server.](https://medium.com/@susindaperera/securing-spring-cloud-config-server-eac7b46f3e41)
 
+### K6:
+
+1. [The best developer experience for load testing.](https://k6.io/)
+1. [Running K6.](https://grafana.com/docs/k6/latest/get-started/running-k6/)
+1. [Conhecendo o K6 para o teste de carga.](https://medium.com/xp-inc/conhecendo-o-k6-para-testes-de-carga-943a0489de1e)
+1. [Testes de Performance e Carga com k6: Um Guia Didático e Passo a Passo.](https://medium.com/@israfaioli/testes-de-performance-e-carga-com-k6-um-guia-did%C3%A1tico-e-passo-a-passo-22bc4854a63e)
+
 [Go Back](../README.md)
 
 #

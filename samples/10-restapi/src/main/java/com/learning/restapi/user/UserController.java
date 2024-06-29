@@ -19,13 +19,20 @@ public class UserController {
   private List<User> users = new ArrayList<>();
 
   public UserController() {
-    users.add(new User(1L, "Zara", "zara@example.com"));
-    users.add(new User(2L, "Malu", "malu@example.com"));
+    users.add(new User(1L, "user-01", "user-01@example.com"));
+    users.add(new User(2L, "user-02", "user-02@example.com"));
   }
 
   @GetMapping
   public List<User> getUsers() {
     return users;
+  }
+
+  @GetMapping("/{id}")
+  public User getUserById(@PathVariable Long id) {
+    User user = users.stream().filter(u -> u.getId().equals(id)).findFirst().orElse(null);
+
+    return user;
   }
 
   @PostMapping
