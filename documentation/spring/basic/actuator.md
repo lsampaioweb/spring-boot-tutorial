@@ -32,7 +32,7 @@ Spring Boot Actuator provides production-ready features to help you monitor and 
 
     1. Explanation of `show-details` Property:
 
-        The `management.endpoint.health.show-details` property in the `application.yml` file configures the level of detail shown in the /actuator/health endpoint. This property can take the following values:
+        The `management.endpoint.health.show-details` property in the `application.yml` file configures the level of detail shown in the `/actuator/health` endpoint. This property can take the following values:
 
         `never`: The details are never shown, even if the request is authenticated.
 
