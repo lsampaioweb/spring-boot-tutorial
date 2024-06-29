@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: "logs"
+
+logging:
+  config: "classpath:log/logback-spring.xml"

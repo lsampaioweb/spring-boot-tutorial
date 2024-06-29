@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: "lombok"
+
+logging:
+  config: "classpath:log/logback-spring.xml"

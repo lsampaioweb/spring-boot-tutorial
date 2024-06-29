@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: "devtools"
+  devtools:
+    restart:
+      enabled: true
+
+logging:
+  config: "classpath:log/logback-spring.xml"
