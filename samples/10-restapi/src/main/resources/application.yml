@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: "restapi"
+
+logging:
+  config: "classpath:log/logback-spring.xml"

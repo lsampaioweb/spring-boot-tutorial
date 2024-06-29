@@ -19,8 +19,10 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 
 ### Spring Boot features:
 1. [Cloud Config.](documentation/spring/features/cloud-config.md)
-1. Rest.
+1. [Rest.](documentation/spring/features/rest.md)
+1. [Vault.](documentation/spring/features/vault.md)
 1. PostgreSQL.
+1. Redis.
 1. RabbitMQ.
 
 ### Spring Boot extra:
