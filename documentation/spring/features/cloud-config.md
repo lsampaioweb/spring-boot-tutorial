@@ -81,7 +81,7 @@ Centralizing application configuration using Spring Boot Config Server simplifie
 
     Create a Git repository to store your configuration files. Create a folder for each project or Spring Boot application, and within each folder, create subfolders for each profile (e.g., `default`, `development`, `production`). Inside each subfolder, create an `application.yml` file with the application settings.
 
-    default/application.yml
+    cloud-config-client/default/application.yml
     ```yml
     user:
       role: "Default"
@@ -90,7 +90,7 @@ Centralizing application configuration using Spring Boot Config Server simplifie
       port: 8080
     ```
 
-    production/application.yml
+    cloud-config-client/production/application.yml
     ```yml
     user:
       role: "Production"
