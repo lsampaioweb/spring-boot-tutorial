@@ -90,10 +90,10 @@ Centralizing application configuration using Spring Boot Config Server simplifie
       port: 8080
     ```
 
-    cloud-config-client/production/application.yml
+    cloud-config-client/development/application.yml
     ```yml
     user:
-      role: "Production"
+      role: "development"
 
     server:
       port: 8181
