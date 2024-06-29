@@ -2,44 +2,56 @@ Spring Boot profiles provide a way to segregate parts of your application config
 
 1. Define Profile-Specific Configuration Files.
 
-    You can define multiple configuration files for different profiles. The default configuration file is `application.properties`. You can create additional configuration files for each profile:
+    You can define multiple configuration files for different profiles. The default configuration file is `application.yml`. You can create additional configuration files for each profile:
 
-    - `application.properties`
-    - `application-development.properties`
-    - `application-production.properties`
+    - `application.yml`
+    - `application-development.yml`
+    - `application-production.yml`
 
     **Common settings for all profiles can be added to the default file.**
 
-    `application.properties`:
-    ```properties
-    spring.application.name=learning-about-profiles
+    `application.yml`:
+    ```yml
+    spring:
+      application:
+        name: "learning-about-profiles"
     ```
 
-    `application-development.properties`:
-    ```properties
-    logging.level.root=DEBUG
-    spring.datasource.url=jdbc:mysql://dev-server:3306/dev-db
-    spring.datasource.username=dev-user
-    spring.datasource.password=******
+    `application-development.yml`:
+    ```yml
+    logging:
+      level:
+        root: "DEBUG"
+    spring:
+      datasource:
+        url: "jdbc:mysql://dev-server:3306/dev-db"
+        username: "dev-user"
+        password: "******"
     ```
 
-    `application-production.properties`:
-    ```properties
-    logging.level.root=INFO
-    spring.datasource.url=jdbc:mysql://prod-server:3306/prod-db
-    spring.datasource.username=prod-user
-    spring.datasource.password=******
+    `application-production.yml`:
+    ```yml
+    logging:
+      level:
+        root: "INFO"
+    spring:
+      datasource:
+        url: "jdbc:mysql://prod-server:3306/prod-db"
+        username: "prod-user"
+        password: "******"
     ```
 
 1. Activate a Profile.
 
     You can activate a profile in several ways:
 
-    - Using `application.properties`:
-    ```properties
-    spring.profiles.active=development
-    # or
-    spring.profiles.active=production
+    - Using `application.yml`:
+    ```yml
+    spring:
+      profiles:
+        # active: "default"
+        active: "development"
+        # active: "production"
     ```
 
     - Using Environment Variable:
@@ -90,6 +102,8 @@ Spring Boot profiles provide a way to segregate parts of your application config
       ]
     }
     ```
+
+[Go Back](../../../README.md)
 
 #
 ### Created by:

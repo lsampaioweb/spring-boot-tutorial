@@ -15,11 +15,16 @@ Spring Boot DevTools aim to reduce the development time by offering functionalit
 
     Devtools monitors classpath resources and automatically restarts the application whenever files are changed.
 
-    You can configure it in the `application.properties` file:
-    ```properties
+    You can configure it in the `application.yml` file:
+    ```yml
     # default is true.
-    spring.devtools.restart.enabled=true
+    spring:
+      devtools:
+        restart:
+          enabled: true
     ```
+
+[Go Back](../../../README.md)
 
 #
 ### Created by:

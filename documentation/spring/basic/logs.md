@@ -2,12 +2,13 @@ Prepare the application to log debug, information, warning and error messages.
 
 1. No additional dependencies are required as the log library is included in the `spring-boot-starter` dependency.
 
-1. Add the path for the log configuration file in the `application.properties`.
+1. Add the path for the log configuration file in the `application.yml`.
 
     Ensure the log configuration file is located inside the resources folder. To enhance organization, we have included a log folder.
 
-    ```bash
-    logging.config=classpath:log/logback-spring.xml
+    ```yml
+    logging:
+      config: "classpath:log/logback-spring.xml"
     ```
 
     The main sections of the configuration file include:
@@ -71,6 +72,8 @@ Prepare the application to log debug, information, warning and error messages.
     logger.warn("A WARN Message");
     logger.error("An ERROR Message");
     ```
+
+[Go Back](../../../README.md)
 
 #
 ### Created by:

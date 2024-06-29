@@ -29,7 +29,7 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 #
 ### Links:
 
-[Links](docs/links.md "Links")
+[Links](documentation/links.md "Links")
 
 #
 ### License:
