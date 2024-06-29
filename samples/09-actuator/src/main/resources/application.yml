@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: "actuator"
+
+# Add if you want to have a username and password for the actuator endpoint.
+  # security:
+  #   user:
+  #     name: "${USERNAME}"
+  #     password: "${PASSWORD}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # include: "*"
+        include: "health,metrics"
+
+  endpoint:
+    health:
+      show-details: "always"
