@@ -7,7 +7,7 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [Install Maven.](documentation/maven/install.md)
 1. [Install VSCode extentions.](documentation/vscode/index.md)
 
-### Spring Boot basic:
+### Spring Boot Basic:
 1. [Basic Spring Boot project.](documentation/spring/basic/project.md)
 1. [Maven commands.](documentation/maven/pom.md)
 1. [DevTools.](documentation/spring/basic/devtools.md)
@@ -15,12 +15,14 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [Profile.](documentation/spring/basic/profile.md)
 1. [Lombok.](documentation/spring/basic/lombok.md)
 1. [Actuator.](documentation/spring/basic/actuator.md)
+1. [Rest.](documentation/spring/basic/rest.md)
+1. [Thymeleaf.](documentation/spring/basic/thymeleaf.md)
 1. [HTTPS.](documentation/spring/basic/https.md)
 
-### Spring Boot features:
-1. [Cloud Config.](documentation/spring/features/cloud-config.md)
-1. [Rest.](documentation/spring/features/rest.md)
-1. [Security.](documentation/spring/features/security.md)
+### Spring Boot Advanced:
+1. [Cloud Config.](documentation/spring/advanced/cloud-config.md)
+1. [Security.](documentation/spring/advanced/security.md)
+1. WebSocket.
 
 ### Spring Boot and Docker:
 1. [Docker and Docker Compose.](documentation/spring/extra/container.md)

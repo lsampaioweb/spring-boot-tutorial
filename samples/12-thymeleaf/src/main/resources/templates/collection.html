@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Learning Thymeleaf</title>
+</head>
+
+<body>
+  <div id="one">
+    <h2 th:text="${message}">
+      <span>message will print here</span>
+    </h2>
+  </div>
+
+  <div>
+    <ul>
+      <li id="two" th:each="list:${cloudProvider}">
+        <span th:text=${list}>items will print here</span>
+      </li>
+    </ul>
+  </div>
+</body>
+
+</html>

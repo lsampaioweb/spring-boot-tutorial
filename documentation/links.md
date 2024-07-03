@@ -10,6 +10,11 @@
 
 1. [Spring Boot Logging Example.](https://mkyong.com/spring-boot/spring-boot-logging-example/)
 
+### Thymeleaf:
+
+1. [Spring Boot – How Thymeleaf Works?](https://www.geeksforgeeks.org/spring-boot-how-thymeleaf-works/amp/)
+1. [Spring Boot – Thymeleaf with Example.](https://www.geeksforgeeks.org/spring-boot-thymeleaf-with-example/amp/)
+
 ### HTTPS:
 
 1. [HTTPS using Self-Signed Certificate in Spring Boot.](https://www.baeldung.com/spring-boot-https-self-signed-certificate)
