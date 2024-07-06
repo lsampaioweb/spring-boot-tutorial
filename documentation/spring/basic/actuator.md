@@ -69,11 +69,6 @@ Spring Boot Actuator provides production-ready features to help you monitor and 
     Local machine:
       - http://localhost:8080/actuator
 
-    Remote server:
-      - http://jump-server-01.homelab:8080/actuator
-      - http://jump-server-01.homelab:8080/actuator/health
-      - http://jump-server-01.homelab:8080/actuator/metrics
-
 [Go Back](../../../README.md)
 
 #

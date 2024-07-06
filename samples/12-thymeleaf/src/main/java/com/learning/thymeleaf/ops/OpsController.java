@@ -19,8 +19,8 @@ public class OpsController {
   }
 
   @PostMapping
-  public String postPage(@ModelAttribute("ops") OperatingSystem os, Model model) {
-    String attributeValue = os.getOS1() + " " + os.getOS2() + " " + os.getOS3();
+  public String postPage(@ModelAttribute("ops") OperatingSystem ops, Model model) {
+    String attributeValue = ops.getOS1() + " " + ops.getOS2() + " " + ops.getOS3();
 
     model.addAttribute("message", attributeValue);
 
