@@ -18,10 +18,11 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [Rest.](documentation/spring/basic/rest.md)
 1. [Thymeleaf.](documentation/spring/basic/thymeleaf.md)
 1. [HTTPS.](documentation/spring/basic/https.md)
+1. [i18n.](documentation/spring/basic/i18n.md)
 
 ### Spring Boot Advanced:
 1. [Cloud Config.](documentation/spring/advanced/cloud-config.md)
-1. [Security.](documentation/spring/advanced/security.md)
+1. Security.
 1. WebSocket.
 
 ### Spring Boot and Docker:

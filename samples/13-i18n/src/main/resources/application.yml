@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: "i18n"
+
+# This is only necessary if you change the default path.
+  messages:
+    basename: "i18n/messages"
+
+logging:
+  config: "classpath:log/logback-spring.xml"

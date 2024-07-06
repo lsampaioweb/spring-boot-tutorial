@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>i18n Example</title>
+</head>
+
+<body>
+  <h1 th:text="#{greeting}">Greeting</h1>
+  <a th:text="#{lang.default}" th:href="@{/}">Default</a> |
+  <a th:text="#{lang.english}" th:href="@{/?lang=en}">English</a> |
+  <a th:text="#{lang.portuguese}" th:href="@{/?lang=pt-BR}">Português</a> |
+</body>
+
+</html>
