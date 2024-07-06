@@ -22,6 +22,7 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 
 ### Spring Boot Advanced:
 1. [Cloud Config.](documentation/spring/advanced/cloud-config.md)
+1. [Virtual Threads.](documentation/spring/advanced/virtual-threads.md)
 1. Security.
 1. WebSocket.
 
@@ -32,6 +33,7 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [K6.](documentation/spring/tests/k6.md)
 
 ### Spring Boot Integrations:
+1. Traefik.
 1. Vault.
 1. PostgreSQL.
 1. Redis.

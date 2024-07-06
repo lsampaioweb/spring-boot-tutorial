@@ -38,6 +38,12 @@
 1. [Conhecendo o K6 para o teste de carga.](https://medium.com/xp-inc/conhecendo-o-k6-para-testes-de-carga-943a0489de1e)
 1. [Testes de Performance e Carga com k6: Um Guia Didático e Passo a Passo.](https://medium.com/@israfaioli/testes-de-performance-e-carga-com-k6-um-guia-did%C3%A1tico-e-passo-a-passo-22bc4854a63e)
 
+### Virtual Threads:
+
+1. [Virtual Threads in Spring Boot.](https://www.danvega.dev/blog/virtual-threads-spring-boot)
+1. [A guide to using virtual threads with Spring Boot.](https://bell-sw.com/blog/a-guide-to-using-virtual-threads-with-spring-boot/)
+1. [Working with Virtual Threads in Spring 6.](https://www.baeldung.com/spring-6-virtual-threads)
+
 [Go Back](../README.md)
 
 #

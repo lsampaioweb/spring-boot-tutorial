@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: "virtual-threads"
+
+  threads:
+    virtual:
+      enabled: true
+
+# Tomcat threads defaults to 200, 0 is unlimited.
+# server:
+#   tomcat:
+#     threads:
+#       max: 10
+
+logging:
+  config: "classpath:log/logback-spring.xml"
