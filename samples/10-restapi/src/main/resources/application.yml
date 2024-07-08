@@ -2,5 +2,9 @@ spring:
   application:
     name: "restapi"
 
+  # Because we are not using a database.
+  autoconfigure:
+    exclude: "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
+
 logging:
   config: "classpath:log/logback-spring.xml"

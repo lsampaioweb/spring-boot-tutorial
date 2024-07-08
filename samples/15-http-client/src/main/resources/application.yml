@@ -6,15 +6,19 @@ spring:
   application:
     name: "http-client"
 
+  # Because we are not using a database.
+  autoconfigure:
+    exclude: "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
+
   threads:
     virtual:
       enabled: true
 
   # Only necessary if you want to change some settings.
-  http:
-    client:
-      connect-timeout: 5000
-      read-timeout: 5000
+  # http:
+  #   client:
+  #     connect-timeout: 5000
+  #     read-timeout: 5000
 
 logging:
   config: "classpath:log/logback-spring.xml"

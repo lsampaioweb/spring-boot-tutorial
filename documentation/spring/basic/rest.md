@@ -9,6 +9,21 @@ This guide will walk you through setting up a Spring Boot application with a `RE
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    ```
+
+1. Exclude the Auto Configuration of a Datasource:
+
+    Because we are not using a database, add the following to your `application.yml` file:
+
+    ```yml
+    spring:
+      autoconfigure:
+        exclude: "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
     ```
 
 1. Create the Model Class.
@@ -19,12 +34,131 @@ This guide will walk you through setting up a Spring Boot application with a `RE
     ...
 
     @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     public class User {
-      private Long id;
+      private int id;
       private String name;
       private String email;
+    }
+    ```
+
+1. Create the Service class.
+
+    Create the service class to handle the business logic:
+
+    ```java
+    ...
+    @Service
+    class UserService {
+
+      private List<User> users = new ArrayList<>();
+
+      public UserService() {
+        users.add(new User(1, "user-01", "user-01@example.com"));
+        users.add(new User(2, "user-02", "user-02@example.com"));
+        users.add(new User(3, "user-03", "user-03@example.com"));
+        users.add(new User(4, "user-04", "user-04@example.com"));
+        users.add(new User(5, "user-05", "user-05@example.com"));
+        users.add(new User(6, "user-06", "user-06@example.com"));
+        users.add(new User(7, "user-07", "user-07@example.com"));
+        users.add(new User(8, "user-08", "user-08@example.com"));
+        users.add(new User(9, "user-09", "user-09@example.com"));
+        users.add(new User(10, "user-10", "user-10@example.com"));
+      }
+
+      List<User> findAll() {
+        return users;
+      }
+
+      Page<User> paginateAndSort(Pageable pageable) {
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        Sort sort = pageable.getSort();
+
+        List<User> paginatedUsers = getPaginatedList(users, pageNumber, pageSize);
+        List<User> sortedPaginatedUsers = getSortedUsers(paginatedUsers, sort);
+
+        return new PageImpl<>(sortedPaginatedUsers, PageRequest.of(pageNumber, pageSize, sort), users.size());
+      }
+
+      private List<User> getPaginatedList(List<User> users, int pageNumber, int pageSize) {
+        int fromIndex = pageNumber * pageSize;
+
+        if (users.size() < fromIndex) {
+          return Collections.emptyList();
+        } else {
+          int toIndex = Math.min(fromIndex + pageSize, users.size());
+
+          return users.subList(fromIndex, toIndex);
+        }
+      }
+
+      private List<User> getSortedUsers(List<User> users, Sort sort) {
+        if (!sort.isSorted()) {
+          return users;
+        }
+
+        List<User> sortedUsers = new ArrayList<>(users);
+
+        for (Sort.Order order : sort) {
+          Comparator<User> comparator;
+
+          switch (order.getProperty()) {
+            case "id":
+              comparator = Comparator.comparing(User::getId);
+              break;
+            case "name":
+              comparator = Comparator.comparing(User::getName);
+              break;
+            case "email":
+              comparator = Comparator.comparing(User::getEmail);
+              break;
+            default:
+              throw new IllegalArgumentException("Invalid sort property: " + order.getProperty());
+          }
+
+          if (order.getDirection() == Sort.Direction.DESC) {
+            comparator = comparator.reversed();
+          }
+
+          sortedUsers = sortedUsers.stream()
+              .sorted(comparator)
+              .collect(Collectors.toList());
+        }
+
+        return sortedUsers;
+      }
+
+      Optional<User> findById(Integer id) {
+        return users.stream().filter(getById(id)).findFirst();
+      }
+
+      User create(User user) {
+        int newId = users.isEmpty() ? 1 : users.getLast().getId() + 1;
+
+        user.setId(newId);
+        users.add(user);
+
+        return user;
+      }
+
+      Optional<User> update(Integer id, User userDetails) {
+        return users.stream().filter(getById(id)).findFirst()
+            .map(user -> {
+              user.setName(userDetails.getName());
+              user.setEmail(userDetails.getEmail());
+
+              return user;
+            });
+      }
+
+      boolean delete(Integer id) {
+        return users.removeIf(getById(id));
+      }
+
+      private Predicate<? super User> getById(Integer id) {
+        return u -> u.getId().equals(id);
+      }
+
     }
     ```
 
@@ -34,75 +168,96 @@ This guide will walk you through setting up a Spring Boot application with a `RE
 
     ```java
     ...
-
     @RestController
     @RequestMapping("/api/v1/users")
     public class UserController {
 
-      private List<User> users = new ArrayList<>();
+      private final UserService userService;
 
-      public UserController() {
-        users.add(new User(1L, "user-01", "user-01@example.com"));
-        users.add(new User(2L, "user-02", "user-02@example.com"));
+      public UserController(UserService userService) {
+        this.userService = userService;
       }
 
-      @GetMapping
-      public List<User> getUsers() {
-        return users;
+      @GetMapping("")
+      List<User> findAll() {
+        return userService.findAll();
+      }
+
+      @GetMapping("/all")
+      public Page<User> all(Pageable pageable) {
+        return userService.paginateAndSort(pageable);
+      }
+
+      @GetMapping("/{id}")
+      public ResponseEntity<User> findById(@PathVariable Integer id) {
+        Optional<User> user = userService.findById(id);
+
+        return user.map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
       }
 
       @PostMapping
-      public User createUser(@RequestBody User user) {
-        users.add(user);
+      public ResponseEntity<User> create(@RequestBody User user) {
+        User createdUser = userService.create(user);
 
-        return user;
+        return ResponseEntity.ok(createdUser);
       }
 
       @PutMapping("/{id}")
-      public User updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        User user = users.stream().filter(u -> u.getId().equals(id)).findFirst().orElse(null);
+      public ResponseEntity<User> update(@PathVariable Integer id, @RequestBody User user) {
+        Optional<User> updatedUser = userService.update(id, user);
 
-        if (user != null) {
-          user.setName(userDetails.getName());
-          user.setEmail(userDetails.getEmail());
-        }
-
-        return user;
+        return updatedUser.map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
       }
 
       @DeleteMapping("/{id}")
-      public String deleteUser(@PathVariable Long id) {
-        users.removeIf(u -> u.getId().equals(id));
+      public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        boolean userRemoved = userService.delete(id);
 
-        return String.format("User with ID '%d' has been deleted.", id);
+        if (userRemoved) {
+          return ResponseEntity.ok().build();
+        } else {
+          return ResponseEntity.notFound().build();
+        }
       }
-
     }
 
 1. Test the Endpoints.
 
     You can use tools like `Postman` or `curl` to test the endpoints:
 
-    - GET /api/v1/users - Retrieve all users.
+    1. Start your Spring Boot API Rest application.
 
-    ```bash
-    curl -X GET http://localhost:8080/api/v1/users
-    ```
+    - Get all users.
+      ```bash
+      curl -X GET http://localhost:8080/api/v1/users
+      ```
 
-    - POST /api/v1/users - Create a new user.
-    ```bash
-    curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"id":1,"name":"user-01","email":"user-01@example.com"}'
-    ```
+    - Get paginated and sorted users.
+      ```bash
+      curl -X GET "http://localhost:8080/api/v1/users/all?page=1&size=3&sort=name,asc"
+      ```
 
-    - PUT /api/v1/users/{id} - Update an existing user.
-    ```bash
-    curl -X PUT http://localhost:8080/api/v1/users/1 -H "Content-Type: application/json" -d '{"name":"user-02","email":"user-02@example.com"}'
-    ```
+    - Get a user by ID.
+      ```bash
+      curl -X GET http://localhost:8080/api/v1/users/1
+      ```
 
-    - DELETE /api/v1/users/{id} - Delete a user.
-    ```bash
-    curl -X DELETE http://localhost:8080/api/v1/users/1
-    ```
+    - Create a user.
+      ```bash
+      curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
+      ```
+
+    - Update a user.
+      ```bash
+      curl -X PUT http://localhost:8080/api/v1/users/11 -H "Content-Type: application/json" -d '{"name":"Jane Doe","email":"jane.doe@example.com"}'
+      ```
+
+    - Delete a user.
+      ```bash
+      curl -X DELETE http://localhost:8080/api/v1/users/11
+      ```
 
 [Go Back](../../../README.md)
 

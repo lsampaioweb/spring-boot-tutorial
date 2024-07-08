@@ -1,8 +1,10 @@
 package com.learning.http_client.user;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.http.HttpStatusCode;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,30 +30,42 @@ public class UserController {
     return userService.findAll();
   }
 
+  @GetMapping("/all")
+  public Page<User> all(Pageable pageable) {
+    return userService.paginateAndSort(pageable);
+  }
+
   @GetMapping("/{id}")
-  User findById(@PathVariable Integer id) {
-    return userService.findById(id);
+  public ResponseEntity<User> findById(@PathVariable Integer id) {
+    Optional<User> user = userService.findById(id);
+
+    return user.map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  User create(@RequestBody User user) {
-    return userService.create(user);
+  public ResponseEntity<User> create(@RequestBody User user) {
+    User createdUser = userService.create(user);
+
+    return ResponseEntity.ok(createdUser);
   }
 
   @PutMapping("/{id}")
-  User update(@PathVariable Integer id, @RequestBody User user) {
-    return userService.update(id, user);
+  public ResponseEntity<User> update(@PathVariable Integer id, @RequestBody User user) {
+    Optional<User> updatedUser = userService.update(id, user);
+
+    return updatedUser.map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @DeleteMapping("/{id}")
-  ResponseEntity<Void> delete(@PathVariable Integer id) {
-    HttpStatusCode status = userService.delete(id).getStatusCode();
+  public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    boolean userRemoved = userService.delete(id);
 
-    if ((status != null) && (status.is2xxSuccessful())) {
+    if (userRemoved) {
       return ResponseEntity.ok().build();
     } else {
       return ResponseEntity.notFound().build();
     }
   }
-
 }

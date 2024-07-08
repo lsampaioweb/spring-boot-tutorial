@@ -1,13 +1,20 @@
 package com.learning.http_client.user;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.PostConstruct;
 
@@ -31,7 +38,7 @@ class UserService {
         .build();
   }
 
-  public List<User> findAll() {
+  List<User> findAll() {
     return restClient
         .get()
         .retrieve()
@@ -39,15 +46,26 @@ class UserService {
         });
   }
 
-  public User findById(Integer id) {
+  Page<User> paginateAndSort(Pageable pageable) {
     return restClient
+        .get()
+        .uri(getPagingAndSortingUrl(pageable))
+        .retrieve()
+        .body(new ParameterizedTypeReference<Page<User>>() {
+        });
+  }
+
+  Optional<User> findById(Integer id) {
+    User user = restClient
         .get()
         .uri("/{id}", id)
         .retrieve()
         .body(User.class);
+
+    return Optional.ofNullable(user);
   }
 
-  public User create(User user) {
+  User create(User user) {
     return restClient
         .post()
         .contentType(MediaType.APPLICATION_JSON)
@@ -56,21 +74,40 @@ class UserService {
         .body(User.class);
   }
 
-  public User update(Integer id, User user) {
-    return restClient
+  Optional<User> update(Integer id, User user) {
+    User updatedUser = restClient
         .put()
         .uri("/{id}", id)
         .contentType(MediaType.APPLICATION_JSON)
         .body(user)
         .retrieve()
         .body(User.class);
+
+    return Optional.ofNullable(updatedUser);
   }
 
-  public ResponseEntity<Void> delete(Integer id) {
-    return restClient
+  boolean delete(Integer id) {
+    HttpStatusCode status = restClient
         .delete()
         .uri("/{id}", id)
         .retrieve()
-        .toBodilessEntity();
+        .toBodilessEntity()
+        .getStatusCode();
+
+    return ((status == HttpStatus.OK) || (status == HttpStatus.NO_CONTENT));
+  }
+
+  private String getPagingAndSortingUrl(Pageable pageable) {
+    return UriComponentsBuilder.fromHttpUrl(usersUrl + "/all")
+        .queryParam("page", pageable.getPageNumber())
+        .queryParam("size", pageable.getPageSize())
+        .queryParam("sort", formatSort(pageable.getSort()))
+        .toUriString();
+  }
+
+  private String formatSort(Sort sort) {
+    return sort.stream()
+        .map(order -> order.getProperty() + "," + order.getDirection())
+        .collect(Collectors.joining(","));
   }
 }

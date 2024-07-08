@@ -2,6 +2,32 @@
 
 Spring Boot 3.1 and later versions include the new HTTP Client, which provides a more modern and flexible approach to making HTTP requests compared to the older RestTemplate. This guide will demonstrate how to use the new HTTP Client in a Spring Boot application.
 
+1. Add Dependencies.
+
+    Add the following dependencies to your `pom.xml` file:
+
+    ```xml
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    ```
+
+1. Exclude the Auto Configuration of a Datasource:
+
+    Because we are not using a database, add the following to your `application.yml` file:
+
+    ```yml
+    spring:
+      autoconfigure:
+        exclude: "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
+    ```
+
 1. Add HTTP Client Configuration.
 
     In your `application.yml`, you can configure settings related to the HTTP Client if necessary.
@@ -23,20 +49,27 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
         users: "${external.api.base-url}/users"
     ```
 
-1. Create a Service Using the HTTP Client.
+1. Create the Model Class.
 
-    Create a service class to use the new HTTP Client.
+    Create a model class to represent the data structure you will be working with. For this example, let's use a `User` model with Lombok annotations to reduce boilerplate code:
 
     ```java
-    import jakarta.annotation.PostConstruct;
-    import org.springframework.beans.factory.annotation.Value;
-    import org.springframework.http.MediaType;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.stereotype.Service;
-    import org.springframework.web.client.RestClient;
+    ...
 
-    import java.util.List;
+    @Data
+    public class User {
+      private int id;
+      private String name;
+      private String email;
+    }
+    ```
 
+1. Create the Service class.
+
+    Create the service class to handle the business logic:
+
+    ```java
+    ...
     @Service
     class UserService {
 
@@ -57,22 +90,34 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
             .build();
       }
 
-      public List<User> findAll() {
+      List<User> findAll() {
         return restClient
             .get()
             .retrieve()
-            .body(new ParameterizedTypeReference<List<User>>() {});
+            .body(new ParameterizedTypeReference<List<User>>() {
+            });
       }
 
-      public User findById(Integer id) {
+      Page<User> paginateAndSort(Pageable pageable) {
         return restClient
+            .get()
+            .uri(getPagingAndSortingUrl(pageable))
+            .retrieve()
+            .body(new ParameterizedTypeReference<Page<User>>() {
+            });
+      }
+
+      Optional<User> findById(Integer id) {
+        User user = restClient
             .get()
             .uri("/{id}", id)
             .retrieve()
             .body(User.class);
+
+        return Optional.ofNullable(user);
       }
 
-      public User create(User user) {
+      User create(User user) {
         return restClient
             .post()
             .contentType(MediaType.APPLICATION_JSON)
@@ -81,37 +126,45 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
             .body(User.class);
       }
 
-      public User update(Integer id, User user) {
-        return restClient
+      Optional<User> update(Integer id, User user) {
+        User updatedUser = restClient
             .put()
             .uri("/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
             .body(user)
             .retrieve()
             .body(User.class);
+
+        return Optional.ofNullable(updatedUser);
       }
 
-      public ResponseEntity<Void> delete(Integer id) {
-        return restClient
+      boolean delete(Integer id) {
+        HttpStatusCode status = restClient
             .delete()
             .uri("/{id}", id)
             .retrieve()
-            .toBodilessEntity();
+            .toBodilessEntity()
+            .getStatusCode();
+
+        return ((status == HttpStatus.OK) || (status == HttpStatus.NO_CONTENT));
+      }
+
+      private String getPagingAndSortingUrl(Pageable pageable) {
+        return UriComponentsBuilder.fromHttpUrl(usersUrl)
+            .queryParam("page", pageable.getPageNumber())
+            .queryParam("size", pageable.getPageSize())
+            .queryParam("sort", pageable.getSort().toString().replace(":", ","))
+            .toUriString();
       }
     }
     ```
 
-1. Create a Controller to Use the Service.
+1. Create the REST Controller.
 
-    Create a controller class to expose an endpoint that uses the service.
+    Create a REST controller with GET, POST, PUT, and DELETE endpoints, including some sample users:
 
     ```java
-    import org.springframework.http.HttpStatusCode;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.web.bind.annotation.*;
-
-    import java.util.List;
-
+    ...
     @RestController
     @RequestMapping("http/v1/users")
     public class UserController {
@@ -127,26 +180,39 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
         return userService.findAll();
       }
 
+      @GetMapping("/all")
+      public Page<User> all(Pageable pageable) {
+        return userService.paginateAndSort(pageable);
+      }
+
       @GetMapping("/{id}")
-      User findById(@PathVariable Integer id) {
-        return userService.findById(id);
+      public ResponseEntity<User> findById(@PathVariable Integer id) {
+        Optional<User> user = userService.findById(id);
+
+        return user.map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
       }
 
       @PostMapping
-      User create(@RequestBody User user) {
-        return userService.create(user);
+      public ResponseEntity<User> create(@RequestBody User user) {
+        User createdUser = userService.create(user);
+
+        return ResponseEntity.ok(createdUser);
       }
 
       @PutMapping("/{id}")
-      User update(@PathVariable Integer id, @RequestBody User user) {
-        return userService.update(id, user);
+      public ResponseEntity<User> update(@PathVariable Integer id, @RequestBody User user) {
+        Optional<User> updatedUser = userService.update(id, user);
+
+        return updatedUser.map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
       }
 
       @DeleteMapping("/{id}")
-      ResponseEntity<Void> delete(@PathVariable Integer id) {
-        HttpStatusCode status = userService.delete(id).getStatusCode();
+      public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        boolean userRemoved = userService.delete(id);
 
-        if ((status != null) && (status.is2xxSuccessful())) {
+        if (userRemoved) {
           return ResponseEntity.ok().build();
         } else {
           return ResponseEntity.notFound().build();
@@ -155,50 +221,42 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
     }
     ```
 
-1. Create a User model class.
+1. Test the Endpoints.
 
-    Create a model class to have the user's attribute.
-
-    ```java
-    import lombok.Data;
-
-    @Data
-    public class User {
-      private int id;
-      private String name;
-      private String email;
-    }
-    ```
-
-1. Testing the HTTP Client
+    You can use tools like `Postman` or `curl` to test the endpoints:
 
     1. Start your Spring Boot API Rest application.
     1. Start your Spring Boot HTTP Client application.
 
-        Get all users:
-        ```bash
-        curl -X GET http://localhost:8081/http/v1/users
-        ```
+    - Get all users.
+      ```bash
+      curl -X GET http://localhost:8081/http/v1/users
+      ```
 
-        Get one user by its id:
-        ```bash
-        curl -X GET http://localhost:8081/http/v1/users/1
-        ```
+    - Get paginated and sorted users.
+      ```bash
+      curl -X GET "http://localhost:8081/http/v1/users/all?page=1&size=3&sort=name,asc"
+      ```
 
-        Create a user:
-        ```bash
-        curl -X POST http://localhost:8081/http/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
-        ```
+    - Get a user by ID.
+      ```bash
+      curl -X GET http://localhost:8081/http/v1/users/1
+      ```
 
-        Update a user:
-        ```bash
-        curl -X PUT http://localhost:8081/http/v1/users/3 -H "Content-Type: application/json" -d '{"name":"Jane Doe","email":"jane.doe@example.com"}'
-        ```
+    - Create a user.
+      ```bash
+      curl -X POST http://localhost:8081/http/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
+      ```
 
-        Delete a user:
-        ```bash
-        curl -X DELETE http://localhost:8081/http/v1/users/3
-        ```
+    - Update a user.
+      ```bash
+      curl -X PUT http://localhost:8081/http/v1/users/11 -H "Content-Type: application/json" -d '{"name":"Jane Doe","email":"jane.doe@example.com"}'
+      ```
+
+    - Delete a user.
+      ```bash
+      curl -X DELETE http://localhost:8081/http/v1/users/11
+      ```
 
 [Go Back](../../../README.md)
 

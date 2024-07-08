@@ -21,7 +21,7 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [Actuator](documentation/spring/intermediate/actuator.md): Monitoring and managing your Spring Boot application.
 1. [i18n](documentation/spring/intermediate/i18n.md): Implementing internationalization (i18n) in Spring Boot.
 1. [HTTPS](documentation/spring/intermediate/https.md): Securing your application with HTTPS.
-1. [HTTP Client](documentation/spring/intermediate/http-client.md): XXX.
+1. [HTTP Client](documentation/spring/intermediate/http-client.md): Making HTTP requests using the new HTTP Client in Spring Boot.
 
 ### Spring Boot Advanced:
 1. [Cloud Config](documentation/spring/advanced/cloud-config.md): Externalized configuration using Spring Cloud Config.

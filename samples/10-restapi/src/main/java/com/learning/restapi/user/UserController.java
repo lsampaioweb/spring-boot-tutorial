@@ -1,8 +1,10 @@
 package com.learning.restapi.user;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,49 +19,48 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-  private List<User> users = new ArrayList<>();
+  private final UserService userService;
 
-  public UserController() {
-    users.add(new User(1, "user-01", "user-01@example.com"));
-    users.add(new User(2, "user-02", "user-02@example.com"));
+  public UserController(UserService userService) {
+    this.userService = userService;
   }
 
-  @GetMapping
+  @GetMapping("")
   List<User> findAll() {
-    return users;
+    return userService.findAll();
+  }
+
+  @GetMapping("/all")
+  public Page<User> all(Pageable pageable) {
+    return userService.paginateAndSort(pageable);
   }
 
   @GetMapping("/{id}")
-  User findById(@PathVariable Integer id) {
-    User user = users.stream().filter(u -> u.getId().equals(id)).findFirst().orElse(null);
+  public ResponseEntity<User> findById(@PathVariable Integer id) {
+    Optional<User> user = userService.findById(id);
 
-    return user;
+    return user.map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  User create(@RequestBody User user) {
-    user.setId(users.getLast().getId() + 1);
+  public ResponseEntity<User> create(@RequestBody User user) {
+    User createdUser = userService.create(user);
 
-    users.add(user);
-
-    return user;
+    return ResponseEntity.ok(createdUser);
   }
 
   @PutMapping("/{id}")
-  User update(@PathVariable Integer id, @RequestBody User userDetails) {
-    User user = users.stream().filter(u -> u.getId().equals(id)).findFirst().orElse(null);
+  public ResponseEntity<User> update(@PathVariable Integer id, @RequestBody User user) {
+    Optional<User> updatedUser = userService.update(id, user);
 
-    if (user != null) {
-      user.setName(userDetails.getName());
-      user.setEmail(userDetails.getEmail());
-    }
-
-    return user;
+    return updatedUser.map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @DeleteMapping("/{id}")
-  ResponseEntity<Void> delete(@PathVariable Integer id) {
-    boolean userRemoved = users.removeIf(u -> u.getId().equals(id));
+  public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    boolean userRemoved = userService.delete(id);
 
     if (userRemoved) {
       return ResponseEntity.ok().build();
