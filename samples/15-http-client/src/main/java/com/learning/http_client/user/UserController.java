@@ -1,10 +1,11 @@
 package com.learning.http_client.user;
 
-import java.util.List;
+import java.net.URI;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("http/v1/users")
@@ -25,14 +27,11 @@ public class UserController {
     this.userService = userService;
   }
 
-  @GetMapping("")
-  List<User> findAll() {
-    return userService.findAll();
-  }
+  @GetMapping
+  public ResponseEntity<PagedModel<EntityModel<User>>> findAll(Pageable pageable) {
+    PagedModel<EntityModel<User>> users = userService.findAll(pageable);
 
-  @GetMapping("/all")
-  public Page<User> all(Pageable pageable) {
-    return userService.paginateAndSort(pageable);
+    return ResponseEntity.ok(users);
   }
 
   @GetMapping("/{id}")
@@ -44,10 +43,12 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@RequestBody User user) {
+  public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
     User createdUser = userService.create(user);
 
-    return ResponseEntity.ok(createdUser);
+    URI location = uriBuilder.path("/{id}").buildAndExpand(createdUser.getId()).toUri();
+
+    return ResponseEntity.created(location).body(createdUser);
   }
 
   @PutMapping("/{id}")

@@ -1,14 +1,14 @@
 package com.learning.http_client.user;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -38,20 +38,12 @@ class UserService {
         .build();
   }
 
-  List<User> findAll() {
-    return restClient
-        .get()
-        .retrieve()
-        .body(new ParameterizedTypeReference<List<User>>() {
-        });
-  }
-
-  Page<User> paginateAndSort(Pageable pageable) {
+  PagedModel<EntityModel<User>> findAll(Pageable pageable) {
     return restClient
         .get()
         .uri(getPagingAndSortingUrl(pageable))
         .retrieve()
-        .body(new ParameterizedTypeReference<Page<User>>() {
+        .body(new ParameterizedTypeReference<PagedModel<EntityModel<User>>>() {
         });
   }
 
@@ -98,7 +90,7 @@ class UserService {
   }
 
   private String getPagingAndSortingUrl(Pageable pageable) {
-    return UriComponentsBuilder.fromHttpUrl(usersUrl + "/all")
+    return UriComponentsBuilder.fromHttpUrl(usersUrl)
         .queryParam("page", pageable.getPageNumber())
         .queryParam("size", pageable.getPageSize())
         .queryParam("sort", formatSort(pageable.getSort()))

@@ -16,6 +16,11 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-hateoas</artifactId>
+    </dependency>
     ```
 
 1. Exclude the Auto Configuration of a Datasource:
@@ -90,20 +95,12 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
             .build();
       }
 
-      List<User> findAll() {
-        return restClient
-            .get()
-            .retrieve()
-            .body(new ParameterizedTypeReference<List<User>>() {
-            });
-      }
-
-      Page<User> paginateAndSort(Pageable pageable) {
+      PagedModel<EntityModel<User>> findAll(Pageable pageable) {
         return restClient
             .get()
             .uri(getPagingAndSortingUrl(pageable))
             .retrieve()
-            .body(new ParameterizedTypeReference<Page<User>>() {
+            .body(new ParameterizedTypeReference<PagedModel<EntityModel<User>>>() {
             });
       }
 
@@ -153,8 +150,14 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
         return UriComponentsBuilder.fromHttpUrl(usersUrl)
             .queryParam("page", pageable.getPageNumber())
             .queryParam("size", pageable.getPageSize())
-            .queryParam("sort", pageable.getSort().toString().replace(":", ","))
+            .queryParam("sort", formatSort(pageable.getSort()))
             .toUriString();
+      }
+
+      private String formatSort(Sort sort) {
+        return sort.stream()
+            .map(order -> order.getProperty() + "," + order.getDirection())
+            .collect(Collectors.joining(","));
       }
     }
     ```
@@ -175,14 +178,11 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
         this.userService = userService;
       }
 
-      @GetMapping("")
-      List<User> findAll() {
-        return userService.findAll();
-      }
+      @GetMapping
+      public ResponseEntity<PagedModel<EntityModel<User>>> findAll(Pageable pageable) {
+        PagedModel<EntityModel<User>> users = userService.findAll(pageable);
 
-      @GetMapping("/all")
-      public Page<User> all(Pageable pageable) {
-        return userService.paginateAndSort(pageable);
+        return ResponseEntity.ok(users);
       }
 
       @GetMapping("/{id}")
@@ -194,10 +194,12 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
       }
 
       @PostMapping
-      public ResponseEntity<User> create(@RequestBody User user) {
+      public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
         User createdUser = userService.create(user);
 
-        return ResponseEntity.ok(createdUser);
+        URI location = uriBuilder.path("/{id}").buildAndExpand(createdUser.getId()).toUri();
+
+        return ResponseEntity.created(location).body(createdUser);
       }
 
       @PutMapping("/{id}")
@@ -235,7 +237,7 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
 
     - Get paginated and sorted users.
       ```bash
-      curl -X GET "http://localhost:8081/http/v1/users/all?page=1&size=3&sort=name,asc"
+      curl -X GET "http://localhost:8081/http/v1/users?page=1&size=3&sort=name,asc"
       ```
 
     - Get a user by ID.
