@@ -198,7 +198,7 @@ This guide will walk you through setting up a Spring Boot application with a `RE
       public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
         User createdUser = userService.create(user);
 
-        URI location = uriBuilder.path("/{id}").buildAndExpand(createdUser.getId()).toUri();
+        URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
 
         return ResponseEntity.created(location).body(createdUser);
       }
@@ -222,8 +222,12 @@ This guide will walk you through setting up a Spring Boot application with a `RE
         }
       }
 
-    }
+      private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {
+        return uriBuilder.path(path).buildAndExpand(uriVariableValues).toUri();
+      }
 
+    }
+    ```
 
 1. Test the Endpoints.
 

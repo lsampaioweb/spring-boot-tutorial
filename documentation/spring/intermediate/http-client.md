@@ -197,7 +197,7 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
       public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
         User createdUser = userService.create(user);
 
-        URI location = uriBuilder.path("/{id}").buildAndExpand(createdUser.getId()).toUri();
+        URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
 
         return ResponseEntity.created(location).body(createdUser);
       }
@@ -219,6 +219,10 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
         } else {
           return ResponseEntity.notFound().build();
         }
+      }
+
+      private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {
+        return uriBuilder.path(path).buildAndExpand(uriVariableValues).toUri();
       }
     }
     ```

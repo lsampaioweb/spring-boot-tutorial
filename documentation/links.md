@@ -15,6 +15,11 @@
 1. [Spring Boot – How Thymeleaf Works?](https://www.geeksforgeeks.org/spring-boot-how-thymeleaf-works/amp/)
 1. [Spring Boot – Thymeleaf with Example.](https://www.geeksforgeeks.org/spring-boot-thymeleaf-with-example/amp/)
 
+### Exception Handling:
+
+1. [Error Handling for REST with Spring.](https://www.baeldung.com/exception-handling-for-rest-with-spring)
+1. [Exception Handling in Spring Boot.](https://www.geeksforgeeks.org/exception-handling-in-spring-boot/)
+
 ### HTTPS:
 
 1. [HTTPS using Self-Signed Certificate in Spring Boot.](https://www.baeldung.com/spring-boot-https-self-signed-certificate)

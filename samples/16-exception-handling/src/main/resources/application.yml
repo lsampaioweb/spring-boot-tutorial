@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: "exception-handling"
+  messages:
+    basename: "i18n/messages"
+  threads:
+    virtual:
+      enabled: true
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+
+server:
+  error:
+    # include-stacktrace: "never"
+    include-stacktrace: "always"

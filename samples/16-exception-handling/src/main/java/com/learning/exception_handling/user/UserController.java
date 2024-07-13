@@ -1,13 +1,10 @@
-package com.learning.restapi.user;
+package com.learning.exception_handling.user;
 
 import java.net.URI;
-import java.util.Optional;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+import java.util.List;
+import java.util.Locale;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,36 +16,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/v1/users")
+@Slf4j
 public class UserController {
 
+  private final MessageSource messageSource;
   private final UserService userService;
-  private final PagedResourcesAssembler<User> pagedResourcesAssembler;
 
-  public UserController(UserService userService, PagedResourcesAssembler<User> pagedResourcesAssembler) {
+  public UserController(UserService userService, MessageSource messageSource) {
+    this.messageSource = messageSource;
     this.userService = userService;
-    this.pagedResourcesAssembler = pagedResourcesAssembler;
   }
 
   @GetMapping
-  public ResponseEntity<PagedModel<EntityModel<User>>> findAll(Pageable pageable) {
-    Page<User> users = userService.findAll(pageable);
-    PagedModel<EntityModel<User>> pagedModel = pagedResourcesAssembler.toModel(users);
+  public ResponseEntity<List<User>> findAll() {
+    log.info(getMethodCalledMessage("findAll"));
 
-    return ResponseEntity.ok(pagedModel);
+    return ResponseEntity.ok(userService.findAll());
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<User> findById(@PathVariable Long id) {
-    Optional<User> user = userService.findById(id);
+    log.info(getMethodCalledMessage("findById"));
 
-    return user.map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
+    return ResponseEntity.ok(userService.findById(id));
   }
 
   @PostMapping
   public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
+    log.info(getMethodCalledMessage("create"));
+
     User createdUser = userService.create(user);
 
     URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
@@ -58,25 +58,32 @@ public class UserController {
 
   @PutMapping("/{id}")
   public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
-    Optional<User> updatedUser = userService.update(id, user);
+    log.info(getMethodCalledMessage("update"));
 
-    return updatedUser.map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
+    User updatedUser = userService.update(id, user);
+
+    return ResponseEntity.ok(updatedUser);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
-    boolean userRemoved = userService.delete(id);
+    log.info(getMethodCalledMessage("delete"));
 
-    if (userRemoved) {
-      return ResponseEntity.ok().build();
-    } else {
-      return ResponseEntity.notFound().build();
-    }
+    userService.delete(id);
+
+    return ResponseEntity.ok().build();
   }
 
   private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {
     return uriBuilder.path(path).buildAndExpand(uriVariableValues).toUri();
+  }
+
+  private String getMethodCalledMessage(String methodName) {
+    return messageSource.getMessage("method.called", new Object[] { methodName }, getLocale());
+  }
+
+  private Locale getLocale() {
+    return LocaleContextHolder.getLocale();
   }
 
 }
