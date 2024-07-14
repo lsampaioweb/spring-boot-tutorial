@@ -1,4 +1,4 @@
-package com.learning.exception_handling.advice;
+package com.learning.exception_handling.core.exception;
 
 import java.time.LocalDateTime;
 

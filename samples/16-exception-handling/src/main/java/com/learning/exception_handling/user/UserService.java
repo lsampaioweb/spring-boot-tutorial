@@ -2,26 +2,19 @@ package com.learning.exception_handling.user;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 class UserService {
 
-  private final MessageSource messageSource;
-
   private List<User> users = new ArrayList<>();
   private AtomicLong idCounter = new AtomicLong();
 
-  public UserService(MessageSource messageSource) {
-    this.messageSource = messageSource;
-
+  public UserService() {
     users.add(new User(idCounter.incrementAndGet(), "user-01", "user-01@example.com"));
     users.add(new User(idCounter.incrementAndGet(), "user-02", "user-02@example.com"));
     users.add(new User(idCounter.incrementAndGet(), "user-03", "user-03@example.com"));
@@ -39,63 +32,51 @@ class UserService {
   }
 
   User findById(Long id) {
-    Optional<User> user = users.stream().filter(getById(id)).findFirst();
+    Optional<User> entity = users.stream().filter(getById(id)).findFirst();
 
-    if (user.isPresent()) {
-      return user.get();
+    if (entity.isPresent()) {
+      return entity.get();
     } else {
-      throw new NoSuchUserExistsException(getUserNotFoundMessage(id));
+      throw new UserNotFoundException(id);
     }
   }
 
-  User create(User user) {
-    boolean userExists = users.stream().anyMatch(equals(user));
+  User create(User entity) {
+    boolean entityExists = users.stream().anyMatch(equals(entity));
 
-    if (userExists) {
-      throw new UserAlreadyExistsException(getUserAlreadyExistsMessage(user));
+    if (entityExists) {
+      throw new UserAlreadyExistsException(entity);
     } else {
-      user.setId(idCounter.incrementAndGet());
+      entity.setId(idCounter.incrementAndGet());
 
-      users.add(user);
+      users.add(entity);
 
-      return user;
+      return entity;
     }
   }
 
-  User update(Long id, User userDetails) {
-    User user = findById(id);
+  User update(Long id, User entityDetails) {
+    User entity = findById(id);
 
-    user.setName(userDetails.getName());
-    user.setEmail(userDetails.getEmail());
+    entity.setName(entityDetails.getName());
+    entity.setEmail(entityDetails.getEmail());
 
-    return user;
+    return entity;
   }
 
   boolean delete(Long id) {
-    User user = findById(id);
+    User entity = findById(id);
 
-    return users.remove(user);
+    return users.remove(entity);
   }
 
   private Predicate<? super User> getById(Long id) {
     return u -> u.getId().equals(id);
   }
 
-  private Predicate<? super User> equals(User user) {
-    return u -> u.getName().equals(user.getName()) &&
-        u.getEmail().equals(user.getEmail());
-  }
-
-  private Locale getLocale() {
-    return LocaleContextHolder.getLocale();
-  }
-
-  private String getUserNotFoundMessage(Long id) {
-    return messageSource.getMessage("user.notfound", new Object[] { id }, getLocale());
-  }
-
-  private String getUserAlreadyExistsMessage(User user) {
-    return messageSource.getMessage("user.exists", new Object[] { user.getName(), user.getEmail() }, getLocale());
+  private Predicate<? super User> equals(User entity) {
+    return u -> u.getName().equals(entity.getName()) &&
+        u.getEmail().equals(entity.getEmail());
   }
 
 }

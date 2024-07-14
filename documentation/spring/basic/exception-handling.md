@@ -113,6 +113,7 @@ This guide demonstrates how to handle exceptions in a Spring Boot application. T
         }
 
         @ExceptionHandler(Exception.class)
+        @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
         public @ResponseBody ErrorResponse handleGenericException(Exception ex, HttpServletRequest request) {
           return newErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -333,31 +334,52 @@ This guide demonstrates how to handle exceptions in a Spring Boot application. T
 
     1. Start your Spring Boot application.
 
-    - Get all users:
+    - Get all users and products:
       ```bash
       curl -X GET http://localhost:8080/api/v1/users
+      curl -X GET http://localhost:8080/api/v1/products
       ```
 
-    - Try fetching a user by ID that does not exist:
+    - Try fetching a user or product by ID that does not exist:
       ```bash
       curl -X GET http://localhost:8080/api/v1/users/1111
+      curl -X GET http://localhost:8080/api/v1/products/1111
       ```
 
     - Try accessing an endpoint that does not exist:
       ```bash
       curl -X GET http://localhost:8080/api/v1/wrongpage
       ```
-    - Try creating a user:
-      - This endpoint creates a new user with the provided JSON payload containing the user's name and email.
+
+    - Try creating a user or product (twice):
+      - This endpoint creates a new user and product with the provided JSON payload.
+      - If you try it for a second time, it should return a `409 Conflict` error indicating that the user or product already exists.
         ```bash
         curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
+        curl -X POST http://localhost:8080/api/v1/products -H "Content-Type: application/json" -d '{"name":"Iphone"}'
         ```
 
-    - Try creating a user twice:
-      - This endpoint attempts to create a user with the same name and email as an existing user. It should return a `409 Conflict` error indicating that the user already exists.
-        ```bash
-        curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
-        ```
+    - Update a user or product:
+      ```bash
+      curl -X PUT http://localhost:8080/api/v1/users/11 -H "Content-Type: application/json" -d '{"name":"Other name","email":"other.name@example.com"}'
+      curl -X PUT http://localhost:8080/api/v1/products/11 -H "Content-Type: application/json" -d '{"name":"Android"}'
+      ```
+
+    - Delete a user or product:
+      - If you try it for a second time, it should return a `404 Not Found` error indicating that the user or product does not exists.
+      ```bash
+      curl -X DELETE http://localhost:8080/api/v1/users/11
+      curl -X DELETE http://localhost:8080/api/v1/products/11
+      ```
+
+    - Test the I18n messages:
+      `Accept-Language` Header: Set Accept-Language header in your HTTP requests to test language preferences.
+
+      URL Parameter (lang): Append `?lang=pt-BR` or similar to your URL to override language preferences.
+
+      - curl -X GET http://localhost:8080/api/v1/users
+      - curl -X GET http://localhost:8080/api/v1/users?lang=en
+      - curl -X GET http://localhost:8080/api/v1/users?lang=pt-BR
 
 [Go Back](../../../README.md)
 

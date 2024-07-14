@@ -1,8 +1,9 @@
-package com.learning.exception_handling.user;
+package com.learning.exception_handling.product;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Locale;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
@@ -19,37 +20,37 @@ import org.springframework.web.util.UriComponentsBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("api/v1/products")
 @Slf4j
-public class UserController {
+public class ProductController {
 
   private final MessageSource messageSource;
-  private final UserService service;
+  private final ProductService service;
 
-  public UserController(UserService service, MessageSource messageSource) {
+  public ProductController(ProductService service, MessageSource messageSource) {
     this.messageSource = messageSource;
     this.service = service;
   }
 
   @GetMapping
-  public ResponseEntity<List<User>> findAll() {
+  public ResponseEntity<List<Product>> findAll() {
     log.info(getMethodCalledMessage("findAll"));
 
     return ResponseEntity.ok(service.findAll());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> findById(@PathVariable Long id) {
+  public ResponseEntity<Product> findById(@PathVariable Long id) {
     log.info(getMethodCalledMessage("findById"));
 
     return ResponseEntity.ok(service.findById(id));
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@RequestBody User entity, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<Product> create(@RequestBody Product entity, UriComponentsBuilder uriBuilder) {
     log.info(getMethodCalledMessage("create"));
 
-    User createdEntity = service.create(entity);
+    Product createdEntity = service.create(entity);
 
     URI location = getLocation(uriBuilder, "/{id}", createdEntity.getId());
 
@@ -57,10 +58,10 @@ public class UserController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User entity) {
+  public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product entity) {
     log.info(getMethodCalledMessage("update"));
 
-    User updatedEntity = service.update(id, entity);
+    Product updatedEntity = service.update(id, entity);
 
     return ResponseEntity.ok(updatedEntity);
   }
@@ -85,5 +86,4 @@ public class UserController {
   private Locale getLocale() {
     return LocaleContextHolder.getLocale();
   }
-
 }

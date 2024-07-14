@@ -1,4 +1,4 @@
-package com.learning.exception_handling.advice;
+package com.learning.exception_handling.core.exception;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -15,15 +15,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import com.learning.exception_handling.user.NoSuchUserExistsException;
-import com.learning.exception_handling.user.UserAlreadyExistsException;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.core.env.Environment;
 
 @RestControllerAdvice
-public class ExceptionHandling {
+public class ExceptionHandlingAdvice {
 
   private static final String SERVER_ERROR_INCLUDE_STACKTRACE = "server.error.include-stacktrace";
   private static final String SERVER_ERROR_INCLUDE_STACKTRACE_NEVER = "never";
@@ -32,7 +29,7 @@ public class ExceptionHandling {
 
   private final Environment environment;
 
-  public ExceptionHandling(Environment environment) {
+  public ExceptionHandlingAdvice(Environment environment) {
     this.environment = environment;
   }
 
@@ -59,21 +56,22 @@ public class ExceptionHandling {
     return newErrorResponse(ex, request, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler(NoSuchUserExistsException.class)
+  @ExceptionHandler(EntityNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public @ResponseBody ErrorResponse handleNoSuchUserExistsException(NoSuchUserExistsException ex,
+  public @ResponseBody ErrorResponse handleNoSuchUserExistsException(EntityNotFoundException ex,
       HttpServletRequest request) {
     return newErrorResponse(ex, request, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler(UserAlreadyExistsException.class)
+  @ExceptionHandler(EntityAlreadyExistsException.class)
   @ResponseStatus(HttpStatus.CONFLICT)
-  public @ResponseBody ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException ex,
+  public @ResponseBody ErrorResponse handleUserAlreadyExistsException(EntityAlreadyExistsException ex,
       HttpServletRequest request) {
     return newErrorResponse(ex, request, HttpStatus.CONFLICT);
   }
 
   @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public @ResponseBody ErrorResponse handleGenericException(Exception ex, HttpServletRequest request) {
     return newErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
   }
@@ -93,17 +91,16 @@ public class ExceptionHandling {
 
   private boolean shouldIncludeStackTrace() {
     String includeStackTrace = environment.getProperty(SERVER_ERROR_INCLUDE_STACKTRACE,
-        SERVER_ERROR_INCLUDE_STACKTRACE_NEVER);
+        SERVER_ERROR_INCLUDE_STACKTRACE_NEVER).toLowerCase();
 
-    return (SERVER_ERROR_INCLUDE_STACKTRACE_ALWAYS.equalsIgnoreCase(includeStackTrace))
-        || (SERVER_ERROR_INCLUDE_STACKTRACE_ON_TRACE_PARAM.equalsIgnoreCase(includeStackTrace));
+    return (SERVER_ERROR_INCLUDE_STACKTRACE_ALWAYS.equals(includeStackTrace))
+        || (SERVER_ERROR_INCLUDE_STACKTRACE_ON_TRACE_PARAM.equals(includeStackTrace));
   }
 
   private String getStackTraceAsString(Exception ex) {
     StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
 
-    ex.printStackTrace(pw);
+    ex.printStackTrace(new PrintWriter(sw));
 
     return sw.toString();
   }

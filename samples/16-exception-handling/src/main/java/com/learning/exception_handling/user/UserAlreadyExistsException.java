@@ -1,9 +1,11 @@
 package com.learning.exception_handling.user;
 
-public class UserAlreadyExistsException extends RuntimeException {
+import com.learning.exception_handling.core.exception.EntityAlreadyExistsException;
 
-  public UserAlreadyExistsException(String message) {
-    super(message);
+public class UserAlreadyExistsException extends EntityAlreadyExistsException {
+
+  public UserAlreadyExistsException(User entity) {
+    super("user", new Object[] { entity.getName(), entity.getEmail() });
   }
 
 }

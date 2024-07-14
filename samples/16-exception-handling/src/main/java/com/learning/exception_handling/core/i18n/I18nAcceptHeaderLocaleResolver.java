@@ -1,4 +1,4 @@
-package com.learning.i18n.i18n;
+package com.learning.exception_handling.core.i18n;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,3 +74,4 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
     return availableLocales;
   }
 }
+

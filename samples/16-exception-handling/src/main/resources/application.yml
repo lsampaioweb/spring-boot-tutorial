@@ -12,5 +12,5 @@ logging:
 
 server:
   error:
-    # include-stacktrace: "never"
-    include-stacktrace: "always"
+    include-stacktrace: "never"
+    # include-stacktrace: "always"
