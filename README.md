@@ -23,6 +23,8 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
     - Integrating Lombok into your Spring Boot project.
 1. [Profile](documentation/spring/basic/profile.md)
     - Using Spring Boot profiles.
+1. [Actuator](documentation/spring/basic/actuator.md)
+    - Monitoring and managing your Spring Boot application.
 1. [Thymeleaf](documentation/spring/basic/thymeleaf.md)
     - Using Thymeleaf as the templating engine.
 1. [REST](documentation/spring/basic/rest.md)
@@ -31,8 +33,6 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
     - Handle sorting.
 
 ### Spring Boot Intermediate:
-1. [Actuator](documentation/spring/intermediate/actuator.md)
-    - Monitoring and managing your Spring Boot application.
 1. [i18n](documentation/spring/intermediate/i18n.md)
     - Implementing internationalization (i18n) in Spring Boot.
 1. [Exception Handling](documentation/spring/intermediate/exception-handling.md)
