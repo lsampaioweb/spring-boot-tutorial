@@ -1,0 +1,56 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+log:
+  level: "INFO" # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  # format: "common" # common, json, logfmt
+  filePath: "/var/log/traefik/traefik.log"
+  maxSize: 10
+  maxBackups: 100
+  maxAge: 2
+  compress: true
+
+accesslog:
+  # format: "common" # common, json, logfmt
+  fields:
+    names:
+      StartUTC: "drop"
+  filePath: "/var/log/traefik/access.log"
+
+api:
+  dashboard: true
+
+ping:
+  entryPoint: "ping"
+
+providers:
+  file:
+    directory: "/etc/traefik/apps"
+    watch: true
+  docker:
+    network: "reverse-proxy"
+    defaultRule: Host(`{{ normalize .Name }}.homelab`)'
+    exposedbydefault: false
+
+entryPoints:
+  ping:
+    address: ":8080"
+
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: "websecure"
+          scheme: "https"
+          permanent: true
+
+  websecure:
+    address: ":443"
+    http3: {}
+
+serversTransport:
+  insecureSkipVerify: false
+  rootCAs:
+    - "/etc/traefik/certificates/ca.homelab.crt"
