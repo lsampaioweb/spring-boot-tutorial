@@ -29,14 +29,14 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
     - Creating RESTful web services.
     - Handle pagination.
     - Handle sorting.
-1. [Exception Handling](documentation/spring/basic/exception-handling.md)
-    - Handling exceptions in Spring Boot applications.
 
 ### Spring Boot Intermediate:
 1. [Actuator](documentation/spring/intermediate/actuator.md)
     - Monitoring and managing your Spring Boot application.
 1. [i18n](documentation/spring/intermediate/i18n.md)
     - Implementing internationalization (i18n) in Spring Boot.
+1. [Exception Handling](documentation/spring/intermediate/exception-handling.md)
+    - Handling exceptions in Spring Boot applications.
 1. [HTTPS](documentation/spring/intermediate/https.md)
     - Securing your application with HTTPS.
 1. [HTTP Client](documentation/spring/intermediate/http-client.md)
