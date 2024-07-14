@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("api/v1")
 @Slf4j
-public class userController {
+public class UserController {
 
   @GetMapping("/hello")
   public String sayHello() {
