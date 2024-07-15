@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: "app"
+  threads:
+    virtual:
+      enabled: true
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "always"

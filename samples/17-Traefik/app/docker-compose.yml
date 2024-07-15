@@ -1,0 +1,42 @@
+version: "3.9"
+
+networks:
+  reverse-proxy:
+    external: true
+
+services:
+  app:
+    image: "lsampaioweb/app:1.1"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: "start-first"
+      restart_policy:
+        condition: "on-failure"
+    environment:
+      # - "SERVER_PORT=8081"
+      - "SPRING_PROFILES_ACTIVE=development"
+      # - "SPRING_PROFILES_ACTIVE=production"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.rule=Host(`app.homelab`)"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.routers.app.middlewares=headers-rate-limit@file,headers-security@file"
+      - "traefik.http.services.app.loadbalancer.server.port=8080"
+    networks:
+      - "reverse-proxy"
+    volumes:
+      # Adjust the date and time of the container.
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      # Files and folders for the container.
+      - "./logs:/home/app/logs"
+    user: "1002:1002"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8080/actuator/health/ping || exit 1"]
+      start_period: "4s"
+      interval: "10s"
+      timeout: "2s"
+      retries: 2
