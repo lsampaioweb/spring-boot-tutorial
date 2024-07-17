@@ -29,7 +29,7 @@ services:
       - "./apps/:/etc/traefik/apps/"
       - "./certificates/:/etc/traefik/certificates/"
       - "./config/traefik.yml:/etc/traefik/traefik.yml:ro"
-      - "./log/:/var/log/traefik/"
+      - "./logs/:/var/log/traefik/"
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       start_period: "5s"
