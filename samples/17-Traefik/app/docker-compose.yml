@@ -6,7 +6,7 @@ networks:
 
 services:
   app:
-    image: "lsampaioweb/app:1.1"
+    image: "lsampaioweb/app:1.0"
     deploy:
       replicas: 2
       update_config:
@@ -23,7 +23,7 @@ services:
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.rule=Host(`app.homelab`)"
       - "traefik.http.routers.app.tls=true"
-      - "traefik.http.routers.app.middlewares=headers-rate-limit@file,headers-security@file"
+      - "traefik.http.routers.app.middlewares=headers-rate-limit@file,headers-default@file,headers-security@file"
       - "traefik.http.services.app.loadbalancer.server.port=8080"
     networks:
       - "reverse-proxy"

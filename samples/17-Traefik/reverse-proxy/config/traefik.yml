@@ -30,8 +30,8 @@ providers:
     watch: true
   docker:
     network: "reverse-proxy"
-    defaultRule: Host(`{{ normalize .Name }}.homelab`)'
-    exposedbydefault: false
+    defaultRule: 'Host(`{{ normalize .Name }}.homelab`)'
+    exposedByDefault: false
 
 entryPoints:
   ping:
@@ -49,6 +49,10 @@ entryPoints:
   websecure:
     address: ":443"
     http3: {}
+    forwardedHeaders:
+      # insecure: true
+      trustedIPs:
+        - "0.0.0.0/0"  # Trust all IPs or restrict to a specific range.
 
 serversTransport:
   insecureSkipVerify: false

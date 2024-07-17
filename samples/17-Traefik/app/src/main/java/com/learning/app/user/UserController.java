@@ -4,6 +4,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Enumeration;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -12,33 +15,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 public class UserController {
 
+  private static final String APP_VERSION = "1.0";
+  // private static final String APP_VERSION = "1.1";
+  private static final String BREAK_LINE = "<br />\n";
+
   @GetMapping("")
   public String sayHello(HttpServletRequest request) {
-    String containerId = request.getLocalAddr();
-    String threadId = Thread.currentThread().getName();
+    StringBuilder response = new StringBuilder();
 
-    String message = String.format("Ip: [%s] - threadId: [%s]", containerId, threadId);
-    log.info(message);
+    response.append("Local IP: ").append(request.getLocalAddr()).append(BREAK_LINE);
+    response.append("Remote IP: ").append(request.getRemoteAddr()).append(BREAK_LINE);
+    response.append("Thread Id: ").append(Thread.currentThread().getName()).append(BREAK_LINE);
+    response.append("App Version: ").append(APP_VERSION).append(BREAK_LINE);
 
-    // Retrieve headers sent by Traefik.
-    String xForwardedFor = request.getHeader("X-Forwarded-For");
-    String xForwardedHost = request.getHeader("X-Forwarded-Host");
-    String xForwardedPort = request.getHeader("X-Forwarded-Port");
-    String xForwardedProto = request.getHeader("X-Forwarded-Proto");
-    String xForwardedServer = request.getHeader("X-Forwarded-Server");
-    String xRealIp = request.getHeader("X-Real-Ip");
+    Enumeration<String> headerNames = request.getHeaderNames();
+    while (headerNames.hasMoreElements()) {
+      String headerName = headerNames.nextElement();
+      String headerValue = request.getHeader(headerName);
 
-    // Build the response string.
-    StringBuilder responseBuilder = new StringBuilder();
-    String BREAK_LINE = "\n";
-    responseBuilder.append(message).append(BREAK_LINE)
-        .append("X-Forwarded-For: ").append(xForwardedFor).append(BREAK_LINE)
-        .append("X-Forwarded-Host: ").append(xForwardedHost).append(BREAK_LINE)
-        .append("X-Forwarded-Port: ").append(xForwardedPort).append(BREAK_LINE)
-        .append("X-Forwarded-Proto: ").append(xForwardedProto).append(BREAK_LINE)
-        .append("X-Forwarded-Server: ").append(xForwardedServer).append(BREAK_LINE)
-        .append("X-Real-Ip: ").append(xRealIp).append(BREAK_LINE);
+      response.append(headerName).append(": ").append(headerValue).append(BREAK_LINE);
+    }
 
-    return responseBuilder.toString();
+    log.info(response.toString());
+
+    return response.toString();
   }
 }
