@@ -1,16 +1,20 @@
-1. Initialize `Docker Swarm`:
+1. Create a `bridge` Network:
     ```bash
-    docker swarm init
-    ```
-
-1. Create an `Overlay` Network:
-    ```bash
-    docker network create --driver=overlay reverse-proxy
+    docker network create reverse-proxy
     ```
 
 1. Deploy Traefik:
     ```bash
-    docker stack deploy -c docker-compose.yml traefik -d
+    docker-compose.yml up -d
+    ```
+
+1. Test Traefik:
+
+    - https://loadbalancer.homelab
+
+1. Remove Traefik:
+    ```bash
+    docker-compose.yml down
     ```
 
 1. Build the Application as a Docker Image:
@@ -18,27 +22,24 @@
     docker build --tag=lsampaioweb/app:1.0 .
     ```
 
-1. Deploy the Application:
+1. Deploy the application:
     ```bash
-    docker stack deploy -c docker-compose.yml app -d
+    docker-compose.yml up -d
     ```
 
-1. Build a newer version of the Application:
-    ```bash
-    docker build --tag=lsampaioweb/app:1.1 .
-    ```
+1. Test the application:
+
+    - https://app.homelab/api/v1/users
 
 1. Test the application with multiple requests:
 
-    Update the stack by running the deploy command again, then fire this test to see the versions changing:
     ```bash
     for ((i=1; i<=1000; i++)); do curl -s --max-time 2 https://app.homelab/api/v1/users; done
     ```
 
-1. Remove the Applications:
+1. Remove the application:
     ```bash
-    docker stack rm traefik
-    docker stack rm app
+    docker-compose.yml down
     ```
 
 1. Clean up unused containers:

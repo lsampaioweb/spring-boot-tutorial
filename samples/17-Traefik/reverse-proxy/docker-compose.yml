@@ -7,13 +7,10 @@ networks:
 services:
   traefik:
     image: "traefik:latest"
-    deploy:
-      replicas: 2
-      update_config:
-        parallelism: 1
-        order: "start-first"
-      restart_policy:
-        condition: "on-failure"
+    container_name: "traefik"
+    restart: "unless-stopped"
+    security_opt:
+      - "no-new-privileges:true"
     networks:
       - "reverse-proxy"
     ports:
