@@ -7,12 +7,12 @@ Enabling HTTPS in a Spring Boot application ensures that the data transmitted be
 1. Save the password of the Private Key in the Secret Manager.
 
     ```bash
-    secret-tool store --label="ssl.jump-server-01.homelab" password "ssl.jump-server-01.homelab"
+    secret-tool store --label="ssl.jump-server-01.lan.homelab" password "ssl.jump-server-01.lan.homelab"
     ```
 
 1. Confirm the password was correctly saved.
     ```bash
-    secret-tool lookup password "ssl.jump-server-01.homelab"
+    secret-tool lookup password "ssl.jump-server-01.lan.homelab"
     ```
 
 1. Add the Environmente variable in the `~/.bashrc` file.
@@ -20,7 +20,7 @@ Enabling HTTPS in a Spring Boot application ensures that the data transmitted be
     To avoid conflicts with other applications, name the environment variable uniquely, e.g: `KEY_STORE_PASSWORD_MY_HTTPS_APP`.
     ```bash
     nano ~/.bashrc
-    export KEY_STORE_PASSWORD_MY_HTTPS_APP=$(secret-tool lookup password "ssl.jump-server-01.homelab")
+    export KEY_STORE_PASSWORD_MY_HTTPS_APP=$(secret-tool lookup password "ssl.jump-server-01.lan.homelab")
     ```
 
 1. Reload your bash to load the new environment variable.

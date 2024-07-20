@@ -5,7 +5,7 @@ http:
         - "websecure"
       tls:
         options: "tls-loadbalancer"
-      rule: "Host(`loadbalancer.homelab`)"
+      rule: "Host(`loadbalancer.lan.homelab`)"
       middlewares:
         - "headers-rate-limit-loadbalancer"
         - "headers-inFlightReq"

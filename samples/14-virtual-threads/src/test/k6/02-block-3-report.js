@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
 
-const BASE_URL = 'http://jump-server-01.homelab:8080';
+const BASE_URL = 'http://jump-server-01.lan.homelab:8080';
 
 export const options = {
   stages: [

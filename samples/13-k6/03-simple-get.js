@@ -7,7 +7,7 @@ export const options = {
 };
 
 export default function () {
-  http.get('http://jump-server-01.homelab:8080/api/v1/users');
+  http.get('http://jump-server-01.lan.homelab:8080/api/v1/users');
 
   sleep(1);
 }

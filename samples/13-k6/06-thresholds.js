@@ -17,7 +17,7 @@ export const options = {
 };
 
 export default function () {
-  const response = http.get('http://jump-server-01.homelab:8080/api/v1/users/1');
+  const response = http.get('http://jump-server-01.lan.homelab:8080/api/v1/users/1');
 
   check(response, {
     'Status is 200': (r) => r.status === 200,

@@ -19,7 +19,7 @@ spring:
       password: "${PASSWORD}"
   config:
     # import: "configserver:http://localhost:8080"
-    import: "configserver:https://jump-server-01.homelab:9443"
+    import: "configserver:https://jump-server-01.lan.homelab:9443"
 
 logging:
   config: "classpath:log/logback-spring.xml"

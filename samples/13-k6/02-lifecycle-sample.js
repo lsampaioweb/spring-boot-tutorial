@@ -1,7 +1,7 @@
 import http from 'k6/http';
 
 export function setup() {
-  const res = http.get('http://jump-server-01.homelab:8080/api/v1/users');
+  const res = http.get('http://jump-server-01.lan.homelab:8080/api/v1/users');
 
   return { data: res.json() };
 }

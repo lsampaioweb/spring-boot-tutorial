@@ -30,7 +30,7 @@ providers:
     watch: true
   docker:
     network: "reverse-proxy"
-    defaultRule: 'Host(`{{ normalize .Name }}.homelab`)'
+    defaultRule: 'Host(`{{ normalize .Name }}.lan.homelab`)'
     exposedByDefault: false
 
 entryPoints:
@@ -57,4 +57,4 @@ entryPoints:
 serversTransport:
   insecureSkipVerify: false
   rootCAs:
-    - "/etc/traefik/certificates/ca.homelab.crt"
+    - "/etc/traefik/certificates/ca.lan.homelab.crt"

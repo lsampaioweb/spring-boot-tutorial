@@ -137,7 +137,7 @@ Centralizing application configuration using Spring Boot Config Server simplifie
           # Import configuration from the Config Server.
           config:
             # import: "configserver:http://localhost:8080"
-            import: "configserver:https://jump-server-01.homelab:9443"
+            import: "configserver:https://jump-server-01.lan.homelab:9443"
         ```
 
     1. Test the Configuration.

@@ -10,7 +10,7 @@
 
 1. Test Traefik:
 
-    - https://loadbalancer.homelab
+    - https://loadbalancer.lan.homelab
 
 1. Remove Traefik:
     ```bash
@@ -29,12 +29,12 @@
 
 1. Test the application:
 
-    - https://app.homelab/api/v1/users
+    - https://app.lan.homelab/api/v1/users
 
 1. Test the application with multiple requests:
 
     ```bash
-    for ((i=1; i<=1000; i++)); do curl -s --max-time 2 https://app.homelab/api/v1/users; done
+    for ((i=1; i<=1000; i++)); do curl -s --max-time 2 https://app.lan.homelab/api/v1/users; done
     ```
 
 1. Remove the application:
