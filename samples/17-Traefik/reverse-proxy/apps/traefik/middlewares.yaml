@@ -1,7 +1,0 @@
-http:
-  middlewares:
-    headers-rate-limit-loadbalancer:
-      rateLimit:
-        burst: 40
-        average: 20
-        # period: "1s"

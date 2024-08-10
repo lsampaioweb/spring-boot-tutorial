@@ -1,9 +1,0 @@
-tls:
-  options:
-    default:
-      minVersion: "VersionTLS13"
-  stores:
-    default:
-      defaultCertificate:
-        certFile: "/etc/traefik/certificates/loadbalancer.lan.homelab.crt"
-        keyFile: "/etc/traefik/certificates/loadbalancer.lan.homelab.key"
