@@ -9,7 +9,7 @@ import com.learning.exception_handling.core.i18n.MessageSourceHolder;
 
 public abstract class CustomException extends RuntimeException {
 
-  public CustomException(String messageKey, Object[] objects) {
+  protected CustomException(String messageKey, Object[] objects) {
     super(getMessage(messageKey, objects));
   }
 

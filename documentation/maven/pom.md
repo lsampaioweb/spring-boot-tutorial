@@ -49,7 +49,7 @@ Maven commands.
         ...
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.2.5</version>
+          <version>3.5.2</version>
         </plugin>
               ...
       </plugins>

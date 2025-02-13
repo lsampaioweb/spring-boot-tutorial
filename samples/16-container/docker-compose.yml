@@ -1,6 +1,6 @@
-version: "3.8"
-
 networks:
+  reverse-proxy:
+    external: true
   my-app-network:
     driver: "bridge"
 
@@ -15,5 +15,6 @@ services:
       - "SERVER_PORT=8081"
       - "SPRING_PROFILES_ACTIVE=development"
       # - "SPRING_PROFILES_ACTIVE=production"
+    restart: "unless-stopped"
     networks:
       - "my-app-network"

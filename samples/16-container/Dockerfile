@@ -18,11 +18,5 @@ LABEL authors="Luciano Sampaio"
 # Copy the *.jar file from maven to the image.
 COPY --from=build ${HOME}/target/*.jar app.jar
 
-# The port that the application will be listening for connections.
-ARG SERVER_PORT=8080
-
-# Expose the port the application runs on.
-EXPOSE ${SERVER_PORT}
-
 # Command to run the Spring Boot application.
 ENTRYPOINT ["java", "-jar", "app.jar"]

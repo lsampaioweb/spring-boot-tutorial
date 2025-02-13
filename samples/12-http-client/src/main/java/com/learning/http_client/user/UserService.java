@@ -21,6 +21,7 @@ import jakarta.annotation.PostConstruct;
 @Service
 class UserService {
 
+  private static final String ID_PARAMETER = "/{id}";
   private final RestClient.Builder restClientBuilder;
   private RestClient restClient;
 
@@ -50,7 +51,7 @@ class UserService {
   Optional<User> findById(Integer id) {
     User user = restClient
         .get()
-        .uri("/{id}", id)
+        .uri(ID_PARAMETER, id)
         .retrieve()
         .body(User.class);
 
@@ -69,7 +70,7 @@ class UserService {
   Optional<User> update(Integer id, User user) {
     User updatedUser = restClient
         .put()
-        .uri("/{id}", id)
+        .uri(ID_PARAMETER, id)
         .contentType(MediaType.APPLICATION_JSON)
         .body(user)
         .retrieve()
@@ -81,7 +82,7 @@ class UserService {
   boolean delete(Integer id) {
     HttpStatusCode status = restClient
         .delete()
-        .uri("/{id}", id)
+        .uri(ID_PARAMETER, id)
         .retrieve()
         .toBodilessEntity()
         .getStatusCode();
@@ -90,7 +91,7 @@ class UserService {
   }
 
   private String getPagingAndSortingUrl(Pageable pageable) {
-    return UriComponentsBuilder.fromHttpUrl(usersUrl)
+    return UriComponentsBuilder.fromUriString(usersUrl)
         .queryParam("page", pageable.getPageNumber())
         .queryParam("size", pageable.getPageSize())
         .queryParam("sort", formatSort(pageable.getSort()))

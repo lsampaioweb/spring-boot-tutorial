@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,10 +19,10 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
   private static final Locale LOCALE_PT_BR = new Locale.Builder().setLanguage("pt").setRegion("BR").build();
 
   @Override
-  public Locale resolveLocale(HttpServletRequest request) {
+  public @NonNull Locale resolveLocale(@NonNull HttpServletRequest request) {
     String languageParam = request.getParameter(LANG);
-    if (languageParam != null && !languageParam.isEmpty()) {
 
+    if (languageParam != null && !languageParam.isEmpty()) {
       Locale locale = Locale.forLanguageTag(languageParam);
       setLocaleInSession(request, locale);
 
@@ -35,8 +37,7 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
 
     String acceptLanguage = request.getHeader(ACCEPT_LANGUAGE);
     if (acceptLanguage == null || acceptLanguage.isEmpty()) {
-
-      Locale locale = Locale.getDefault();
+      Locale locale = (Locale.getDefault() != null) ? Locale.getDefault() : LOCALE_PT_BR;
       setLocaleInSession(request, locale);
 
       return locale;
@@ -45,17 +46,20 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
     // Parse the Accept-Language header and handle quality values (q=...)
     List<Locale.LanguageRange> acceptLocales = Locale.LanguageRange.parse(acceptLanguage);
 
-    // Match the best locale from the available locales
+    // Match the best locale from the available locales.
     Locale bestMatch = Locale.lookup(acceptLocales, getAvailableLocales());
 
     Locale locale = (bestMatch != null) ? bestMatch : Locale.getDefault();
+    if (locale == null)
+      locale = LOCALE_PT_BR; // Ensure it's never null.
     setLocaleInSession(request, locale);
 
     return locale;
   }
 
   @Override
-  public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+  public void setLocale(@NonNull HttpServletRequest request, @Nullable HttpServletResponse response,
+      @Nullable Locale locale) {
     setLocaleInSession(request, locale);
 
     super.setLocale(request, response, locale);
@@ -74,4 +78,3 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
     return availableLocales;
   }
 }
-
