@@ -70,19 +70,19 @@ Docker Compose is a tool for defining and running multi-container Docker applica
 
 1. Build the docker image.
     ```bash
-    docker-compose build
+    docker compose build
     ```
 
 1. Run the Application.
     ```bash
-    docker-compose up -d
+    docker compose up -d
 
     # -p, --project-name
-    docker-compose -p my-app up -d
+    docker compose -p my-app up -d
 
     # Or
-    docker-compose -f my-container-development.yml up -d
-    docker-compose -f my-container-production.yml up -d
+    docker compose -f my-container-development.yml up -d
+    docker compose -f my-container-production.yml up -d
     ```
 
 [Go Back](../../../README.md)

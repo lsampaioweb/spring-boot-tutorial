@@ -22,7 +22,7 @@ Create a Spring Boot project using VSCode.
 
 1. Select the Group ID of the project.
 
-    The `groupId` identifies your project uniquely across all projects.
+    The `groupId` identifies your project uniquely across all projects. We will use `com.learning`.
 
     ![06-pom-group-id](../../images/spring-project/06-pom-group-id.png "06-pom-group-id")
 

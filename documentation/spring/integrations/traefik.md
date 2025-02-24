@@ -5,7 +5,7 @@
 
 1. Deploy Traefik:
     ```bash
-    docker-compose.yml up -d
+    docker compose.yml up -d
     ```
 
 1. Test Traefik:
@@ -14,7 +14,7 @@
 
 1. Remove Traefik:
     ```bash
-    docker-compose.yml down
+    docker compose.yml down
     ```
 
 1. Build the Application as a Docker Image:
@@ -24,7 +24,7 @@
 
 1. Deploy the application:
     ```bash
-    docker-compose.yml up -d
+    docker compose.yml up -d
     ```
 
 1. Test the application:
@@ -39,7 +39,7 @@
 
 1. Remove the application:
     ```bash
-    docker-compose.yml down
+    docker compose.yml down
     ```
 
 1. Clean up unused containers:
