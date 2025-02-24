@@ -3,7 +3,6 @@
 
   <springProperty scope="context" source="spring.application.name" name="APPLICATION_NAME" />
   <springProperty scope="context" source="logging.file.path" name="LOG_DIR" defaultValue="./logs" />
-  <!-- <property name="LOG_DIR" value="./logs" /> -->
 
   <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
