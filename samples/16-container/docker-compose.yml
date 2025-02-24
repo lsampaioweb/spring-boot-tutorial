@@ -1,20 +1,41 @@
 networks:
-  reverse-proxy:
-    external: true
   my-app-network:
     driver: "bridge"
 
 services:
   my-app:
-    image: "lsampaioweb/container:1.1"
+    image: "lsampaioweb/alpine-myapp:1.0"
     container_name: "my-app"
-    ports:
-      # - "8080:8080"
-      - "8081:8081"
-    environment:
-      - "SERVER_PORT=8081"
-      - "SPRING_PROFILES_ACTIVE=development"
-      # - "SPRING_PROFILES_ACTIVE=production"
     restart: "unless-stopped"
+    ports:
+      # - "8181:8181"
+      - "8080:8080"
+      # - "9443:9443"
+    volumes:
+    #   - ./logs:/opt/app/logs # NOT WORKING
+      - "./ssl/:/opt/app/ssl/:ro"
     networks:
       - "my-app-network"
+    environment:
+      # Testing on 8181
+      # - "SERVER_PORT=8181"
+
+      # Testing on 8080
+      - "SPRING_PROFILES_ACTIVE=development"
+
+      # Testing on 9443
+      # - "SPRING_PROFILES_ACTIVE=production"
+    healthcheck:
+      # Testing on 8181
+      # test: ["CMD-SHELL", "wget -q -O- http://my-app-01.dev.homelab:8181/actuator/health/ping || exit 1"]
+
+      # Testing on locahost
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8080/actuator/health/ping || exit 1"]
+      # test: ["CMD-SHELL", "wget --no-check-certificate -q -O- https://localhost:9443/actuator/health/ping || exit 1"]
+
+      # Testing on 9443
+      # test: ["CMD-SHELL", "wget -q -O- https://my-app-01.dev.homelab:9443/actuator/health/ping || exit 1"]
+      start_period: "2s"
+      interval: "10s"
+      timeout: "2s"
+      retries: 2
