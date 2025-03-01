@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: "postgres"
+
+  profiles:
+    active:
+      - "development"
+      # - "production"
+
+  messages:
+    basename: "i18n/messages"
+
+  threads:
+    virtual:
+      enabled: true
+
+logging:
+  config: "classpath:log/logback-spring.xml"

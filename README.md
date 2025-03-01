@@ -74,6 +74,10 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
     - Messaging with RabbitMQ.
 
+### Spring Boot Basic Project:
+1. [Basic Maven Project](documentation/spring/template/basic.md)
+    - Generate the Basic Maven Project.
+
 ### Links:
 
 [Links](documentation/links.md): Useful links and resources.

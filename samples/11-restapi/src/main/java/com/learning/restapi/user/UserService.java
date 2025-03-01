@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -115,7 +113,7 @@ class UserService {
 
       sortedUsers = sortedUsers.stream()
           .sorted(comparator)
-          .collect(Collectors.toList());
+          .toList();
     }
 
     return sortedUsers;
