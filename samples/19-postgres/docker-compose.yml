@@ -27,7 +27,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls=true"
-      - "traefik.http.routers.app.rule=Host(`app.dev.homelab`)"
+      - "traefik.http.routers.app.rule=Host(`app.lan.homelab`)"
       - "traefik.http.routers.app.middlewares=headers-rate-limit@file,headers-default@file,headers-security@file"
 
     #

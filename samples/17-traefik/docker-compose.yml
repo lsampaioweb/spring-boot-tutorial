@@ -1,28 +1,25 @@
 networks:
-  #
+  # xxx.
   reverse-proxy:
     external: true
 
 services:
   app:
-    #
+    # xxx.
     image: "lsampaioweb/app:1.0"
-    #
+
+    # xxx.
     container_name: "app"
 
-    #
-    user: "1002:1002"
-
-    #
+    # xxx.
     restart: "unless-stopped"
 
-    #
+    # xxx.
     environment:
       - "SPRING_PROFILES_ACTIVE=development"
       # - "SPRING_PROFILES_ACTIVE=production"
-      # - "SERVER_PORT=8081"
 
-    #
+    # xxx.
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app.entrypoints=websecure"
@@ -30,20 +27,16 @@ services:
       - "traefik.http.routers.app.rule=Host(`app.lan.homelab`)"
       - "traefik.http.routers.app.middlewares=headers-rate-limit@file,headers-default@file,headers-security@file"
 
-    #
+    # xxx.
     networks:
       - "reverse-proxy"
 
-    #
+    # xxx.
     volumes:
-      # Adjust the date and time of the container.
-      - "/etc/timezone:/etc/timezone:ro"
-      - "/etc/localtime:/etc/localtime:ro"
-
-      # Files and folders for the container.
+      # xxx.
       - "./logs:/home/app/logs"
 
-    #
+    # xxx.
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O- http://localhost:8080/actuator/health/ping || exit 1"]
       start_period: "4s"
