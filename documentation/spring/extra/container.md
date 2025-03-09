@@ -8,7 +8,17 @@ Docker Compose is a tool for defining and running multi-container Docker applica
 
     Create a `Dockerfile` in the root of your Spring Boot project. This file will define the Docker image for your application.
 
-    See this [Dockerfile](../../../samples/06-container/Dockerfile).
+    See this [Dockerfile](../../../samples/16-container/Dockerfile).
+
+1. Fixing Log Directory Permissions (If Needed):
+
+    By default, the **Docker image runs as the `app` user with UID 1112**. If the log directory on the host has incorrect ownership, the application may fail to write logs.
+
+    If you cloned this repository and the setting was lost, **ensure the logs directory has the correct owner** by running:
+
+    ```bash
+    sudo chown -R 1112:1112 ./logs
+    ```
 
 1. Build the Application as a Docker Image.
 
@@ -66,7 +76,7 @@ Docker Compose is a tool for defining and running multi-container Docker applica
 
     Create a `docker-compose.yml` file in the root of your project. This file will define the services (containers) that make up your application.
 
-    See this [docker-compose.yml](../../../samples/06-container/docker-compose.yml).
+    See this [docker-compose.yml](../../../samples/16-container/docker-compose.yml).
 
 1. Build the docker image.
     ```bash
