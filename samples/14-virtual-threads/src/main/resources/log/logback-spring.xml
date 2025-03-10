@@ -6,29 +6,27 @@
 
   <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <Pattern>%black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable</Pattern>
+      <Pattern>%black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%logger{60}): %msg%n%throwable</Pattern>
     </encoder>
   </appender>
 
   <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${LOG_DIR}/${APPLICATION_NAME}.log</file>
     <encoder>
-      <Pattern>%d %p %C{1} [%t] %m%n</Pattern>
+      <Pattern>%d{ISO8601} %p %C{1} [%t] %m%n</Pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
       <fileNamePattern>${LOG_DIR}/archived/${APPLICATION_NAME}-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
-      <!-- Each file should be at most 100MB, keep 1 day worth of history, but at most 1GB -->
+      <!-- Each file is capped at 100MB -->
       <maxFileSize>100MB</maxFileSize>
-      <totalSizeCap>1GB</totalSizeCap>
+      <!-- Keeps 1 day of history, up to 1GB total -->
       <maxHistory>1</maxHistory>
+      <totalSizeCap>1GB</totalSizeCap>
     </rollingPolicy>
   </appender>
 
   <appender name="File" class="ch.qos.logback.classic.AsyncAppender">
     <appender-ref ref="RollingFile" />
-    <queueSize>5000</queueSize>
-    <discardingThreshold>0</discardingThreshold>
-    <neverBlock>true</neverBlock>
   </appender>
 
   <springProfile name="debug">
