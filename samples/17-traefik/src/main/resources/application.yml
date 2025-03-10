@@ -1,3 +1,9 @@
 spring:
   application:
     name: "traefik"
+  # Configures the base name for i18n message files (required since path is i18n/messages).
+  messages:
+    basename: "i18n/messages"
+
+logging:
+  config: "classpath:log/logback-spring.xml"

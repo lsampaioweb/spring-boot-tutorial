@@ -95,6 +95,14 @@ Docker Compose is a tool for defining and running multi-container Docker applica
     docker compose -f my-container-production.yml up -d
     ```
 
+1. See the logs.
+    ```bash
+    docker compose logs my-container
+
+    # -f to keep watching.
+    docker compose logs -f my-container
+    ```
+
 [Go Back](../../../README.md)
 
 #

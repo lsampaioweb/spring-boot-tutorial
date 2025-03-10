@@ -1,44 +1,54 @@
 networks:
-  # xxx.
+  # Defines the external network used by Traefik for reverse proxying.
   reverse-proxy:
     external: true
 
 services:
   app:
-    # xxx.
+    # Specifies the image built for this application.
     image: "lsampaioweb/app:1.0"
 
-    # xxx.
+    # Sets a consistent container name for easier identification.
     container_name: "app"
 
-    # xxx.
+    # Ensures the container restarts unless explicitly stopped by the user.
     restart: "unless-stopped"
 
-    # xxx.
+    # Configures the Spring profile dynamically with a fallback to 'development'.
     environment:
-      - "SPRING_PROFILES_ACTIVE=development"
-      # - "SPRING_PROFILES_ACTIVE=production"
+      - "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-development}"
+      # - "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-production}"
 
-    # xxx.
+    # Configures Traefik labels to enable reverse proxying with TLS and custom routing.
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls=true"
       - "traefik.http.routers.app.rule=Host(`app.lan.homelab`)"
       - "traefik.http.routers.app.middlewares=headers-rate-limit@file,headers-default@file,headers-security@file"
+      - "traefik.http.services.app.loadbalancer.server.port=${SERVER_PORT:-8080}"
+      # - "traefik.http.services.app.loadbalancer.server.port=${SERVER_PORT:-9443}"
 
-    # xxx.
+    # Exposes ports directly if not behide Traefik.
+    ports:
+      - "8080:8080"
+      # - "9443:9443"
+
+    # Connects the app to the external Traefik network for routing.
     networks:
       - "reverse-proxy"
 
-    # xxx.
+    # Maps host directories to the container.
     volumes:
-      # xxx.
-      - "./logs:/home/app/logs"
+      # Persists application logs to the host filesystem.
+      - "./logs:/opt/app/logs"
+      # Optional: Mount SSL certificates if app handles TLS directly.
+      # - "./ssl/:/opt/app/ssl/:ro"
 
-    # xxx.
+    # Defines a health check to ensure the app is running and responsive.
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O- http://localhost:8080/actuator/health/ping || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:${SERVER_PORT:-8080}/actuator/health || exit 1"]
+      # test: ["CMD-SHELL", "wget --no-check-certificate -q -O- https://localhost:${SERVER_PORT:-9443}/actuator/health || exit 1"]
       start_period: "4s"
       interval: "10s"
       timeout: "2s"

@@ -1,3 +1,8 @@
+server:
+  port: 8080
+  error:
+    include-stacktrace: "always"
+
 management:
   endpoints:
     web:
@@ -6,7 +11,3 @@ management:
   endpoint:
     health:
       show-details: "always"
-
-server:
-  error:
-    include-stacktrace: "always"

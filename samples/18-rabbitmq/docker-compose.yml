@@ -41,11 +41,11 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
 
       # Files and folders for the container.
-      - "./logs:/home/app/logs"
+      - "./logs:/opt/app/logs"
 
     #
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O- http://localhost:8080/actuator/health/ping || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8080/actuator/health || exit 1"]
       start_period: "4s"
       interval: "10s"
       timeout: "2s"
