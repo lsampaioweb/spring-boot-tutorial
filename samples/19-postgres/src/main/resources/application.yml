@@ -9,5 +9,20 @@ spring:
     virtual:
       enabled: true
 
+  datasource:
+    driver-class-name: "org.postgresql.Driver"
+    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:mydatabase}"
+    username: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    hikari:
+      # Maximum number of connections in the pool (default: 10).
+      maximum-pool-size: 10
+      # Minimum number of idle connections in the pool (default: same as max).
+      minimum-idle: 2
+      # Time (ms) before an idle connection is removed (must be less than max-lifetime).
+      idle-timeout: 30000
+      # Maximum time (ms) to wait for a connection before throwing an error.
+      connection-timeout: 20000
+
 logging:
   config: "classpath:log/logback-spring.xml"
