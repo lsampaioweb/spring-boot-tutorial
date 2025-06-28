@@ -2,17 +2,19 @@
 
 Documentation on how to create Java libraries and Spring Boot projects for our team.
 
-### Ubuntu 22.04 Environment:
+### Ubuntu Environment:
 1. [Install Java](documentation/java/install.md):
-    - Instructions on installing Java on Ubuntu 22.04.
+    - Instructions on installing Java on Ubuntu.
 1. [Install Maven](documentation/maven/install.md):
     - Steps to install Maven.
 1. [Install VSCode Extensions](documentation/vscode/index.md):
     - Recommended VSCode extensions for Java development.
 
+### Setup:
+1. [Create a Spring Boot Project](documentation/setup/project.md):
+    - Guide to set up a Spring Boot project using VS Code or CLI.
+
 ### Spring Boot Basics:
-1. [Basic Spring Boot Project](documentation/spring/basic/project.md):
-    - Guide to set up a basic Spring Boot project.
 1. [Maven Commands](documentation/maven/pom.md):
     - Common Maven commands and usage.
 1. [DevTools](documentation/spring/basic/devtools.md):
