@@ -1,6 +1,6 @@
 # Install Java on Ubuntu
 
-This guide explains how to install Java JDK or JRE on Ubuntu 22.04 for desktop or server environments, targeted at non-beginner Java developers.
+This guide explains how to install Java JDK or JRE on Ubuntu for desktop or server environments, targeted at non-beginner Java developers.
 
 1. Update the apt cache to refresh package lists.
     ```bash

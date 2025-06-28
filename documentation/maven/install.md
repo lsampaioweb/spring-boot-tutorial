@@ -1,38 +1,33 @@
-Steps to install Maven on Ubuntu 22.04 (desktop or server).
+# Install Maven on Ubuntu
 
-1. Update the apt cache.
-```bash
-sudo apt update
-```
+This guide explains how to install Maven on Ubuntu for desktop or server environments, targeted at non-beginner Java developers.
 
-2. Install the latest version.
-```bash
-sudo apt install -y maven
-```
+1. Update the package cache to refresh available packages.
+    ```bash
+    sudo apt update
+    ```
 
-3. Verify the installation.
-```bash
-mvn --version
-```
+1. Install Maven (e.g., version 3.9.x or later).
+    ```bash
+    sudo apt install -y maven
+    ```
 
-4. Set the MAVEN_HOME variable globally.
+1. Verify the Maven installation.
+    ```bash
+    mvn --version
+    ```
 
-    4.1. Open the profile file. It will be available for all users.
-
+1. Edit the global profile file to set `MAVEN_HOME`.
     ```bash
     sudo nano /etc/profile
     ```
 
-    4.2. Add these lines at the end of the file.
-
+1. Add the `MAVEN_HOME` export to the profile file.
     ```bash
     export MAVEN_HOME="$(readlink -f `which mvn` | sed 's:/bin/mvn::')"
-    ````
+    ```
 
-    4.3. Reload the profile file.
-
-    This command will reload the file, but only for this terminal session. In order to make it available to all users and terminal sessions, it is necessary to logout and login again.
-
+1. Reload the profile file for the current session. Log out and log in to apply globally.
     ```bash
     source /etc/profile
     ```
@@ -41,5 +36,4 @@ mvn --version
 
 #
 ### Created by:
-
 1. Luciano Sampaio.
