@@ -2,9 +2,9 @@
 
 Documentation on how to create Java libraries and Spring Boot projects for our team.
 
-### Ubuntu 22.04 Environment:
+## Ubuntu 22.04/24.04 Environment:
 1. [Install Java](documentation/java/install.md):
-    - Instructions on installing Java on Ubuntu 22.04.
+    - Instructions on installing Java on Ubuntu 22.04/24.04.
 1. [Install Maven](documentation/maven/install.md):
     - Steps to install Maven.
 1. [Install VSCode Extensions](documentation/vscode/index.md):
@@ -74,18 +74,15 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
     - Messaging with RabbitMQ.
 
-### Spring Boot Basic Project:
-1. [Basic Maven Project](documentation/spring/template/basic.md)
-    - Generate the Basic Maven Project.
+## Links:
 
-### Links:
+1. [Useful links and resources](documentation/links.md)
 
-[Links](documentation/links.md): Useful links and resources.
+## License:
 
-### License:
+[MIT License](LICENSE):
+  - This project is licensed under the MIT License.
 
-[MIT License](LICENSE): This project is licensed under the MIT License.
-
-### Created by:
+## Created by:
 
 1. Luciano Sampaio
