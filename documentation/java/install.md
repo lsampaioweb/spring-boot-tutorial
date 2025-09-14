@@ -82,7 +82,7 @@ This guide explains how to install Java on Ubuntu Desktop or Server.
     echo $JAVA_HOME
     ```
 
-**Troubleshooting:**  
+**Troubleshooting:**
 If `JAVA_HOME` is not set, double-check the path and ensure you have reloaded your environment or restarted your session.
 
 **Notes:**
