@@ -7,7 +7,7 @@
 - **Philosophy**: Each project should be self-contained and may build upon concepts from previous projects.
 - **Maintenance reality**: Samples are intentionally independent, so version upgrades usually require touching multiple `pom.xml` files.
 
-> Spring Boot coding conventions (Maven, Java 21, constructor injection, application.yml, ResponseEntity, Lombok, etc.) are defined in the shared skill. This file contains only rules specific to this tutorial project.
+> Spring Boot coding conventions (Maven, Java 25, constructor injection, application.yml, ResponseEntity, Lombok, etc.) are defined in the shared skill. This file contains only rules specific to this tutorial project.
 
 ## AI Customization Roles
 - Keep this file for always-on, repository-wide rules.
