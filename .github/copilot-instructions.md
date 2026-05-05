@@ -5,8 +5,15 @@
 - **Target Audience**: Developers learning Spring Boot from zero to hero.
 - **Structure**: Sequential, isolated projects (`samples/XX-{topic}/`) each focusing on one concept.
 - **Philosophy**: Each project should be self-contained and may build upon concepts from previous projects.
+- **Maintenance reality**: Samples are intentionally independent, so version upgrades usually require touching multiple `pom.xml` files.
 
 > Spring Boot coding conventions (Maven, Java 21, constructor injection, application.yml, ResponseEntity, Lombok, etc.) are defined in the shared skill. This file contains only rules specific to this tutorial project.
+
+## AI Customization Roles
+- Keep this file for always-on, repository-wide rules.
+- Use the `spring-boot` skill for task-specific Spring Boot implementation guidance.
+- Avoid duplicating the same coding convention in both places.
+- When asked to upgrade or refresh the tutorial samples, prefer the repository maintenance workflow described in `documentation/maven/upgrade.md`.
 
 ## Educational Principles
 - Prioritize clarity and teaching value over advanced abstractions.
@@ -31,6 +38,7 @@ samples/XX-{topic}/
 - Package structure: `com.learning.{projectname}.{feature}`.
 - One concept per numbered project; use consistent naming: `XX-{topic-name}`.
 - Keep dependencies minimal per project — only what that sample teaches.
+- Preserve self-contained samples unless the user explicitly asks for shared parents, shared libraries, or repo-wide restructuring.
 
 ## Documentation Standards
 - Use `1.` for ALL numbered lists (let Markdown auto-increment).
