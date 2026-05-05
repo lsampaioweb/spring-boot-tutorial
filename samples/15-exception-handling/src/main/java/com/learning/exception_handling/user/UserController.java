@@ -3,6 +3,7 @@ package com.learning.exception_handling.user;
 import java.net.URI;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class UserController {
 
     URI location = getLocation(uriBuilder, "/{id}", createdEntity.getId());
 
-    return ResponseEntity.created(location).body(createdEntity);
+    return ResponseEntity.created(Objects.requireNonNull(location)).body(createdEntity);
   }
 
   @PutMapping("/{id}")
@@ -75,7 +76,9 @@ public class UserController {
   }
 
   private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {
-    return uriBuilder.path(path).buildAndExpand(uriVariableValues).toUri();
+    return uriBuilder.path(Objects.requireNonNull(path))
+        .buildAndExpand(Objects.requireNonNull(uriVariableValues))
+        .toUri();
   }
 
   private String getMethodCalledMessage(String methodName) {

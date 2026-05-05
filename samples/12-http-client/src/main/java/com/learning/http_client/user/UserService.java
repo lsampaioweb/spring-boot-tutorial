@@ -1,6 +1,7 @@
 package com.learning.http_client.user;
 
 import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -35,14 +36,14 @@ class UserService {
   @PostConstruct
   private void init() {
     this.restClient = restClientBuilder
-        .baseUrl(usersUrl)
+      .baseUrl(Objects.requireNonNull(usersUrl))
         .build();
   }
 
   PagedModel<EntityModel<User>> findAll(Pageable pageable) {
     return restClient
         .get()
-        .uri(getPagingAndSortingUrl(pageable))
+      .uri(Objects.requireNonNull(getPagingAndSortingUrl(pageable)))
         .retrieve()
         .body(new ParameterizedTypeReference<PagedModel<EntityModel<User>>>() {
         });
@@ -61,8 +62,8 @@ class UserService {
   User create(User user) {
     return restClient
         .post()
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(user)
+      .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
+      .body(Objects.requireNonNull(user))
         .retrieve()
         .body(User.class);
   }
@@ -71,8 +72,8 @@ class UserService {
     User updatedUser = restClient
         .put()
         .uri(ID_PARAMETER, id)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(user)
+      .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
+      .body(Objects.requireNonNull(user))
         .retrieve()
         .body(User.class);
 
@@ -91,7 +92,7 @@ class UserService {
   }
 
   private String getPagingAndSortingUrl(Pageable pageable) {
-    return UriComponentsBuilder.fromUriString(usersUrl)
+    return UriComponentsBuilder.fromUriString(Objects.requireNonNull(usersUrl))
         .queryParam("page", pageable.getPageNumber())
         .queryParam("size", pageable.getPageSize())
         .queryParam("sort", formatSort(pageable.getSort()))
