@@ -63,7 +63,7 @@ Because of that, there is no single Maven command that magically upgrades the wh
     - dependency version incompatibilities;
     - configuration property changes;
     - test changes caused by framework behavior updates;
-    - annotation processor or Lombok compatibility issues.
+    - Lombok annotation processing not working — see [Lombok documentation](../spring/basic/lombok.md).
 
 1. Commit upgrade work in slices.
 

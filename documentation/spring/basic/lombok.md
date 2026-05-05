@@ -17,6 +17,29 @@ Lombok is a Java library that provides annotations to simplify Java development 
     <scope>provided</scope>
     ```
 
+1. Annotation processing on Java 23+.
+
+    Java 23 deprecated and Java 25 removed implicit annotation processor discovery from the classpath. Any project using Lombok on Java 23 or later requires an explicit `annotationProcessorPaths` entry in `maven-compiler-plugin`, otherwise `@Slf4j`, `@Data`, and other annotations produce "cannot find symbol" errors.
+
+    Add this block to the `<build><plugins>` section of the `pom.xml`:
+
+    ```xml
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <configuration>
+        <annotationProcessorPaths>
+          <path>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+          </path>
+        </annotationProcessorPaths>
+      </configuration>
+    </plugin>
+    ```
+
+    No version is needed; Spring Boot's parent POM manages it.
+
 1. VS Code Integration.
 
     Install the Lombok extension using the UI.
