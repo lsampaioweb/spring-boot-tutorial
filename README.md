@@ -15,6 +15,8 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
     - Guide to set up a basic Spring Boot project.
 1. [Maven Commands](documentation/maven/pom.md):
     - Common Maven commands and usage.
+1. [Upgrade Process](documentation/maven/upgrade.md):
+    - Practical workflow to keep all sample POMs updated.
 1. [DevTools](documentation/spring/basic/devtools.md):
     - Enabling and using Spring Boot DevTools.
 1. [Logs](documentation/spring/basic/logs.md):
