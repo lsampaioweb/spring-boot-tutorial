@@ -1,8 +1,10 @@
 package com.learning.http_client.user;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.lang.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -43,12 +45,12 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<User> create(@RequestBody User user, @NonNull UriComponentsBuilder uriBuilder) {
     User createdUser = userService.create(user);
 
     URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
 
-    return ResponseEntity.created(location).body(createdUser);
+    return ResponseEntity.created(Objects.requireNonNull(location)).body(createdUser);
   }
 
   @PutMapping("/{id}")
@@ -70,7 +72,10 @@ public class UserController {
     }
   }
 
-  private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {
-    return uriBuilder.path(path).buildAndExpand(uriVariableValues).toUri();
+  private @NonNull URI getLocation(@NonNull UriComponentsBuilder uriBuilder, @NonNull String path,
+      @NonNull Object... uriVariableValues) {
+    return uriBuilder.path(Objects.requireNonNull(path))
+        .buildAndExpand(Objects.requireNonNull(uriVariableValues))
+        .toUri();
   }
 }

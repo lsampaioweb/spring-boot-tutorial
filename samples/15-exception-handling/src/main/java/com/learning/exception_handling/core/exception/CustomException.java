@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.lang.NonNull;
 
 import com.learning.exception_handling.core.i18n.MessageSourceHolder;
 
@@ -13,7 +14,8 @@ public abstract class CustomException extends RuntimeException {
     super(getMessage(messageKey, objects));
   }
 
-  private static String getMessage(String messageKey, Object[] objects) {
+  @SuppressWarnings("null")
+  private static @NonNull String getMessage(String messageKey, Object[] objects) {
     return getMessageSource().getMessage(messageKey, objects, getLocale());
   }
 

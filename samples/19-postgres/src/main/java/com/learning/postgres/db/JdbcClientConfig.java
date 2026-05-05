@@ -1,5 +1,7 @@
 package com.learning.postgres.db;
 
+import java.util.Objects;
+
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,6 @@ public class JdbcClientConfig {
 
   @Bean
   public JdbcClient jdbcClient(DataSource dataSource) {
-    return JdbcClient.create(dataSource);
+    return JdbcClient.create(Objects.requireNonNull(dataSource));
   }
 }

@@ -1,6 +1,7 @@
 package com.learning.restapi.user;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -34,7 +35,7 @@ public class UserController {
   @GetMapping
   public ResponseEntity<PagedModel<EntityModel<User>>> findAll(Pageable pageable) {
     Page<User> users = userService.findAll(pageable);
-    PagedModel<EntityModel<User>> pagedModel = pagedResourcesAssembler.toModel(users);
+    PagedModel<EntityModel<User>> pagedModel = pagedResourcesAssembler.toModel(Objects.requireNonNull(users));
 
     return ResponseEntity.ok(pagedModel);
   }
@@ -53,7 +54,7 @@ public class UserController {
 
     URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
 
-    return ResponseEntity.created(location).body(createdUser);
+    return ResponseEntity.created(Objects.requireNonNull(location)).body(createdUser);
   }
 
   @PutMapping("/{id}")
@@ -76,7 +77,9 @@ public class UserController {
   }
 
   private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {
-    return uriBuilder.path(path).buildAndExpand(uriVariableValues).toUri();
+    return uriBuilder.path(Objects.requireNonNull(path))
+        .buildAndExpand(Objects.requireNonNull(uriVariableValues))
+        .toUri();
   }
 
 }

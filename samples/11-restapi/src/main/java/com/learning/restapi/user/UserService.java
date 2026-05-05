@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
@@ -36,7 +37,7 @@ class UserService {
     List<User> paginatedUsers = getPaginatedList(users, pageable);
     List<User> sortedPaginatedUsers = getSortedUsers(paginatedUsers, pageable);
 
-    return new PageImpl<>(sortedPaginatedUsers, pageable, users.size());
+    return new PageImpl<>(Objects.requireNonNull(sortedPaginatedUsers), Objects.requireNonNull(pageable), users.size());
   }
 
   Optional<User> findById(Long id) {

@@ -17,6 +17,8 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 ### Spring Boot Basics:
 1. [Maven Commands](documentation/maven/pom.md):
     - Common Maven commands and usage.
+1. [Upgrade Process](documentation/maven/upgrade.md):
+    - Practical workflow to keep all sample POMs updated.
 1. [DevTools](documentation/spring/basic/devtools.md):
     - Enabling and using Spring Boot DevTools.
 1. [Logs](documentation/spring/basic/logs.md):
@@ -27,16 +29,18 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
     - Using Spring Boot profiles.
 1. [Actuator](documentation/spring/basic/actuator.md)
     - Monitoring and managing your Spring Boot application.
-1. [Thymeleaf](documentation/spring/basic/thymeleaf.md)
-    - Using Thymeleaf as the templating engine.
-1. [REST](documentation/spring/basic/rest.md)
-    - Creating RESTful web services.
-    - Handle pagination.
-    - Handle sorting.
 
 ### Spring Boot Intermediate:
 1. [i18n](documentation/spring/intermediate/i18n.md)
     - Implementing internationalization (i18n) in Spring Boot.
+1. [REST](documentation/spring/basic/rest.md)
+    - Creating RESTful web services.
+    - Handle pagination.
+    - Handle sorting.
+1. [Thymeleaf](documentation/spring/basic/thymeleaf.md)
+    - Using Thymeleaf as the templating engine.
+1. [Validation](documentation/spring/intermediate/validation.md)
+    - Input validation for REST APIs and web forms.
 1. [Exception Handling](documentation/spring/intermediate/exception-handling.md)
     - Handling exceptions in Spring Boot applications.
 1. [HTTPS](documentation/spring/intermediate/https.md)
@@ -51,16 +55,12 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
     - Externalized configuration using Spring Cloud Config.
 1. [Virtual Threads](documentation/spring/advanced/virtual-threads.md)
     - Using virtual threads in Spring Boot.
-1. [Security](documentation/spring/advanced/security.md)
-    - Securing your Spring Boot application.
 1. [WebSocket](documentation/spring/advanced/websocket.md)
     - Implementing WebSocket communication.
-
-### Spring Boot and Docker:
-1. [Docker and Docker Compose](documentation/spring/extra/container.md):
+1. [Security](documentation/spring/advanced/security.md)
+    - Securing your Spring Boot application.
+1. [Container](documentation/spring/extra/container.md)
     - Containerizing your Spring Boot application with Docker.
-
-### Spring Boot Tests:
 1. [K6](documentation/spring/tests/k6.md)
     - Performance testing with K6.
 
@@ -76,18 +76,15 @@ Documentation on how to create Java libraries and Spring Boot projects for our t
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
     - Messaging with RabbitMQ.
 
-### Spring Boot Basic Project:
-1. [Basic Maven Project](documentation/spring/template/basic.md)
-    - Generate the Basic Maven Project.
+## Links:
 
-### Links:
+1. [Useful links and resources](documentation/links.md)
 
-[Links](documentation/links.md): Useful links and resources.
+## License:
 
-### License:
+[MIT License](LICENSE):
+  - This project is licensed under the MIT License.
 
-[MIT License](LICENSE): This project is licensed under the MIT License.
-
-### Created by:
+## Created by:
 
 1. Luciano Sampaio

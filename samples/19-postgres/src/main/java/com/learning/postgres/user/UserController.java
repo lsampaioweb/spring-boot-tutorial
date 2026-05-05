@@ -30,12 +30,14 @@ public class UserController {
     return repository.findById(id);
   }
 
+  // Create a single user.
   @PostMapping
   public void createUser(@RequestBody Model model) {
     repository.save(model);
   }
 
-  @PostMapping
+  // Create multiple users (use a different path).
+  @PostMapping("/batch")
   public void createUsers(@RequestBody List<Model> list) {
     repository.saveAll(list);
   }

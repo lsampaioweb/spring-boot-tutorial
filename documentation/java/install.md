@@ -12,14 +12,19 @@ This guide explains how to install Java JDK or JRE on Ubuntu for desktop or serv
     sudo apt search openjdk
     ```
 
-1. Install the OpenJDK JDK (e.g., OpenJDK 21) for desktop environments.
+1. Install the recommended JDK for your Ubuntu version (future-proof, recommended for most users).
+    ```bash
+    sudo apt install -y default-jdk
+    ```
+
+1. (Alternative) Install a specific JDK version (e.g., OpenJDK 21).
     ```bash
     sudo apt install -y openjdk-21-jdk
     ```
 
-1. Install the OpenJDK JRE (e.g., OpenJDK 21) for server environments.
+1. (Optional) For server environments where only running Java apps is needed, install the JRE.
     ```bash
-    sudo apt install -y openjdk-21-jre
+    sudo apt install -y default-jre
     ```
 
 1. Verify the Java installation.
@@ -27,9 +32,14 @@ This guide explains how to install Java JDK or JRE on Ubuntu for desktop or serv
     java --version
     ```
 
-1. Open the global profile file to set `JAVA_HOME`.
+1. (Optional) List all installed Java versions.
     ```bash
-    sudo nano /etc/profile
+    update-java-alternatives --list
+    ```
+
+1. (Optional) Switch between installed Java versions.
+    ```bash
+    sudo update-alternatives --config java
     ```
 
 1. Add the `JAVA_HOME` export to the profile file.
@@ -39,8 +49,16 @@ This guide explains how to install Java JDK or JRE on Ubuntu for desktop or serv
 
 1. Reload the profile file for the current session. Log out and log in to apply globally.
     ```bash
-    source /etc/profile
+    echo $JAVA_HOME
     ```
+
+**Troubleshooting:**
+If `JAVA_HOME` is not set, double-check the path and ensure you have reloaded your environment or restarted your session.
+
+**Notes:**
+- Use `default-jdk` unless you need a specific Java version.
+- For development, always use the JDK, not just the JRE.
+- Setting JAVA_HOME in `/etc/environment` is preferred for system-wide use; use `~/.profile` or `~/.bashrc` for per-user configuration.
 
 [Go Back](../../README.md)
 

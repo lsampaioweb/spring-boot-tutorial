@@ -3,6 +3,7 @@ package com.learning.exception_handling.core.i18n;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.lang.NonNull;
@@ -26,7 +27,7 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
       Locale locale = Locale.forLanguageTag(languageParam);
       setLocaleInSession(request, locale);
 
-      return locale;
+      return Objects.requireNonNull(locale);
     }
 
     // Check if the user's preferred locale is already in session.
@@ -40,7 +41,7 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
       Locale locale = (Locale.getDefault() != null) ? Locale.getDefault() : LOCALE_PT_BR;
       setLocaleInSession(request, locale);
 
-      return locale;
+      return Objects.requireNonNull(locale);
     }
 
     // Parse the Accept-Language header and handle quality values (q=...)
@@ -54,7 +55,7 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
       locale = LOCALE_PT_BR; // Ensure it's never null.
     setLocaleInSession(request, locale);
 
-    return locale;
+    return Objects.requireNonNull(locale);
   }
 
   @Override
