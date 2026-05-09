@@ -19,10 +19,7 @@ public class GreetingController {
 
   @GetMapping("/greet")
   public String greet(@RequestParam(name = "name", defaultValue = "User") String name) {
-
-    String greeting = messageSource.getMessage("greeting.message", new Object[] { name }, getLocale());
-
-    return greeting;
+    return messageSource.getMessage("greeting.message", new Object[] { name }, getLocale());
   }
 
   private Locale getLocale() {
