@@ -1,4 +1,0 @@
-[submodule ".github/skills"]
-	path = .github/skills
-	url = https://github.com/lsampaioweb/copilot-skills-dev.git
-	branch = main
