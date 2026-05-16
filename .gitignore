@@ -1,2 +1,7 @@
 .vscode/*
-.DS_Store
+.DS_Store# VS Code Copilot symlinks (pointing to .ia-instructions submodule)
+.github/skills
+.github/agents
+.github/prompts
+.github/instructions
+.github/hooks
