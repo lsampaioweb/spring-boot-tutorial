@@ -17,9 +17,9 @@ This guide explains how to install Java JDK or JRE on Ubuntu for desktop or serv
     sudo apt install -y default-jdk
     ```
 
-1. (Alternative) Install a specific JDK version (e.g., OpenJDK 21).
+1. (Alternative) Install a specific JDK version (e.g., OpenJDK 25).
     ```bash
-    sudo apt install -y openjdk-21-jdk
+    sudo apt install -y openjdk-25-jdk
     ```
 
 1. (Optional) For server environments where only running Java apps is needed, install the JRE.
