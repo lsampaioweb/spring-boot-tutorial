@@ -36,14 +36,14 @@ class UserService {
   @PostConstruct
   private void init() {
     this.restClient = restClientBuilder
-      .baseUrl(Objects.requireNonNull(usersUrl))
+        .baseUrl(Objects.requireNonNull(usersUrl))
         .build();
   }
 
   PagedModel<EntityModel<User>> findAll(Pageable pageable) {
     return restClient
         .get()
-      .uri(Objects.requireNonNull(getPagingAndSortingUrl(pageable)))
+        .uri(Objects.requireNonNull(getPagingAndSortingUrl(pageable)))
         .retrieve()
         .body(new ParameterizedTypeReference<PagedModel<EntityModel<User>>>() {
         });
@@ -62,8 +62,8 @@ class UserService {
   User create(User user) {
     return restClient
         .post()
-      .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
-      .body(Objects.requireNonNull(user))
+        .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
+        .body(Objects.requireNonNull(user))
         .retrieve()
         .body(User.class);
   }
@@ -72,8 +72,8 @@ class UserService {
     User updatedUser = restClient
         .put()
         .uri(ID_PARAMETER, id)
-      .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
-      .body(Objects.requireNonNull(user))
+        .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
+        .body(Objects.requireNonNull(user))
         .retrieve()
         .body(User.class);
 
