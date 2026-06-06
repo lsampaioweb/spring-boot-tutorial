@@ -2,96 +2,47 @@
 
 This guide explains how to install essential `VS Code` extensions for `Java` and `Spring Boot` development on `Ubuntu`, targeted at non-beginner Java developers.
 
-1. Install the VS Code Icons extension for enhanced UI icons.
-    ```bash
-    Name: vscode-icons
-    ```
-
-1. Install the Project Manager for Java extension for project management.
-    ```bash
-    Name: Project Manager for Java
-    ```
-
-1. Install the Extension Pack for Java for comprehensive Java support.
-    ```bash
-    Name: Extension Pack for Java
-    ```
-
-1. Install the Maven for Java extension for Maven integration.
-    ```bash
-    Name: Maven for Java
-    ```
-
-1. Install the Debugger for Java extension for debugging support.
-    ```bash
-    Name: Debugger for Java
-    ```
-
-1. Install the Test Runner for Java extension for running tests.
-    ```bash
-    Name: Test Runner for Java
-    ```
-
-1. Install the Lombok Annotations Support extension for Lombok annotations.
-    ```bash
-    Name: Lombok Annotations Support for VS Code
-    ```
-
-1. Install the Language Support for Java(TM) by Red Hat extension for Java language features.
-    ```bash
-    Name: Language Support for Java(TM) by Red Hat
-    ```
-
-1. Install the XML extension for XML file support.
-    ```bash
-    Name: XML
-    ```
-
-1. Install the Spring Boot Dashboard extension for Spring Boot project management.
-    ```bash
-    Name: Spring Boot Dashboard
-    ```
-
-1. Install the Spring Boot Tools extension for Spring Boot utilities.
-    ```bash
-    Name: Spring Boot Tools
-    ```
-
-1. Install the Spring Initializr Java Support extension for project creation.
-    ```bash
-    Name: Spring Initializr Java Support
-    ```
-
-1. Install the ESLint extension for JavaScript linting.
-    ```bash
-    Name: ESLint
-    ```
-
 1. Install extensions via terminal for automation.
     ```bash
-    code --install-extension vscode-icons-team.vscode-icons
-    code --install-extension vscjava.vscode-java-pack
-    code --install-extension vscjava.vscode-java-dependency
-    code --install-extension vscjava.vscode-maven
-    code --install-extension vscjava.vscode-java-debug
-    code --install-extension vscjava.vscode-java-test
-    code --install-extension vscjava.vscode-lombok
+    code --install-extension dbaeumer.vscode-eslint
+    code --install-extension hashicorp.hcl
+    code --install-extension hashicorp.terraform
+    code --install-extension ms-azuretools.vscode-containers
+    code --install-extension ms-dotnettools.vscode-dotnet-runtime
+    code --install-extension ms-mssql.data-workspace-vscode
+    code --install-extension ms-mssql.mssql
+    code --install-extension ms-mssql.sql-bindings-vscode
+    code --install-extension ms-mssql.sql-database-projects-vscode
+    code --install-extension ms-python.debugpy
+    code --install-extension ms-python.python
+    code --install-extension ms-python.vscode-pylance
+    code --install-extension ms-python.vscode-python-envs
+    code --install-extension ms-vscode-remote.remote-containers
+    code --install-extension ms-vscode-remote.remote-ssh
+    code --install-extension ms-vscode-remote.remote-ssh-edit
+    code --install-extension ms-vscode.remote-explorer
+    code --install-extension ms-vscode.vscode-chat-customizations-evaluations
+    code --install-extension redhat.ansible
     code --install-extension redhat.java
     code --install-extension redhat.vscode-xml
-    code --install-extension vscjava.vscode-spring-boot-dashboard
+    code --install-extension redhat.vscode-yaml
+    code --install-extension sonarsource.sonarlint-vscode
+    code --install-extension tomoki1207.pdf
     code --install-extension vmware.vscode-spring-boot
+    code --install-extension vscjava.vscode-gradle
+    code --install-extension vscjava.vscode-java-debug
+    code --install-extension vscjava.vscode-java-dependency
+    code --install-extension vscjava.vscode-java-pack
+    code --install-extension vscjava.vscode-java-test
+    code --install-extension vscjava.vscode-maven
+    code --install-extension vscjava.vscode-spring-boot-dashboard
     code --install-extension vscjava.vscode-spring-initializr
-    code --install-extension dbaeumer.vscode-eslint
+    code --install-extension vscode-icons-team.vscode-icons
     ```
 
 1. List installed extensions.
     ```bash
     code --list-extensions
-    ```
-
-1. Verify if all extensions were installed.
-    ```bash
-    code --list-extensions | grep -E 'vscode-icons|vscjava|redhat|vmware|dbaeumer'
     ```
 
 [Go Back](../../README.md)

@@ -62,14 +62,6 @@ This guide explains how to install Java JDK or JRE on Ubuntu for desktop or serv
     echo $JAVA_HOME
     ```
 
-**Troubleshooting:**
-If `JAVA_HOME` is not set, double-check the path and ensure you have reloaded your environment or restarted your session.
-
-**Notes:**
-- Use `default-jdk` unless you need a specific Java version.
-- For development, always use the JDK, not just the JRE.
-- Setting JAVA_HOME in `/etc/environment` is preferred for system-wide use; use `~/.profile` or `~/.bashrc` for per-user configuration.
-
 [Go Back](../../README.md)
 
 #

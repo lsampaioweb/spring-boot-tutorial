@@ -20,46 +20,6 @@ Documentation and working samples for building Java libraries and Spring Boot pr
 1. [Create a Spring Boot Project](documentation/setup/project.md):
     - Guide to set up a Spring Boot project using VS Code or CLI.
 
-### Working Samples:
-
-This project includes 19 runnable samples demonstrating Spring Boot features and best practices. All samples follow standardized architecture conventions and are validated via Maven compilation and test execution.
-
-**Sample Index:**
-
-1. **01-pom** – Maven project structure and configuration
-2. **02-devtools** – Spring Boot DevTools for development workflow
-3. **03-logs** – Logging configuration and management
-4. **04-lombok** – Lombok integration for code generation
-5. **05-profiles** – Spring Boot profiles for environment-specific configuration
-6. **06-actuator** – Application monitoring and health checks
-7. **07-thymeleaf** – Server-side templating with Thymeleaf
-8. **08-cloud-config** – Externalized configuration with Spring Cloud Config
-9. **09-https** – HTTPS/SSL configuration and setup
-10. **10-i18n** – Internationalization (i18n) with message bundles
-11. **11-restapi** – RESTful API design with DTOs and validation
-12. **12-http-client** – HTTP client calls to external services
-13. **13-k6** – Performance and load testing
-14. **14-virtual-threads** – Virtual threads for asynchronous processing
-15. **15-exception-handling** – Centralized exception handling and error responses
-16. **16-container** – Docker containerization and Compose orchestration
-17. **17-traefik** – Reverse proxy integration with Traefik
-18. **18-rabbitmq** – Async messaging with RabbitMQ
-19. **19-postgres** – Database integration with PostgreSQL and JDBC
-
-**To run a specific sample:**
-```bash
-cd samples/<sample-name>
-mvn clean test  # Run tests
-mvn clean spring-boot:run  # Run the application
-```
-
-**To run all samples:**
-```bash
-for dir in samples/[0-9]*; do
-  [ -f "$dir/pom.xml" ] && mvn -f "$dir/pom.xml" clean test
-done
-```
-
 ### Spring Boot Basics:
 1. [Maven Commands](documentation/maven/pom.md):
     - Common Maven commands and usage.
@@ -125,6 +85,46 @@ done
 ## Links:
 
 1. [Useful links and resources](documentation/links.md)
+
+### Working Samples:
+
+This project includes 19 runnable samples demonstrating Spring Boot features and best practices. All samples follow standardized architecture conventions and are validated via Maven compilation and test execution.
+
+**Sample Index:**
+
+1. **01-pom** – Maven project structure and configuration
+2. **02-devtools** – Spring Boot DevTools for development workflow
+3. **03-logs** – Logging configuration and management
+4. **04-lombok** – Lombok integration for code generation
+5. **05-profiles** – Spring Boot profiles for environment-specific configuration
+6. **06-actuator** – Application monitoring and health checks
+7. **07-thymeleaf** – Server-side templating with Thymeleaf
+8. **08-cloud-config** – Externalized configuration with Spring Cloud Config
+9. **09-https** – HTTPS/SSL configuration and setup
+10. **10-i18n** – Internationalization (i18n) with message bundles
+11. **11-restapi** – RESTful API design with DTOs and validation
+12. **12-http-client** – HTTP client calls to external services
+13. **13-k6** – Performance and load testing
+14. **14-virtual-threads** – Virtual threads for asynchronous processing
+15. **15-exception-handling** – Centralized exception handling and error responses
+16. **16-container** – Docker containerization and Compose orchestration
+17. **17-traefik** – Reverse proxy integration with Traefik
+18. **18-rabbitmq** – Async messaging with RabbitMQ
+19. **19-postgres** – Database integration with PostgreSQL and JDBC
+
+**To run a specific sample:**
+```bash
+cd samples/<sample-name>
+mvn clean test  # Run tests
+mvn clean spring-boot:run  # Run the application
+```
+
+**To run all samples:**
+```bash
+for dir in samples/[0-9]*; do
+  [ -f "$dir/pom.xml" ] && mvn -f "$dir/pom.xml" clean test
+done
+```
 
 ## Project Guidelines & Conventions
 
