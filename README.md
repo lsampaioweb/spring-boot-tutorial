@@ -140,7 +140,7 @@ This project follows standardized Spring Boot architecture and code conventions:
 - **Database access:** Spring JDBC / MyBatis (no ORM)
 - **Testing:** Slice tests (`@WebMvcTest`, `@DataJdbcTest`) + integration tests
 
-For detailed conventions, see the instruction files in: `/home/luciano.souza/git/lsampaioweb/datacenter/06-projects/11-ia-instructions/instructions/`
+For detailed conventions, see the instruction files in: `https://github.com/lsampaioweb/ia-instructions`
 
 ## License:
 
