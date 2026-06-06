@@ -11,19 +11,30 @@ This guide will walk you through setting up a Spring Boot application with a `RE
     </dependency>
 
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-hateoas</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- Optional for endpoint monitoring -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
     ```
 
-1. Exclude the Auto Configuration of a Datasource:
+1. Optional: Exclude Datasource Auto Configuration.
 
-    Because we are not using a database, add the following to your `application.yml` file:
+    This sample keeps an explicit datasource exclusion in `application.yml` because it does not use a database:
 
     ```yml
     spring:
