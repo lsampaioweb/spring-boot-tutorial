@@ -1,40 +1,52 @@
+---
 networks:
-  my-app-network:
-    driver: "bridge"
+  spring-boot-container-network:
+    external: true
 
 services:
-  my-app:
-    image: "lsampaioweb/alpine-myapp:1.0"
-    container_name: "my-app"
+  spring-boot-container:
+    image: "docker.io/lsampaioweb/spring-boot-container:1.0"
+    # image: "docker.io/lsampaioweb/spring-boot-container:1.1"
+    # image: "docker.io/lsampaioweb/spring-boot-container:latest"
+    container_name: "spring-boot-container"
     restart: "unless-stopped"
+    # Keep the container filesystem read-only for better runtime security.
+    read_only: true
+    # Drop all Linux capabilities to reduce the attack surface.
+    cap_drop:
+      - "ALL"
+    # Prevent privilege escalation inside the container.
+    security_opt:
+      - "no-new-privileges:true"
+    # Use a small in-memory /tmp with safer mount options.
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=64m"
     ports:
       - "8080:8080"
       # - "9443:9443"
-      # - "8181:8181"
+      # - "8080:80"
+      # - "9443:443"
     volumes:
-      - "./logs:/opt/app/logs"
+      - "./logs/container:/opt/app/logs"
       - "./ssl/:/opt/app/ssl/:ro"
     networks:
-      - "my-app-network"
+      - "spring-boot-container-network"
+    logging:
+      driver: "k8s-file"
     environment:
-      # Testing on 8080
-      - "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-development}"
-
-      # Testing on 9443
-      # - "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-production}"
-
-      # Testing on 8181
-      # - "SERVER_PORT=8181"
+      - "SPRING_PROFILES_ACTIVE=development"
+      # - "SPRING_PROFILES_ACTIVE=production"
+      # - "SERVER_PORT=9443"
+      # - "SSL_CERT_PATH=./ssl/app.cer"
+      # - "SSL_KEY_PATH=./ssl/app.key"
+      - "JAVA_TOOL_OPTIONS=-Xms512m -Xmx1024m"
     healthcheck:
-      # Testing on locahost
-      test: ["CMD-SHELL", "wget -q -O- http://localhost:${SERVER_PORT:-8080}/actuator/health || exit 1"]
-      # test: ["CMD-SHELL", "wget --no-check-certificate -q -O- https://localhost:${SERVER_PORT:-9443}/actuator/health || exit 1"]
-
-      # Testing on 9443
-      # test: ["CMD-SHELL", "wget -q -O- https://my-app-01.lan.homelab:${SERVER_PORT:-9443}/actuator/health || exit 1"]
-
-      # Testing on 8181
-      # test: ["CMD-SHELL", "wget -q -O- http://my-app-01.lan.homelab:${SERVER_PORT:-8181}/actuator/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O- http://localhost:8080/actuator/health/ping || exit 1",
+        ]
+      # test: ["CMD-SHELL", "wget --no-check-certificate -q -O- https://localhost:9443/actuator/health/ping || exit 1"]
       start_period: "2s"
       interval: "10s"
       timeout: "2s"

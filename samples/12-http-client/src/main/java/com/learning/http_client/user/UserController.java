@@ -48,7 +48,7 @@ public class UserController {
   public ResponseEntity<User> create(@RequestBody User user, @NonNull UriComponentsBuilder uriBuilder) {
     User createdUser = userService.create(user);
 
-    URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
+    URI location = getLocation(uriBuilder, "/{id}", createdUser.id());
 
     return ResponseEntity.created(Objects.requireNonNull(location)).body(createdUser);
   }

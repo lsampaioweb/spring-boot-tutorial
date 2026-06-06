@@ -14,36 +14,36 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
 
-  private final UserRepository repository;
+  private final UserService userService;
 
-  public UserController(UserRepository repository) {
-    this.repository = repository;
+  public UserController(UserService userService) {
+    this.userService = userService;
   }
 
   @GetMapping
   public List<Model> getAllUsers() {
-    return repository.findAll();
+    return userService.findAll();
   }
 
   @GetMapping("/{id}")
   public Model getUserById(@PathVariable Long id) {
-    return repository.findById(id);
+    return userService.findById(id);
   }
 
   // Create a single user.
   @PostMapping
   public void createUser(@RequestBody Model model) {
-    repository.save(model);
+    userService.save(model);
   }
 
   // Create multiple users (use a different path).
   @PostMapping("/batch")
   public void createUsers(@RequestBody List<Model> list) {
-    repository.saveAll(list);
+    userService.saveAll(list);
   }
 
   @DeleteMapping("/{id}")
   public void deleteUser(@PathVariable Long id) {
-    repository.deleteById(id);
+    userService.deleteById(id);
   }
 }

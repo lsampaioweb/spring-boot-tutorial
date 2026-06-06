@@ -1,29 +1,30 @@
 package com.learning.exception_handling.core.exception;
 
-import java.util.Locale;
-
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.lang.NonNull;
-
-import com.learning.exception_handling.core.i18n.MessageSourceHolder;
+import org.springframework.http.HttpStatus;
 
 public abstract class CustomException extends RuntimeException {
 
-  protected CustomException(String messageKey, Object[] objects) {
-    super(getMessage(messageKey, objects));
+  private final String messageKey;
+  private final Object[] args;
+  private final HttpStatus status;
+
+  protected CustomException(String messageKey, Object[] args, HttpStatus status) {
+    super(messageKey);
+
+    this.messageKey = messageKey;
+    this.args = args;
+    this.status = status;
   }
 
-  @SuppressWarnings("null")
-  private static @NonNull String getMessage(String messageKey, Object[] objects) {
-    return getMessageSource().getMessage(messageKey, objects, getLocale());
+  public String getMessageKey() {
+    return messageKey;
   }
 
-  private static MessageSource getMessageSource() {
-    return MessageSourceHolder.getMessageSource();
+  public Object[] getArgs() {
+    return args;
   }
 
-  private static Locale getLocale() {
-    return LocaleContextHolder.getLocale();
+  public HttpStatus getStatus() {
+    return status;
   }
 }

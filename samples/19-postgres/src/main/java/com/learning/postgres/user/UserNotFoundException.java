@@ -1,9 +1,22 @@
 package com.learning.postgres.user;
 
-import com.learning.postgres.i18n.MessageSourceHolder;
-
 public class UserNotFoundException extends RuntimeException {
+
+  private static final String MESSAGE_KEY = "error.user.not.found";
+
+  private final Object[] args;
+
   public UserNotFoundException(Long id) {
-    super(MessageSourceHolder.getMessage("error.user.not.found", id));
+    super(MESSAGE_KEY);
+
+    this.args = new Object[] { id };
+  }
+
+  public String getMessageKey() {
+    return MESSAGE_KEY;
+  }
+
+  public Object[] getArgs() {
+    return args;
   }
 }

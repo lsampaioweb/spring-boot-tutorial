@@ -1,0 +1,34 @@
+# Use a Java build image (with JDK and Maven) as the base for this stage.
+FROM docker.io/lsampaioweb/java-build:25-maven-alpine.3.23-2026.05 AS builder
+# FROM docker.io/lsampaioweb/java-build:25-maven-alpine.3.23-latest AS builder
+# FROM docker.io/lsampaioweb/java-build:alpine-latest AS builder
+# FROM docker.io/lsampaioweb/java-build:latest AS builder
+
+# Copy the current directory contents to the working directory in the container.
+COPY . .
+
+# Clean the Maven project.
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn clean
+
+# Package the application into a JAR file.
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn package
+
+# Use a Java web image (with JRE) as the base for the final image.
+FROM docker.io/lsampaioweb/java-web:25-alpine.3.23-2026.05 AS runtime
+# FROM docker.io/lsampaioweb/java-web:25-alpine.3.23-latest AS runtime
+# FROM docker.io/lsampaioweb/java-web:alpine-latest AS runtime
+# FROM docker.io/lsampaioweb/java-web:latest AS runtime
+
+# Copy the application JAR file from the 'builder' stage to the runtime image.
+COPY --from=builder --chown=${APP_USER_NAME}:${APP_GROUP_NAME} ${APP_HOME}/target/*.jar app.jar
+
+# JVM options for the Spring Boot application (can be overridden at runtime).
+ENV JAVA_TOOL_OPTIONS=""
+
+# Expose ports for HTTP and HTTPS traffic (optional, for web apps only).
+EXPOSE 8080 9443
+
+# Command to run the Spring Boot application with JVM options.
+ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -20,46 +20,48 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
   private final UserService userService;
-  private final PagedResourcesAssembler<User> pagedResourcesAssembler;
+  private final PagedResourcesAssembler<UserResponse> pagedResourcesAssembler;
 
-  public UserController(UserService userService, PagedResourcesAssembler<User> pagedResourcesAssembler) {
+  public UserController(UserService userService, PagedResourcesAssembler<UserResponse> pagedResourcesAssembler) {
     this.userService = userService;
     this.pagedResourcesAssembler = pagedResourcesAssembler;
   }
 
   @GetMapping
-  public ResponseEntity<PagedModel<EntityModel<User>>> findAll(Pageable pageable) {
-    Page<User> users = userService.findAll(pageable);
-    PagedModel<EntityModel<User>> pagedModel = pagedResourcesAssembler.toModel(Objects.requireNonNull(users));
+  public ResponseEntity<PagedModel<EntityModel<UserResponse>>> findAll(Pageable pageable) {
+    Page<UserResponse> users = userService.findAll(pageable);
+    PagedModel<EntityModel<UserResponse>> pagedModel = pagedResourcesAssembler.toModel(Objects.requireNonNull(users));
 
     return ResponseEntity.ok(pagedModel);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> findById(@PathVariable Long id) {
-    Optional<User> user = userService.findById(id);
+  public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+    Optional<UserResponse> user = userService.findById(id);
 
     return user.map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
-    User createdUser = userService.create(user);
+  public ResponseEntity<UserResponse> create(@Valid @RequestBody UserRequest request, UriComponentsBuilder uriBuilder) {
+    UserResponse createdUser = userService.create(request);
 
-    URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
+    URI location = getLocation(uriBuilder, "/{id}", createdUser.id());
 
     return ResponseEntity.created(Objects.requireNonNull(location)).body(createdUser);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
-    Optional<User> updatedUser = userService.update(id, user);
+  public ResponseEntity<UserResponse> update(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+    Optional<UserResponse> updatedUser = userService.update(id, request);
 
     return updatedUser.map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
@@ -81,5 +83,4 @@ public class UserController {
         .buildAndExpand(Objects.requireNonNull(uriVariableValues))
         .toUri();
   }
-
 }

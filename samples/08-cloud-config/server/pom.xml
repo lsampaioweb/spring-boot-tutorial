@@ -11,7 +11,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>com.learning.cloud.config</groupId>
+  <groupId>io.github.lsampaioweb</groupId>
   <artifactId>server</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>server</name>
@@ -85,6 +85,9 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <workingDirectory>${project.basedir}</workingDirectory>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

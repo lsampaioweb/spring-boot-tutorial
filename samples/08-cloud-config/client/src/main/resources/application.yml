@@ -9,6 +9,8 @@
 spring:
   application:
     name: "cloud-config-client"
+  messages:
+    basename: "i18n/messages"
   profiles:
     # active: "default"
     active: "development"

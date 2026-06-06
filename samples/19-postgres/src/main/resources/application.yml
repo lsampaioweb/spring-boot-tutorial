@@ -26,3 +26,7 @@ spring:
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+server:
+  error:
+    include-stacktrace: "never"

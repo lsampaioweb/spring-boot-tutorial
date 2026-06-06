@@ -2,6 +2,9 @@ package com.learning.postgres.user;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,32 +16,44 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Repository
-public class UserRepository {
+class UserRepository {
 
   private final JdbcClient jdbcClient;
+  private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+  private final String findAllSql;
+  private final String findByIdSql;
+  private final String insertSql;
+  private final String deleteByIdSql;
 
-  public UserRepository(JdbcClient jdbcClient) {
+  UserRepository(
+      JdbcClient jdbcClient,
+      NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+      @Value("${sql.users.find-all}") String findAllSql,
+      @Value("${sql.users.find-by-id}") String findByIdSql,
+      @Value("${sql.users.insert}") String insertSql,
+      @Value("${sql.users.delete-by-id}") String deleteByIdSql) {
     this.jdbcClient = jdbcClient;
+    this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    this.findAllSql = findAllSql;
+    this.findByIdSql = findByIdSql;
+    this.insertSql = insertSql;
+    this.deleteByIdSql = deleteByIdSql;
   }
 
-  public List<Model> findAll() {
+  List<Model> findAll() {
     log.info(MessageSourceHolder.getMessage("log.user.fetching.all"));
 
-    String sql = "SELECT id, name, email FROM users";
-
     return jdbcClient
-        .sql(sql)
+        .sql(findAllSql)
         .query(Model.class)
         .list();
   }
 
-  public Model findById(Long id) {
+  Model findById(Long id) {
     log.info(MessageSourceHolder.getMessage("log.user.fetching.id", id));
 
-    String sql = "SELECT id, name, email FROM users WHERE id = :id";
-
     return jdbcClient
-        .sql(sql)
+        .sql(findByIdSql)
         .param("id", id)
         .query(Model.class)
         .optional()
@@ -49,33 +64,26 @@ public class UserRepository {
         });
   }
 
-  public void save(Model model) {
+  void save(Model model) {
+    log.info(MessageSourceHolder.getMessage("log.user.inserting"));
+
     try {
-
-      String sql = "INSERT INTO users (name, email) VALUES (:name, :email)";
-
       jdbcClient
-          .sql(sql)
+          .sql(insertSql)
           .param("name", model.getName())
           .param("email", model.getEmail())
           .update();
     } catch (Exception e) {
-      throw new DatabaseException("Error inserting user", e);
+      throw new DatabaseException("error.user.insert", e);
     }
   }
 
   @Transactional
-  public void saveAll(List<Model> list) {
-    try {
-      log.info(MessageSourceHolder.getMessage("log.user.inserting.batch", list.size()));
+  void saveAll(List<Model> list) {
+    log.info(MessageSourceHolder.getMessage("log.user.inserting.batch", list.size()));
 
-      String sql = "INSERT INTO users (name, email) VALUES (:name, :email)";
-      for (Model item : list) {
-        jdbcClient.sql(sql)
-            .param("name", item.getName())
-            .param("email", item.getEmail())
-            .update();
-      }
+    try {
+      namedParameterJdbcTemplate.batchUpdate(insertSql, SqlParameterSourceUtils.createBatch(list));
     } catch (Exception e) {
       log.error(MessageSourceHolder.getMessage("error.user.insert.batch"), e);
 
@@ -83,11 +91,11 @@ public class UserRepository {
     }
   }
 
-  public void deleteById(Long id) {
-    String sql = "DELETE FROM users WHERE id = :id";
+  void deleteById(Long id) {
+    log.info(MessageSourceHolder.getMessage("log.user.deleting.id", id));
 
     int rowsAffected = jdbcClient
-        .sql(sql)
+        .sql(deleteByIdSql)
         .param("id", id)
         .update();
 

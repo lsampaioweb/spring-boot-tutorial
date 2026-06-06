@@ -1,9 +1,22 @@
 package com.learning.postgres.db;
 
-import com.learning.postgres.i18n.MessageSourceHolder;
-
 public class DatabaseException extends RuntimeException {
+
+  private final String messageKey;
+  private final Object[] args;
+
   public DatabaseException(String messageKey, Throwable cause, Object... args) {
-    super(MessageSourceHolder.getMessage(messageKey, args), cause);
+    super(messageKey, cause);
+
+    this.messageKey = messageKey;
+    this.args = args;
+  }
+
+  public String getMessageKey() {
+    return messageKey;
+  }
+
+  public Object[] getArgs() {
+    return args;
   }
 }

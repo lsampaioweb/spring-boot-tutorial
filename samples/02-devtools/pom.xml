@@ -11,7 +11,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>com.learning</groupId>
+  <groupId>io.github.lsampaioweb</groupId>
   <artifactId>devtools</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>devtools</name>
@@ -52,6 +52,9 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <workingDirectory>${project.basedir}</workingDirectory>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>

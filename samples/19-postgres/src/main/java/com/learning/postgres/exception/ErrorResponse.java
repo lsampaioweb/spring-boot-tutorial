@@ -1,4 +1,4 @@
-package com.learning.exception_handling.core.exception;
+package com.learning.postgres.exception;
 
 import java.time.LocalDateTime;
 
