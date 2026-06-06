@@ -4,13 +4,34 @@ Centralizing application configuration using Spring Boot Config Server simplifie
 
     1. Add dependencies.
 
-        Add the following dependencies to your `pom.xml` file:
+        Manage Spring Cloud dependencies with BOM and add the Config Server starter.
+
+        In your `pom.xml`, declare the Spring Cloud BOM in `dependencyManagement`:
+
+        ```xml
+        <properties>
+          <spring-cloud.version>2025.0.1</spring-cloud.version>
+        </properties>
+
+        <dependencyManagement>
+          <dependencies>
+            <dependency>
+              <groupId>org.springframework.cloud</groupId>
+              <artifactId>spring-cloud-dependencies</artifactId>
+              <version>${spring-cloud.version}</version>
+              <type>pom</type>
+              <scope>import</scope>
+            </dependency>
+          </dependencies>
+        </dependencyManagement>
+        ```
+
+        Then add the following dependencies:
 
         ```xml
         <dependency>
           <groupId>org.springframework.cloud</groupId>
           <artifactId>spring-cloud-config-server</artifactId>
-          <version>4.1.2</version>
         </dependency>
 
         <dependency>
@@ -26,6 +47,12 @@ Centralizing application configuration using Spring Boot Config Server simplifie
 
     1. Configure `application.yml`.
 
+      For portability, set `CONFIG_REPO_PATH` in your environment:
+
+      ```bash
+      export CONFIG_REPO_PATH="$PWD/samples/08-cloud-config/git-config"
+      ```
+
         ```yml
         spring:
           application:
@@ -35,7 +62,7 @@ Centralizing application configuration using Spring Boot Config Server simplifie
               server:
                 git:
                   # Local repository.
-                  uri: "file://${user.home}/git/datacenter/spring-boot/tutorial/samples/08-cloud-config/git-config"
+                  uri: "file://${CONFIG_REPO_PATH:${user.home}/path/to/spring-boot-tutorial/samples/08-cloud-config/git-config}"
                   cloneOnStart: true
                   # The name of the application and active profile.
                   search-paths: "{application}/{profile}"
@@ -54,11 +81,11 @@ Centralizing application configuration using Spring Boot Config Server simplifie
                   #     search-paths: "{application}/{profile}"
                   #     uri: "..."
 
-        # Optional: Security configuration.
-        security:
-          user:
-            name: "${USERNAME}"
-            password: "${PASSWORD}"
+          # Optional: Security configuration.
+          security:
+            user:
+              name: "${USERNAME}"
+              password: "${PASSWORD}"
         ```
 
     1. Enable Config Server.
@@ -105,13 +132,12 @@ Centralizing application configuration using Spring Boot Config Server simplifie
 
     1. Add dependencies.
 
-        Add the following dependency to your `pom.xml` file:
+        Add the following dependency to your `pom.xml` file (version comes from the Spring Cloud BOM):
 
         ```xml
           <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
-            <version>4.1.2</version>
           </dependency>
         ```
 
