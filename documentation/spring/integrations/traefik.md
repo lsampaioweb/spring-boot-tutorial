@@ -4,7 +4,7 @@ This sample deploys a Spring Boot app behind `Traefik`, a `reverse proxy`, using
 
 ## Prerequisites
 - Docker and Docker Compose installed.
-- Java 21 and Maven for building the app.
+- Java 25 and Maven for building the app.
 - An existing Traefik instance on the `reverse-proxy` network (see step 1 if not set up).
 
 ## Steps

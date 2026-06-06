@@ -4,9 +4,9 @@ Virtual Threads are a lightweight concurrency mechanism introduced in Java as pa
 
 ### Prerequisites
 
-1. Java 21:
+1. Java 25:
 
-    Ensure your project is using `JDK 21` or later, as Virtual Threads are fully supported in this version.
+  Ensure your project is using `JDK 25` or later. Virtual Threads are fully supported on modern JDKs, and this tutorial baseline uses Java 25.
 
 ### Steps to Implement Virtual Threads in Spring Boot
 

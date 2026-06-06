@@ -4,7 +4,7 @@ This tutorial demonstrates how to integrate **Spring Boot** with **PostgreSQL** 
 
 ## 1. Prerequisites
 Before running this project, ensure you have:
-- **Java 21** installed.
+- **Java 25** installed.
 - **Maven** installed.
 - **Docker** installed (for PostgreSQL).
 - **A PostgreSQL instance running in Docker**.
