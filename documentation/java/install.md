@@ -42,12 +42,22 @@ This guide explains how to install Java JDK or JRE on Ubuntu for desktop or serv
     sudo update-alternatives --config java
     ```
 
+1. Edit the `~/.bashrc` file to set `JAVA_HOME`.
+    ```bash
+    nano ~/.bashrc
+    ```
+
 1. Add the `JAVA_HOME` export to the profile file.
     ```bash
     export JAVA_HOME="$(readlink -f `which java` | sed 's:/bin/java::')"
     ```
 
-1. Reload the profile file for the current session. Log out and log in to apply globally.
+1. Reload the `~/.bashrc` file for the current session.
+    ```bash
+    source ~/.bashrc
+    ```
+
+1. Verify the `JAVA_HOME` environment variable.
     ```bash
     echo $JAVA_HOME
     ```

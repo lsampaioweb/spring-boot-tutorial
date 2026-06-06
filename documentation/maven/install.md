@@ -12,14 +12,9 @@ This guide explains how to install Maven on Ubuntu for desktop or server environ
     sudo apt install -y maven
     ```
 
-1. Verify the Maven installation.
+1. Edit the `~/.bashrc` file to set `MAVEN_HOME`.
     ```bash
-    mvn --version
-    ```
-
-1. Edit the global profile file to set `MAVEN_HOME`.
-    ```bash
-    sudo nano /etc/profile
+    nano ~/.bashrc
     ```
 
 1. Add the `MAVEN_HOME` export to the profile file.
@@ -27,9 +22,19 @@ This guide explains how to install Maven on Ubuntu for desktop or server environ
     export MAVEN_HOME="$(readlink -f `which mvn` | sed 's:/bin/mvn::')"
     ```
 
-1. Reload the profile file for the current session. Log out and log in to apply globally.
+1. Reload the `~/.bashrc` file for the current session.
     ```bash
-    source /etc/profile
+    source ~/.bashrc
+    ```
+
+1. Verify the `MAVEN_HOME` environment variable.
+    ```bash
+    echo $MAVEN_HOME
+    ```
+
+1. Verify the Maven installation.
+    ```bash
+    mvn --version
     ```
 
 [Go Back](../../README.md)
