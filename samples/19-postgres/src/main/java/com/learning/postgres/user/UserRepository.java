@@ -20,6 +20,7 @@ class UserRepository {
 
   private final JdbcClient jdbcClient;
   private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+  private final MessageSourceHolder messageSourceHolder;
   private final String findAllSql;
   private final String findByIdSql;
   private final String insertSql;
@@ -28,12 +29,14 @@ class UserRepository {
   UserRepository(
       JdbcClient jdbcClient,
       NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+      MessageSourceHolder messageSourceHolder,
       @Value("${sql.users.find-all}") String findAllSql,
       @Value("${sql.users.find-by-id}") String findByIdSql,
       @Value("${sql.users.insert}") String insertSql,
       @Value("${sql.users.delete-by-id}") String deleteByIdSql) {
     this.jdbcClient = jdbcClient;
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    this.messageSourceHolder = messageSourceHolder;
     this.findAllSql = findAllSql;
     this.findByIdSql = findByIdSql;
     this.insertSql = insertSql;
@@ -41,7 +44,7 @@ class UserRepository {
   }
 
   List<Model> findAll() {
-    log.info(MessageSourceHolder.getMessage("log.user.fetching.all"));
+    log.info(messageSourceHolder.getMessage("log.user.fetching.all"));
 
     return jdbcClient
         .sql(findAllSql)
@@ -50,7 +53,7 @@ class UserRepository {
   }
 
   Model findById(Long id) {
-    log.info(MessageSourceHolder.getMessage("log.user.fetching.id", id));
+    log.info(messageSourceHolder.getMessage("log.user.fetching.id", id));
 
     return jdbcClient
         .sql(findByIdSql)
@@ -58,14 +61,14 @@ class UserRepository {
         .query(Model.class)
         .optional()
         .orElseThrow(() -> {
-          log.warn(MessageSourceHolder.getMessage("error.user.not.found", id));
+          log.warn(messageSourceHolder.getMessage("error.user.not.found", id));
 
           return new UserNotFoundException(id);
         });
   }
 
   void save(Model model) {
-    log.info(MessageSourceHolder.getMessage("log.user.inserting"));
+    log.info(messageSourceHolder.getMessage("log.user.inserting"));
 
     try {
       jdbcClient
@@ -80,19 +83,19 @@ class UserRepository {
 
   @Transactional
   void saveAll(List<Model> list) {
-    log.info(MessageSourceHolder.getMessage("log.user.inserting.batch", list.size()));
+    log.info(messageSourceHolder.getMessage("log.user.inserting.batch", list.size()));
 
     try {
       namedParameterJdbcTemplate.batchUpdate(insertSql, SqlParameterSourceUtils.createBatch(list));
     } catch (Exception e) {
-      log.error(MessageSourceHolder.getMessage("error.user.insert.batch"), e);
+      log.error(messageSourceHolder.getMessage("error.user.insert.batch"), e);
 
       throw new DatabaseException("error.user.insert.batch", e);
     }
   }
 
   void deleteById(Long id) {
-    log.info(MessageSourceHolder.getMessage("log.user.deleting.id", id));
+    log.info(messageSourceHolder.getMessage("log.user.deleting.id", id));
 
     int rowsAffected = jdbcClient
         .sql(deleteByIdSql)

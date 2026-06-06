@@ -7,14 +7,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MessageSourceHolder {
-  private static MessageSource messageSource;
+  private final MessageSource messageSource;
 
-  public MessageSourceHolder(MessageSource messageSource) {
-    MessageSourceHolder.messageSource = messageSource;
+  MessageSourceHolder(MessageSource messageSource) {
+    this.messageSource = messageSource;
   }
 
-  @SuppressWarnings("null")
-  public static @NonNull String getMessage(String key, Object... args) {
+  public @NonNull String getMessage(String key, Object... args) {
     return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
   }
 }

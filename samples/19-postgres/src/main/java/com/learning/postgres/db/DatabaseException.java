@@ -3,7 +3,7 @@ package com.learning.postgres.db;
 public class DatabaseException extends RuntimeException {
 
   private final String messageKey;
-  private final Object[] args;
+  private final transient Object[] args;
 
   public DatabaseException(String messageKey, Throwable cause, Object... args) {
     super(messageKey, cause);
@@ -17,6 +17,6 @@ public class DatabaseException extends RuntimeException {
   }
 
   public Object[] getArgs() {
-    return args;
+    return args == null ? null : args.clone();
   }
 }

@@ -49,7 +49,6 @@ public class UserController {
     }
   }
 
-  @SuppressWarnings("null")
   private @NonNull String getMessage(String messageKey, Object... args) {
     return messageSource.getMessage(messageKey, args, LocaleContextHolder.getLocale());
   }
