@@ -1,12 +1,12 @@
 package com.learning.restapi.user;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -27,17 +27,26 @@ import jakarta.validation.Valid;
 public class UserController {
 
   private final UserService userService;
-  private final PagedResourcesAssembler<UserResponse> pagedResourcesAssembler;
 
-  public UserController(UserService userService, PagedResourcesAssembler<UserResponse> pagedResourcesAssembler) {
+  public UserController(UserService userService) {
     this.userService = userService;
-    this.pagedResourcesAssembler = pagedResourcesAssembler;
   }
 
   @GetMapping
   public ResponseEntity<PagedModel<EntityModel<UserResponse>>> findAll(Pageable pageable) {
     Page<UserResponse> users = userService.findAll(pageable);
-    PagedModel<EntityModel<UserResponse>> pagedModel = pagedResourcesAssembler.toModel(Objects.requireNonNull(users));
+    List<EntityModel<UserResponse>> content = users.getContent()
+        .stream()
+        .map(EntityModel::of)
+        .toList();
+
+    PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(
+        users.getSize(),
+        users.getNumber(),
+        users.getTotalElements(),
+        users.getTotalPages());
+
+    PagedModel<EntityModel<UserResponse>> pagedModel = PagedModel.of(content, metadata);
 
     return ResponseEntity.ok(pagedModel);
   }
