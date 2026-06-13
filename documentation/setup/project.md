@@ -55,7 +55,7 @@ This guide explains how to create a Spring Boot project using `VS Code` or CLI o
 ### Using CLI
 1. Generate the project using Spring Initializr CLI.
     ```bash
-    curl https://start.spring.io/starter.zip -d dependencies=web -d type=maven-project -d bootVersion=3.5.14 -d javaVersion=25 -d groupId=com.learning -d artifactId=pom -o pom.zip
+    curl https://start.spring.io/starter.zip -d dependencies=web -d type=maven-project -d bootVersion=4.1.0 -d javaVersion=25 -d groupId=com.learning -d artifactId=pom -o pom.zip
     ```
 
 1. Extract and navigate to the project directory.

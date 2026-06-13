@@ -2,7 +2,7 @@ Use the current tutorial baseline values when generating the template:
 
 curl -o project.zip https://start.spring.io/starter.zip \
     -d dependencies=devtools,lombok,actuator,web,jdbc \
-    -d type=maven-project -d language=java -d bootVersion=3.5.14 \
+    -d type=maven-project -d language=java -d bootVersion=4.1.0 \
     -d name=spring-boot-base -d groupId=com.learning -d artifactId=spring-boot-base \
     unzip project.zip -d spring-boot-base
 
