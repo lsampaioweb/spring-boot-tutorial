@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en_US">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="#{websocket.page.title}">WebSocket Client</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+  <main class="container" th:attr="
+    data-default-server-url=${serverWsUrl},
+    data-status-connected=#{websocket.status.connected},
+    data-status-disconnected=#{websocket.status.disconnected},
+    data-runtime-socket-opened=#{websocket.runtime.socketOpened},
+    data-runtime-socket-closed=#{websocket.runtime.socketClosed},
+    data-runtime-connection-failed=#{websocket.runtime.connectionFailed},
+    data-runtime-sent-at-na=#{websocket.runtime.sentAtNa}">
+    <h1 th:text="#{websocket.page.title}">WebSocket Client</h1>
+    <p th:text="#{websocket.page.subtitle}">Persistent connection demo</p>
+
+    <section class="panel">
+      <label for="serverUrl" th:text="#{websocket.form.serverUrl}">WebSocket server URL</label>
+      <input id="serverUrl" type="text" />
+
+      <label for="username" th:text="#{websocket.form.user}">User</label>
+      <input id="username" type="text" value="student" />
+
+      <div class="actions">
+        <button id="connectButton" th:text="#{websocket.form.connect}">Connect</button>
+        <button id="disconnectButton" th:text="#{websocket.form.disconnect}" disabled>Disconnect</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <label for="message" th:text="#{websocket.form.message}">Message</label>
+      <input id="message" type="text" th:placeholder="#{websocket.form.messagePlaceholder}" placeholder="Type a message" />
+      <button id="sendButton" th:text="#{websocket.form.send}" disabled>Send</button>
+    </section>
+
+    <section class="panel">
+      <p id="status" th:text="#{websocket.status.disconnected}">Disconnected</p>
+      <ul id="chatMessages"></ul>
+    </section>
+  </main>
+
+  <script th:src="@{/js/vendor/sockjs.min.js}"></script>
+  <script th:src="@{/js/vendor/stomp.min.js}"></script>
+  <script th:src="@{/js/chat-client.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: "websocket-client"
+
+  profiles:
+    active:
+      - "development"
+      # - "production"
+
+  messages:
+    basename: "i18n/messages"
+
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8091
+
+logging:
+  config: "classpath:log/logback-spring.xml"
