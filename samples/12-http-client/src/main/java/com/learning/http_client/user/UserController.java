@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.lang.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -45,7 +44,7 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@RequestBody User user, @NonNull UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
     User createdUser = userService.create(user);
 
     URI location = getLocation(uriBuilder, "/{id}", createdUser.id());
@@ -72,8 +71,8 @@ public class UserController {
     }
   }
 
-  private @NonNull URI getLocation(@NonNull UriComponentsBuilder uriBuilder, @NonNull String path,
-      @NonNull Object... uriVariableValues) {
+  private URI getLocation(UriComponentsBuilder uriBuilder, String path,
+      Object... uriVariableValues) {
     return uriBuilder.path(Objects.requireNonNull(path))
         .buildAndExpand(Objects.requireNonNull(uriVariableValues))
         .toUri();

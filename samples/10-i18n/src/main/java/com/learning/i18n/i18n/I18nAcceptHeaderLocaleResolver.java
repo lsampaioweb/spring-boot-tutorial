@@ -6,8 +6,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +18,7 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
   private static final Locale LOCALE_PT_BR = new Locale.Builder().setLanguage("pt").setRegion("BR").build();
 
   @Override
-  public @NonNull Locale resolveLocale(@NonNull HttpServletRequest request) {
+  public Locale resolveLocale(HttpServletRequest request) {
     String languageParam = request.getParameter(LANG);
 
     if (languageParam != null && !languageParam.isEmpty()) {
@@ -59,8 +57,8 @@ public class I18nAcceptHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
   }
 
   @Override
-  public void setLocale(@NonNull HttpServletRequest request, @Nullable HttpServletResponse response,
-      @Nullable Locale locale) {
+  public void setLocale(HttpServletRequest request, HttpServletResponse response,
+      Locale locale) {
     setLocaleInSession(request, locale);
 
     super.setLocale(request, response, locale);
