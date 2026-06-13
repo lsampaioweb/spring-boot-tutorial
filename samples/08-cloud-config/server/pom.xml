@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.14</version>
+    <version>4.1.0</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
@@ -19,13 +19,8 @@
 
   <properties>
     <java.version>25</java.version>
-    <spring-cloud.version>2025.0.1</spring-cloud.version>
+    <spring-cloud.version>2025.1.2</spring-cloud.version>
   </properties>
-
-  <scm>
-    <developerConnection>scm:git:https://github.com/lsampaioweb/spring-boot-tutorial.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
 
   <dependencyManagement>
     <dependencies>
@@ -100,10 +95,6 @@
             </path>
           </annotationProcessorPaths>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
       </plugin>
     </plugins>
   </build>

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.14</version>
+    <version>4.1.0</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
@@ -55,10 +55,6 @@
         <configuration>
           <workingDirectory>${project.basedir}</workingDirectory>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
       </plugin>
     </plugins>
   </build>
