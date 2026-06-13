@@ -3,7 +3,7 @@
 Documentation and working samples for building Java libraries and Spring Boot projects following modern architecture and best practices.
 
 **Project Specifications:**
-- **Spring Boot:** 3.5.14
+- **Spring Boot:** 4.1.0
 - **Java:** 25
 - **Maven:** 3.9+
 - **Status:** All 19 samples compile and pass tests ✓
