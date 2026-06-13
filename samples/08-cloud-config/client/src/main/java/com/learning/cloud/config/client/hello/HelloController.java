@@ -22,8 +22,8 @@ public class HelloController {
   private final MessageSource messageSource;
 
   public HelloController(
-      @Value("${user.role}") String role,
-      @Value("${server.port}") int serverPort,
+      @Value("${user.role:Default}") String role,
+      @Value("${server.port:8080}") int serverPort,
       MessageSource messageSource) {
     this.role = role;
     this.serverPort = serverPort;
