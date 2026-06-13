@@ -1,0 +1,36 @@
+package com.learning.websocket.server.chat;
+
+import java.time.Instant;
+
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
+
+import com.learning.websocket.server.i18n.LogMessages;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Controller
+@Slf4j
+public class ChatSocketEndpoint {
+
+  private static final String LOG_CHAT_MESSAGE_PUBLISHED = "log.websocket.chat.message.published";
+
+  private final LogMessages logMessages;
+
+  public ChatSocketEndpoint(LogMessages logMessages) {
+    this.logMessages = logMessages;
+  }
+
+  @MessageMapping("/chat.send")
+  @SendTo("/topic/messages")
+  public ChatMessage publish(@Payload ChatMessage message) {
+    if (log.isDebugEnabled()) {
+      log.debug(logMessages.get(LOG_CHAT_MESSAGE_PUBLISHED, message.sender()));
+    }
+
+    return new ChatMessage(message.sender(), message.content(), Instant.now());
+  }
+
+}

@@ -1,0 +1,17 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "always"
+
+app:
+  websocket:
+    allowed-origins:
+      - "*"
+
+server:
+  error:
+    include-stacktrace: "always"

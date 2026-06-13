@@ -1,0 +1,17 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "never"
+
+app:
+  websocket:
+    allowed-origins:
+      - "${WEBSOCKET_ALLOWED_ORIGIN:https://client.example.com}"
+
+server:
+  error:
+    include-stacktrace: "never"
