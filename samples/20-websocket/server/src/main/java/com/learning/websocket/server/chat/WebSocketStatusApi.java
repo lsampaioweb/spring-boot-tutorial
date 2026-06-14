@@ -25,9 +25,7 @@ public class WebSocketStatusApi {
 
   @GetMapping("/connections")
   public WebSocketConnectionStatusResponse openConnections() {
-    if (log.isDebugEnabled()) {
-      log.debug(logMessages.get(LOG_WEBSOCKET_STATUS_REQUESTED, connectionTracker.getOpenConnections()));
-    }
+    log.debug(logMessages.get(LOG_WEBSOCKET_STATUS_REQUESTED, connectionTracker.getOpenConnections()));
 
     return new WebSocketConnectionStatusResponse(connectionTracker.getOpenConnections());
   }

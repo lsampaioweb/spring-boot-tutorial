@@ -26,9 +26,7 @@ public class ChatSocketEndpoint {
   @MessageMapping("/chat.send")
   @SendTo("/topic/messages")
   public ChatMessage publish(@Payload ChatMessage message) {
-    if (log.isDebugEnabled()) {
-      log.debug(logMessages.get(LOG_CHAT_MESSAGE_PUBLISHED, message.sender()));
-    }
+    log.debug(logMessages.get(LOG_CHAT_MESSAGE_PUBLISHED, message.sender()));
 
     return new ChatMessage(message.sender(), message.content(), Instant.now());
   }
