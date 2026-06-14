@@ -9,9 +9,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("")
 public class WebSocketClientPageRoutes {
 
+  private static final String MODEL_SERVER_WS_URL = "serverWsUrl";
+
+  private final WebSocketClientConfigurationProperties webSocketClientConfigurationProperties;
+
+  public WebSocketClientPageRoutes(WebSocketClientConfigurationProperties webSocketClientConfigurationProperties) {
+    this.webSocketClientConfigurationProperties = webSocketClientConfigurationProperties;
+  }
+
   @GetMapping("/")
   public String index(Model model) {
-    model.addAttribute("serverWsUrl", "http://localhost:8090/ws");
+    model.addAttribute(MODEL_SERVER_WS_URL, webSocketClientConfigurationProperties.serverWsUrl());
 
     return "index";
   }

@@ -4,8 +4,8 @@ spring:
 
   profiles:
     active:
-      - "development"
-      # - "production"
+      # - "development"
+      - "production"
 
   messages:
     basename: "i18n/messages"
@@ -19,3 +19,7 @@ server:
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+app:
+  websocket-client:
+    server-ws-url: "http://localhost:8090/ws"
