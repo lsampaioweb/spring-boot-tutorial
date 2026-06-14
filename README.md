@@ -35,6 +35,16 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 1. [Create a Spring Boot Project](documentation/setup/project.md):
     - Guide to set up a Spring Boot project using VS Code or CLI.
 
+### Infrastructure Services:
+Some samples depend on external services (RabbitMQ, PostgreSQL, Redis, Vault). Start the required service before running the sample:
+
+Available services: `postgres`, `rabbitmq`, `redis`, `vault`.
+
+```bash
+cd samples/infrastructure/<service>
+docker-compose up -d
+```
+
 ### Spring Boot Basics:
 1. [Maven Commands](documentation/maven/pom.md):
     - Common Maven commands and usage.
