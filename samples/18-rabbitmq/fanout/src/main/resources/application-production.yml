@@ -1,0 +1,18 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "never"
+
+server:
+  error:
+    include-stacktrace: "never"
+
+app:
+  rabbitmq:
+    exchange: "${RABBITMQ_EXCHANGE:orders.fanout.exchange}"
+    queue-one: "${RABBITMQ_QUEUE_ONE:orders.fanout.queue.one}"
+    queue-two: "${RABBITMQ_QUEUE_TWO:orders.fanout.queue.two}"

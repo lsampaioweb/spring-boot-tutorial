@@ -1,0 +1,19 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "always"
+
+server:
+  error:
+    include-stacktrace: "always"
+  port: 8080
+
+app:
+  rabbitmq:
+    exchange: "dev.orders.direct.exchange"
+    queue: "dev.orders.direct.queue"
+    routing-key: "dev.order.created"

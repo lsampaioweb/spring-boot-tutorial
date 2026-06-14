@@ -1,0 +1,20 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "never"
+
+server:
+  error:
+    include-stacktrace: "never"
+
+app:
+  rabbitmq:
+    exchange: "${RABBITMQ_EXCHANGE:orders.topic.exchange}"
+    queue-one: "${RABBITMQ_QUEUE_ONE:orders.topic.queue.orders}"
+    queue-two: "${RABBITMQ_QUEUE_TWO:orders.topic.queue.audit}"
+    routing-key-one: "${RABBITMQ_ROUTING_KEY_ONE:order.*}"
+    routing-key-two: "${RABBITMQ_ROUTING_KEY_TWO:audit.#}"

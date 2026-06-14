@@ -1,0 +1,21 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "always"
+
+server:
+  error:
+    include-stacktrace: "always"
+  port: 8083
+
+app:
+  rabbitmq:
+    exchange: "dev.orders.topic.exchange"
+    queue-one: "dev.orders.topic.queue.orders"
+    queue-two: "dev.orders.topic.queue.audit"
+    routing-key-one: "dev.order.*"
+    routing-key-two: "dev.audit.#"

@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: "rabbitmq-headers"
+
+  profiles:
+    active:
+      - "development"
+      # - "production"
+
+  messages:
+    basename: "i18n/messages"
+
+  threads:
+    virtual:
+      enabled: true
+
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "admin"
+    password: "${RABBITMQ_ROOT_PASSWORD}"
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+
+app:
+  rabbitmq:
+    exchange: "orders.headers.exchange"
+    queue-one: "orders.headers.queue.created"
+    queue-two: "orders.headers.queue.audit"
+    header-name: "eventType"
+    header-value-one: "order.created"
+    header-value-two: "order.audit"

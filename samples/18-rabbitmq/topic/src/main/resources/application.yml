@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: "rabbitmq-topic"
+
+  profiles:
+    active:
+      - "development"
+      # - "production"
+
+  messages:
+    basename: "i18n/messages"
+
+  threads:
+    virtual:
+      enabled: true
+
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "admin"
+    password: "${RABBITMQ_ROOT_PASSWORD}"
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+
+app:
+  rabbitmq:
+    exchange: "orders.topic.exchange"
+    queue-one: "orders.topic.queue.orders"
+    queue-two: "orders.topic.queue.audit"
+    routing-key-one: "order.*"
+    routing-key-two: "audit.#"
