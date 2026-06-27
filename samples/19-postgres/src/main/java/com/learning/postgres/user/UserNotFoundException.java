@@ -4,7 +4,7 @@ public class UserNotFoundException extends RuntimeException {
 
   private static final String MESSAGE_KEY = "error.user.not.found";
 
-  private final Object[] args;
+  private final transient Object[] args;
 
   public UserNotFoundException(Long id) {
     super(MESSAGE_KEY);

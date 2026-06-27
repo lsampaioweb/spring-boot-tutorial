@@ -3,6 +3,7 @@ package com.learning.postgres.exception;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -65,7 +66,7 @@ public class GlobalExceptionHandler {
   private ErrorResponse newErrorResponse(String message, Exception ex, HttpServletRequest request,
       HttpStatus status) {
     return new ErrorResponse(
-        LocalDateTime.now(),
+        LocalDateTime.now(ZoneOffset.UTC),
         status.value(),
         status.getReasonPhrase(),
         message,
