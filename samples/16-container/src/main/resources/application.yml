@@ -1,6 +1,8 @@
 spring:
   application:
     name: "container"
+  messages:
+    basename: "i18n/messages"
   threads:
     virtual:
       enabled: true
