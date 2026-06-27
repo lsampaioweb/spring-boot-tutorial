@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: "vault"
+
+  profiles:
+    active:
+      # - "development"
+      - "production"
+
+  messages:
+    basename: "i18n/messages"
+
+  threads:
+    virtual:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      show-details: "when-authorized"
+      probes:
+        enabled: true
+
+server:
+  port: 8091
+  error:
+    include-stacktrace: "never"
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+
+app:
+  logging:
+    path: "logs"
+
+  vault:
+    uri: "${VAULT_URI:http://localhost:8200}"
+    token: "${VAULT_TOKEN}"
+    mount-path: "${VAULT_MOUNT_PATH:secret}"
+    read-path-template: "${VAULT_READ_PATH_TEMPLATE:/v1/%s/data/%s}"
+    secrets:
+      - path: "spring-boot-tutorial"
+        key: "api-secret"
+      - path: "spring-boot-tutorial"
+        key: "db-password"
