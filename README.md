@@ -111,7 +111,7 @@ Each service runs in Podman Compose with security hardening (read-only filesyste
 
 To use any integration:
 1. Start infrastructure: `cd samples/infrastructure/{service} && podman compose up -d`
-2. Configure `.env` for your sample (copy from `.env.example`)
+2. Configure environment variables only when required by the sample (for example via `.env` or shell exports)
 3. Run the sample: `mvn spring-boot:run`
 4. Stop infrastructure: `podman compose down`
 
@@ -134,6 +134,7 @@ The following samples expose Swagger UI when running with the `development` prof
 - `samples/18-rabbitmq/topic` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/19-postgres` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/20-websocket/server` → `http://localhost:8090/swagger-ui/index.html`
+- `samples/22-redis` → `http://localhost:8080/swagger-ui/index.html`
 
 Run each sample from its own folder:
 
@@ -143,11 +144,6 @@ mvn spring-boot:run -Dspring-boot.run.profiles=development
 
 ## Tutorial TODO Projects:
 
-### Missing sample applications:
-1. Redis sample application (using Spring Data Redis)
-    - Status: MISSING
-    - Next action: Create a new sample folder and implementation for Redis caching integration (suggested path: samples/22-redis).
-
 ### Placeholder documentation pages:
 1. [documentation/spring/advanced/security.md](documentation/spring/advanced/security.md)
     - Status: PLACEHOLDER
@@ -155,7 +151,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=development
 
 ### Maintenance:
 1. Update this section whenever a missing sample is created, placeholder documentation is completed, or sample numbering/topic mapping changes.
-1. Keep status values standardized: MISSING, PLACEHOLDER, NON-APP (EXPECTED).
+1. Keep status values standardized: MISSING, PLACEHOLDER, NON-APP (EXPECTED), DONE.
 
 ## Links:
 
