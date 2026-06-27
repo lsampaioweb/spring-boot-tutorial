@@ -6,11 +6,19 @@ spring:
   threads:
     virtual:
       enabled: true
+  profiles:
+    active:
+      # - "development"
+      - "production"
 
 logging:
   config: "classpath:log/logback-spring.xml"
 
-server:
-  error:
-    include-stacktrace: "never"
-    # include-stacktrace: "always"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "when-authorized"

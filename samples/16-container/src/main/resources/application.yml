@@ -1,6 +1,24 @@
 spring:
   application:
     name: "container"
+  threads:
+    virtual:
+      enabled: true
+  profiles:
+    active:
+      # - "development"
+      - "production"
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: "when-authorized"
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"

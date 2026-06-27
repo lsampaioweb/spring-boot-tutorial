@@ -1,10 +1,21 @@
 spring:
   application:
     name: "i18n"
-
-# This is only necessary if you change the default path.
   messages:
     basename: "i18n/messages"
+  profiles:
+    active:
+      # - "development"
+      - "production"
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "when-authorized"

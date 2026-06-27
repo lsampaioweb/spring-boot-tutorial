@@ -1,10 +1,13 @@
 spring:
   application:
     name: "virtual-threads"
-
   threads:
     virtual:
       enabled: true
+  profiles:
+    active:
+      # - "development"
+      - "production"
 
 # Tomcat threads defaults to 200, 0 is unlimited.
 # server:
@@ -14,3 +17,12 @@ spring:
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "when-authorized"

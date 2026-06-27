@@ -1,19 +1,15 @@
 spring:
   application:
     name: "rabbitmq-headers"
-
-  profiles:
-    active:
-      - "development"
-      # - "production"
-
   messages:
     basename: "i18n/messages"
-
   threads:
     virtual:
       enabled: true
-
+  profiles:
+    active:
+      # - "development"
+      - "production"
   rabbitmq:
     host: "localhost"
     port: 5672
@@ -22,6 +18,15 @@ spring:
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "when-authorized"
 
 app:
   rabbitmq:

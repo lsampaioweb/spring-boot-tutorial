@@ -13,11 +13,11 @@ management:
     web:
       exposure:
         # include: "*"
-        include: "health,metrics"
+        include: "health,info"
 
   endpoint:
     health:
-      show-details: "always"
+      show-details: "when-authorized"
 
 logging:
   config: "classpath:log/logback-spring.xml"

@@ -2,9 +2,6 @@
 # user:
 #   role: "Default"
 
-# server:
-#   port: 8081
-
 # Part 2. Config in remote server.
 spring:
   application:
@@ -12,9 +9,9 @@ spring:
   messages:
     basename: "i18n/messages"
   profiles:
-    # active: "default"
-    active: "development"
-    # active: "production"
+    active:
+      # - "development"
+      - "production"
   cloud:
     config:
       username: "${USERNAME}"
@@ -25,3 +22,12 @@ spring:
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "when-authorized"

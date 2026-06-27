@@ -1,21 +1,29 @@
 spring:
   application:
     name: "websocket-server"
-
+  messages:
+    basename: "i18n/messages"
+  threads:
+    virtual:
+      enabled: true
   profiles:
     active:
       # - "development"
       - "production"
 
-  messages:
-    basename: "i18n/messages"
-
-  threads:
-    virtual:
-      enabled: true
-
-server:
-  port: 8090
-
 logging:
   config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: "when-authorized"
+
+app:
+  websocket:
+    allowed-origins:
+      - "*"
