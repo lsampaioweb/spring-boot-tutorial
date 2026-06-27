@@ -12,13 +12,16 @@ import lombok.Setter;
 @Setter
 public class RabbitMQConfigurationProperties {
 
-  private String exchange;
+  private String exchange = "orders.fanout.exchange";
+
   private String queue;
-  private String queueOne;
-  private String queueTwo;
+  private String queueOne = "orders.fanout.queue.one";
+  private String queueTwo = "orders.fanout.queue.two";
+
   private String routingKey;
   private String routingKeyOne;
   private String routingKeyTwo;
+
   private String headerName;
   private String headerValueOne;
   private String headerValueTwo;

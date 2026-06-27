@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-class VaultSecretRegistry {
+public class VaultSecretRegistry {
 
   private static final String LOG_REGISTRY_LOADING = "log.vault.registry.loading";
   private static final String LOG_REGISTRY_LOADED = "log.vault.registry.loaded";
