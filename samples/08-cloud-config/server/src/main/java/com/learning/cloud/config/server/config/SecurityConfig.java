@@ -1,5 +1,6 @@
 package com.learning.cloud.config.server.config;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -11,7 +12,14 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class SecurityConfig {
+@EnableConfigurationProperties(SecurityConfigurationProperties.class)
+class SecurityConfig {
+
+  private final SecurityConfigurationProperties securityProperties;
+
+  SecurityConfig(SecurityConfigurationProperties securityProperties) {
+    this.securityProperties = securityProperties;
+  }
 
   @Bean
   @Order(1)
@@ -32,12 +40,10 @@ public class SecurityConfig {
 
     manager.createUser(
         User
-            .withUsername("cloud-config-client")
-            .password("{noop}password")
+            .withUsername(securityProperties.username())
+            .password("{noop}" + securityProperties.password())
             .roles("cloud-config-client")
             .build());
-
-    // manager.createUser(User.withUsername("client2").password("{noop}client2password").roles("CLIENT2").build());
 
     return manager;
   }

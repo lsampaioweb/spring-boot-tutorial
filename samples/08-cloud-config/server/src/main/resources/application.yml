@@ -50,5 +50,11 @@ server:
   http2:
     enabled: true
 
+app:
+  security:
+    cloud-config-client:
+      username: "${CLOUD_CONFIG_CLIENT_USERNAME:cloud-config-client}"
+      password: "${CLOUD_CONFIG_CLIENT_PASSWORD}"
+
 logging:
   config: "classpath:log/logback-spring.xml"

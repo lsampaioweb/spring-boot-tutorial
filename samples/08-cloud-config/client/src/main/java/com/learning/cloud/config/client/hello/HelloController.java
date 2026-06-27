@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("api/v1")
-public class HelloController {
+@RequestMapping("/api/v1")
+class HelloController {
 
   private static final String LOG_SAY_HELLO = "log.say.hello";
   private static final String RESPONSE_MESSAGE = "response.message";
