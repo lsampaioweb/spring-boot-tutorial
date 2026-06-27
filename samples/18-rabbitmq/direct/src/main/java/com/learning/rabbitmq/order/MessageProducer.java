@@ -15,8 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MessageProducer {
 
+  private static final String LOG_ORDER_SENT = "log.order.sent";
+  private static final String LOG_ORDER_SEND_FAILED = "log.order.send.failed";
+
   private final RabbitTemplate rabbitTemplate;
   private final RabbitMQConfigurationProperties rabbitMQConfigurationProperties;
+  private final LogMessages logMessages;
 
   public void sendOrder(OrderMessage message) {
     try {
@@ -25,9 +29,9 @@ public class MessageProducer {
           rabbitMQConfigurationProperties.getRoutingKey(),
           message);
 
-      log.info(LogMessages.ORDER_SENT, message.orderId(), message.customerName());
+      log.info(logMessages.get(LOG_ORDER_SENT, message.orderId(), message.customerName()));
     } catch (AmqpException e) {
-      log.error(LogMessages.ORDER_SEND_FAILED, message.orderId(), e);
+      log.error(logMessages.get(LOG_ORDER_SEND_FAILED, message.orderId()), e);
       throw new OrderPublishException(e);
     }
   }

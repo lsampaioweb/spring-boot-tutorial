@@ -1,6 +1,7 @@
 package com.learning.rabbitmq.api;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import org.springframework.context.MessageSource;
@@ -23,13 +24,16 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/messages/direct")
 @RequiredArgsConstructor
-public class OrderApi {
+class OrderApi {
 
+  private static final String LOG_ORDER_SUBMITTED = "log.order.submitted";
+  private static final String LOG_ORDER_SUBMISSION_ERROR = "log.order.submission.error";
   private static final String API_MESSAGE_SUBMITTED_SUCCESS = "api.message.submitted.success";
   private static final String API_MESSAGE_SUBMITTED_FAILURE = "api.message.submitted.failure";
 
   private final MessageProducer messageProducer;
   private final MessageSource messageSource;
+  private final LogMessages logMessages;
 
   @PostMapping
   public ResponseEntity<OrderResponse> submitOrder(
@@ -45,15 +49,15 @@ public class OrderApi {
           product,
           quantity,
           price,
-          LocalDateTime.now());
+          LocalDateTime.now(ZoneOffset.UTC));
 
       messageProducer.sendOrder(message);
-      log.info(LogMessages.ORDER_SUBMITTED, orderId);
+      log.info(logMessages.get(LOG_ORDER_SUBMITTED, orderId));
 
       return ResponseEntity.status(HttpStatus.ACCEPTED).body(
           new OrderResponse(orderId, getMessage(API_MESSAGE_SUBMITTED_SUCCESS)));
     } catch (Exception e) {
-      log.error(LogMessages.ORDER_SUBMISSION_ERROR, e);
+      log.error(logMessages.get(LOG_ORDER_SUBMISSION_ERROR), e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
           new OrderResponse(null, getMessage(API_MESSAGE_SUBMITTED_FAILURE)));
     }
