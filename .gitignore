@@ -1,9 +1,5 @@
 .vscode/*
 .DS_Store
 
-# VS Code Copilot symlinks (pointing to .ai-instructions submodule).
-.github/agents
-.github/hooks
-.github/instructions
-.github/prompts
-.github/skills
+# Maven/Java build output.
+**/target/

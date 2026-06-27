@@ -19,6 +19,7 @@ This project follows standardized Spring Boot architecture and code conventions:
 - **Security:** Deny-by-default policies with `@PreAuthorize` method-level guards
 - **Validation:** Input validation via `spring-boot-starter-validation` with `@Valid` on controllers
 - **Database access:** Spring JDBC / MyBatis (no ORM)
+- **OpenAPI documentation:** REST-focused samples expose Swagger UI through `springdoc-openapi` (enabled in development, disabled in production)
 - **Testing:** Slice tests (`@WebMvcTest`, `@DataJdbcTest`) + integration tests
 
 For detailed conventions, see the instruction files in: `https://github.com/lsampaioweb/ai-instructions`
@@ -34,16 +35,6 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 ### Setup:
 1. [Create a Spring Boot Project](documentation/setup/project.md):
     - Guide to set up a Spring Boot project using VS Code or CLI.
-
-### Infrastructure Services:
-Some samples depend on external services (RabbitMQ, PostgreSQL, Redis, Vault). Start the required service before running the sample:
-
-Available services: `postgres`, `rabbitmq`, `redis`, `vault`.
-
-```bash
-cd samples/infrastructure/<service>
-docker-compose up -d
-```
 
 ### Spring Boot Basics:
 1. [Maven Commands](documentation/maven/pom.md):
@@ -106,6 +97,78 @@ docker-compose up -d
     - Using Redis for caching and data storage.
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
     - Messaging with RabbitMQ.
+
+### Infrastructure Services:
+Some samples depend on external services (RabbitMQ, PostgreSQL, Redis, Vault). Start the required service before running the sample:
+
+Available services: `postgres`, `rabbitmq`, `redis`, `vault`.
+
+```bash
+cd samples/infrastructure/<service>
+docker-compose up -d
+```
+
+### Swagger UI (Development Profile)
+The following samples expose Swagger UI when running with the `development` profile:
+
+- `samples/08-cloud-config/client` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/10-i18n` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/11-restapi` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/12-http-client` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/14-virtual-threads` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/15-exception-handling` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/16-container` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/17-traefik` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/18-rabbitmq/direct` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/18-rabbitmq/fanout` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/18-rabbitmq/headers` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/18-rabbitmq/topic` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/19-postgres` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/20-websocket/server` → `http://localhost:8090/swagger-ui/index.html`
+
+Run each sample from its own folder:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
+
+## Tutorial TODO Projects:
+
+Last checked: 2026-06-27.
+
+### Missing sample applications:
+1. Redis sample application
+    - Status: MISSING
+    - Next action: Create a new sample folder and implementation for Redis integration (suggested path: samples/22-redis).
+
+### Placeholder documentation pages:
+1. [documentation/spring/advanced/security.md](documentation/spring/advanced/security.md)
+    - Status: PLACEHOLDER
+    - Next action: Replace XXX content with a complete security tutorial.
+1. [documentation/spring/integrations/redis.md](documentation/spring/integrations/redis.md)
+    - Status: PLACEHOLDER
+    - Next action: Replace XXX content with a complete Redis integration tutorial.
+
+### Non-app sample folders (tracked intentionally):
+1. [samples/13-k6](samples/13-k6)
+    - Status: NON-APP (EXPECTED)
+    - Next action: Keep as load-testing assets; no Spring Boot app required.
+1. [samples/infrastructure/postgres](samples/infrastructure/postgres)
+    - Status: NON-APP (EXPECTED)
+    - Next action: Keep as infrastructure support for integration samples.
+1. [samples/infrastructure/rabbitmq](samples/infrastructure/rabbitmq)
+    - Status: NON-APP (EXPECTED)
+    - Next action: Keep as infrastructure support for integration samples.
+1. [samples/infrastructure/redis](samples/infrastructure/redis)
+    - Status: NON-APP (EXPECTED)
+    - Next action: Keep as infrastructure support for integration samples.
+1. [samples/infrastructure/vault](samples/infrastructure/vault)
+    - Status: NON-APP (EXPECTED)
+    - Next action: Keep as infrastructure support for integration samples.
+
+### Maintenance:
+1. Update this section whenever a missing sample is created, placeholder documentation is completed, or sample numbering/topic mapping changes.
+1. Keep status values standardized: MISSING, PLACEHOLDER, NON-APP (EXPECTED).
 
 ## Links:
 
