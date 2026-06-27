@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import jakarta.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("api/v1/products")
+@RequestMapping("/api/v1/products")
 @Slf4j
-public class ProductController {
+class ProductController {
 
   private final MessageSource messageSource;
   private final ProductService service;
@@ -48,7 +50,7 @@ public class ProductController {
   }
 
   @PostMapping
-  public ResponseEntity<Product> create(@RequestBody Product entity, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<Product> create(@Valid @RequestBody Product entity, UriComponentsBuilder uriBuilder) {
     log.info(getMethodCalledMessage("create"));
 
     Product createdEntity = service.create(entity);
@@ -59,7 +61,7 @@ public class ProductController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product entity) {
+  public ResponseEntity<Product> update(@PathVariable Long id, @Valid @RequestBody Product entity) {
     log.info(getMethodCalledMessage("update"));
 
     Product updatedEntity = service.update(id, entity);

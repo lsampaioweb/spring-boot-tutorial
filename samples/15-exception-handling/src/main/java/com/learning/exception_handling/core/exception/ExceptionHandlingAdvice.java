@@ -3,6 +3,7 @@ package com.learning.exception_handling.core.exception;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.springframework.context.MessageSource;
@@ -70,7 +71,7 @@ public class ExceptionHandlingAdvice {
   private ErrorResponse newErrorResponse(Exception ex, String message, HttpServletRequest request,
       HttpStatus httpStatus) {
     return new ErrorResponse(
-        LocalDateTime.now(),
+        LocalDateTime.now(ZoneOffset.UTC),
         httpStatus.value(),
         httpStatus.getReasonPhrase(),
         message,

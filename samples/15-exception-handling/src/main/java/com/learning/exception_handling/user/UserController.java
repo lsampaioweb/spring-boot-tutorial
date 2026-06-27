@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import jakarta.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @Slf4j
-public class UserController {
+class UserController {
 
   private final MessageSource messageSource;
   private final UserService service;
@@ -47,7 +49,7 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@RequestBody User entity, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<User> create(@Valid @RequestBody User entity, UriComponentsBuilder uriBuilder) {
     log.info(getMethodCalledMessage("create"));
 
     User createdEntity = service.create(entity);
@@ -58,7 +60,7 @@ public class UserController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User entity) {
+  public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody User entity) {
     log.info(getMethodCalledMessage("update"));
 
     User updatedEntity = service.update(id, entity);
