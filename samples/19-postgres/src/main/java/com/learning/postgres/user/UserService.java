@@ -21,12 +21,12 @@ class UserService {
     return userRepository.findById(id);
   }
 
-  void save(Model model) {
-    userRepository.save(model);
+  void insert(Model model) {
+    userRepository.insert(model);
   }
 
-  void saveAll(List<Model> list) {
-    userRepository.saveAll(list);
+  void insertAll(List<Model> list) {
+    userRepository.insertAll(list);
   }
 
   void deleteById(Long id) {

@@ -33,13 +33,13 @@ public class UserController {
   // Create a single user.
   @PostMapping
   public void createUser(@RequestBody Model model) {
-    userService.save(model);
+    userService.insert(model);
   }
 
   // Create multiple users (use a different path).
   @PostMapping("/batch")
   public void createUsers(@RequestBody List<Model> list) {
-    userService.saveAll(list);
+    userService.insertAll(list);
   }
 
   @DeleteMapping("/{id}")

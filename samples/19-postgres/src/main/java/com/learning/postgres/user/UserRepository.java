@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.learning.postgres.db.DatabaseException;
-import com.learning.postgres.i18n.MessageSourceHolder;
+import com.learning.postgres.i18n.LogMessages;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,9 +18,18 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 class UserRepository {
 
+  private static final String LOG_USER_FETCHING_ALL = "log.user.fetching.all";
+  private static final String LOG_USER_FETCHING_ID = "log.user.fetching.id";
+  private static final String ERROR_USER_NOT_FOUND = "error.user.not.found";
+  private static final String LOG_USER_INSERTING = "log.user.inserting";
+  private static final String LOG_USER_INSERTING_BATCH = "log.user.inserting.batch";
+  private static final String ERROR_USER_INSERT = "error.user.insert";
+  private static final String ERROR_USER_INSERT_BATCH = "error.user.insert.batch";
+  private static final String LOG_USER_DELETING_ID = "log.user.deleting.id";
+
   private final JdbcClient jdbcClient;
   private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-  private final MessageSourceHolder messageSourceHolder;
+  private final LogMessages logMessages;
   private final String findAllSql;
   private final String findByIdSql;
   private final String insertSql;
@@ -29,14 +38,14 @@ class UserRepository {
   UserRepository(
       JdbcClient jdbcClient,
       NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-      MessageSourceHolder messageSourceHolder,
+      LogMessages logMessages,
       @Value("${sql.users.find-all}") String findAllSql,
       @Value("${sql.users.find-by-id}") String findByIdSql,
       @Value("${sql.users.insert}") String insertSql,
       @Value("${sql.users.delete-by-id}") String deleteByIdSql) {
     this.jdbcClient = jdbcClient;
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    this.messageSourceHolder = messageSourceHolder;
+    this.logMessages = logMessages;
     this.findAllSql = findAllSql;
     this.findByIdSql = findByIdSql;
     this.insertSql = insertSql;
@@ -44,7 +53,7 @@ class UserRepository {
   }
 
   List<Model> findAll() {
-    log.info(messageSourceHolder.getMessage("log.user.fetching.all"));
+    log.info(logMessages.get(LOG_USER_FETCHING_ALL));
 
     return jdbcClient
         .sql(findAllSql)
@@ -53,7 +62,7 @@ class UserRepository {
   }
 
   Model findById(Long id) {
-    log.info(messageSourceHolder.getMessage("log.user.fetching.id", id));
+    log.info(logMessages.get(LOG_USER_FETCHING_ID, id));
 
     return jdbcClient
         .sql(findByIdSql)
@@ -61,14 +70,14 @@ class UserRepository {
         .query(Model.class)
         .optional()
         .orElseThrow(() -> {
-          log.warn(messageSourceHolder.getMessage("error.user.not.found", id));
+          log.warn(logMessages.get(ERROR_USER_NOT_FOUND, id));
 
           return new UserNotFoundException(id);
         });
   }
 
-  void save(Model model) {
-    log.info(messageSourceHolder.getMessage("log.user.inserting"));
+  void insert(Model model) {
+    log.info(logMessages.get(LOG_USER_INSERTING));
 
     try {
       jdbcClient
@@ -77,25 +86,25 @@ class UserRepository {
           .param("email", model.getEmail())
           .update();
     } catch (Exception e) {
-      throw new DatabaseException("error.user.insert", e);
+      throw new DatabaseException(ERROR_USER_INSERT, e);
     }
   }
 
   @Transactional
-  void saveAll(List<Model> list) {
-    log.info(messageSourceHolder.getMessage("log.user.inserting.batch", list.size()));
+  void insertAll(List<Model> list) {
+    log.info(logMessages.get(LOG_USER_INSERTING_BATCH, list.size()));
 
     try {
       namedParameterJdbcTemplate.batchUpdate(insertSql, SqlParameterSourceUtils.createBatch(list));
     } catch (Exception e) {
-      log.error(messageSourceHolder.getMessage("error.user.insert.batch"), e);
+      log.error(logMessages.get(ERROR_USER_INSERT_BATCH), e);
 
-      throw new DatabaseException("error.user.insert.batch", e);
+      throw new DatabaseException(ERROR_USER_INSERT_BATCH, e);
     }
   }
 
   void deleteById(Long id) {
-    log.info(messageSourceHolder.getMessage("log.user.deleting.id", id));
+    log.info(logMessages.get(LOG_USER_DELETING_ID, id));
 
     int rowsAffected = jdbcClient
         .sql(deleteByIdSql)
