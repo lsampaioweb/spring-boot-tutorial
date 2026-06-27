@@ -1,5 +1,6 @@
 package com.learning.websocket.server.chat;
 
+import java.time.Clock;
 import java.time.Instant;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -28,7 +29,7 @@ public class ChatSocketEndpoint {
   public ChatMessage publish(@Payload ChatMessage message) {
     log.debug(logMessages.get(LOG_CHAT_MESSAGE_PUBLISHED, message.sender()));
 
-    return new ChatMessage(message.sender(), message.content(), Instant.now());
+    return new ChatMessage(message.sender(), message.content(), Instant.now(Clock.systemUTC()));
   }
 
 }

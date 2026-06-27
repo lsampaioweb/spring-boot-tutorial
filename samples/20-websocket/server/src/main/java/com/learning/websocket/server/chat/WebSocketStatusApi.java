@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/websocket")
 @Slf4j
-public class WebSocketStatusApi {
+class WebSocketStatusApi {
 
   private static final String LOG_WEBSOCKET_STATUS_REQUESTED = "log.websocket.status.requested";
 

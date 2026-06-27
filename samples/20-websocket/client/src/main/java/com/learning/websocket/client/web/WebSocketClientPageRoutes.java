@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("")
-public class WebSocketClientPageRoutes {
+class WebSocketClientPageRoutes {
 
   private static final String MODEL_SERVER_WS_URL = "serverWsUrl";
 
