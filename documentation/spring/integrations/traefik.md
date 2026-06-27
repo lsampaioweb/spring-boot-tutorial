@@ -1,93 +1,74 @@
-# Spring Boot with Traefik Reverse Proxy
+# Spring Boot + Traefik
 
-This sample deploys a Spring Boot app behind `Traefik`, a `reverse proxy`, using `Docker`. It demonstrates dynamic routing with TLS via Traefik labels and a custom Docker image.
+This page explains the Traefik infrastructure project and how to route Spring Boot containers through it.
 
 ## Prerequisites
-- Docker and Docker Compose installed.
-- Java 25 and Maven for building the app.
-- An existing Traefik instance on the `reverse-proxy` network (see step 1 if not set up).
+1. Podman with Podman Compose
+1. A Spring Boot app running in a container with Traefik labels
 
-## Steps
+Before first use with rootless Podman:
 
-1. Create a Bridge Network:
+```bash
+systemctl --user enable --now podman.socket
+podman system migrate
+```
 
-   Connects Traefik and the app for routing.
-   ```bash
-   docker network create reverse-proxy
-   ```
+## 1. Start Traefik Infrastructure
 
-1. Deploy Traefik (if not already running):
+For Podman, map its socket by setting `CONTAINER_SOCKET` first:
 
-   Starts Traefik on a separate machine or locally.
-   ```bash
-   docker compose up -d
-   ```
+```bash
+cp .env.example .env
+```
 
-1. Test Traefik:
+```bash
+cd samples/infrastructure/traefik
+podman compose up -d
+```
 
-   Verify Traefik is running.
-   - `https://loadbalancer.lan.homelab`
+Check status:
 
-1. Remove Traefik:
+```bash
+podman compose ps
+```
 
-   Stops Traefik.
-   ```bash
-   docker compose down
-   ```
+Traefik dashboard (tutorial mode):
+1. URL: `http://localhost:8080`
 
-1. Build the Application as a Docker Image:
+## 2. Route a Spring Boot App Through Traefik
 
-   Build the application.
-   ```bash
-   mvn clean package
-   ```
+Your app container must:
+1. Join network `tutorial-network`
+1. Include labels like:
 
-   Creates `lsampaioweb/app:1.0` from the Spring Boot app using the `Dockerfile`.
-   ```bash
-   docker build --tag lsampaioweb/app:1.0 .
-   ```
+```yaml
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.myapp.rule=Host(`app.localhost`)"
+  - "traefik.http.routers.myapp.entrypoints=web"
+  - "traefik.http.services.myapp.loadbalancer.server.port=8080"
+```
 
-1. Deploy the Application:
+The sample in `samples/17-traefik` already includes labels and uses the shared external network `tutorial-network`.
 
-   Runs the app with Traefik routing to `app.lan.homelab`.
-   ```bash
-   docker compose up -d
-   ```
+## 3. Validate Routing
 
-1. See the logs.
-    ```bash
-    docker compose logs app
+If your app is exposed as `app.localhost`:
 
-    # -f to keep watching.
-    docker compose logs -f app
-    ```
+```bash
+curl -H "Host: app.localhost" http://localhost/api/v1/hello
+```
 
-1. Test the Application:
+## 4. Stop Traefik Infrastructure
 
-   Hits the app’s endpoint, returning the container’s hostname and IP.
-   - https://app.lan.homelab/api/v1/hello
-
-1. Test with Multiple Requests:
-
-   Simulates load to verify Traefik routing and app stability.
-   ```bash
-   for ((i=1; i<=1000; i++)); do curl -s --max-time 2 https://app.lan.homelab/api/v1/hello; done
-   ```
-
-1. Remove the Application:
-
-   Stops and removes the app container.
-   ```bash
-   docker compose down
-   ```
-
-1. Clean Up Unused Containers:
-    Removes stopped containers to free resources.
-    ```bash
-    docker container prune -f
-    ```
+```bash
+cd samples/infrastructure/traefik
+podman compose down
+```
 
 [Go Back](../../../README.md)
 
+#
 ### Created by:
-Luciano Sampaio
+
+1. Luciano Sampaio.

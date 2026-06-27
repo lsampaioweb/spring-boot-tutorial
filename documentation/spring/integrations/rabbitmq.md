@@ -47,12 +47,17 @@ Each project contains the same core pieces:
 | Topic   | `topic`   | `8083` | `/api/v1/messages/topic`   | Pattern routing with wildcards |
 | Headers | `headers` | `8084` | `/api/v1/messages/headers` | Match by message header values |
 
-### Start RabbitMQ
+### Start RabbitMQ Infrastructure
 
 ```bash
 cd samples/infrastructure/rabbitmq
-docker-compose up -d
+podman compose up -d
 ```
+
+RabbitMQ management UI:
+1. URL: `http://localhost:15672`
+1. User: `admin`
+1. Password: `admin`
 
 ### Run each sample
 
@@ -116,8 +121,15 @@ curl -X POST "http://localhost:8084/api/v1/messages/headers?customerName=Dave&pr
 ### Notes
 
 1. Development profile is active by default in each subproject.
-1. RabbitMQ credentials come from `RABBITMQ_ROOT_PASSWORD`.
+1. Infrastructure credentials are `admin/admin` from `samples/infrastructure/rabbitmq/docker-compose.yml`.
 1. Management endpoints expose `health` and `metrics` in development.
+
+### Stop RabbitMQ Infrastructure
+
+```bash
+cd samples/infrastructure/rabbitmq
+podman compose down
+```
 
 [Go Back](../../../README.md)
 

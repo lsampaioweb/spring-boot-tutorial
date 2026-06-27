@@ -88,25 +88,34 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 
 ### Spring Boot Integrations:
 1. [Traefik](documentation/spring/integrations/traefik.md)
-    - Integrating Traefik as a reverse proxy.
+    - Integrating Traefik as a reverse proxy for container routing.
 1. [Vault](documentation/spring/integrations/vault.md)
-    - Using HashiCorp Vault for secrets management.
+    - Reading secrets from HashiCorp Vault with startup caching.
 1. [PostgreSQL](documentation/spring/integrations/postgresql.md)
-    - Integrating PostgreSQL database.
+    - Integrating PostgreSQL database via JdbcClient.
 1. [Redis](documentation/spring/integrations/redis.md)
     - Using Redis for caching and data storage.
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
-    - Messaging with RabbitMQ.
+    - Messaging with RabbitMQ (direct, fanout, topic, headers exchanges).
 
-### Infrastructure Services:
-Some samples depend on external services (RabbitMQ, PostgreSQL, Redis, Vault). Start the required service before running the sample:
+## Infrastructure Services
 
-Available services: `postgres`, `rabbitmq`, `redis`, `vault`.
+All integration samples use containerized infrastructure defined in `samples/infrastructure/`:
+- **Traefik** — Reverse proxy for HTTP routing and load balancing
+- **Vault** — HashiCorp Vault for secrets management
+- **PostgreSQL** — Relational database
+- **Redis** — In-memory data store
+- **RabbitMQ** — Message broker
 
-```bash
-cd samples/infrastructure/<service>
-docker-compose up -d
-```
+Each service runs in Podman Compose with security hardening (read-only filesystems, dropped capabilities, no-new-privileges).
+
+To use any integration:
+1. Start infrastructure: `cd samples/infrastructure/{service} && podman compose up -d`
+2. Configure `.env` for your sample (copy from `.env.example`)
+3. Run the sample: `mvn spring-boot:run`
+4. Stop infrastructure: `podman compose down`
+
+See individual integration documentation for detailed setup steps.
 
 ### Swagger UI (Development Profile)
 The following samples expose Swagger UI when running with the `development` profile:
@@ -134,37 +143,15 @@ mvn spring-boot:run -Dspring-boot.run.profiles=development
 
 ## Tutorial TODO Projects:
 
-Last checked: 2026-06-27.
-
 ### Missing sample applications:
-1. Redis sample application
+1. Redis sample application (using Spring Data Redis)
     - Status: MISSING
-    - Next action: Create a new sample folder and implementation for Redis integration (suggested path: samples/22-redis).
+    - Next action: Create a new sample folder and implementation for Redis caching integration (suggested path: samples/22-redis).
 
 ### Placeholder documentation pages:
 1. [documentation/spring/advanced/security.md](documentation/spring/advanced/security.md)
     - Status: PLACEHOLDER
     - Next action: Replace XXX content with a complete security tutorial.
-1. [documentation/spring/integrations/redis.md](documentation/spring/integrations/redis.md)
-    - Status: PLACEHOLDER
-    - Next action: Replace XXX content with a complete Redis integration tutorial.
-
-### Non-app sample folders (tracked intentionally):
-1. [samples/13-k6](samples/13-k6)
-    - Status: NON-APP (EXPECTED)
-    - Next action: Keep as load-testing assets; no Spring Boot app required.
-1. [samples/infrastructure/postgres](samples/infrastructure/postgres)
-    - Status: NON-APP (EXPECTED)
-    - Next action: Keep as infrastructure support for integration samples.
-1. [samples/infrastructure/rabbitmq](samples/infrastructure/rabbitmq)
-    - Status: NON-APP (EXPECTED)
-    - Next action: Keep as infrastructure support for integration samples.
-1. [samples/infrastructure/redis](samples/infrastructure/redis)
-    - Status: NON-APP (EXPECTED)
-    - Next action: Keep as infrastructure support for integration samples.
-1. [samples/infrastructure/vault](samples/infrastructure/vault)
-    - Status: NON-APP (EXPECTED)
-    - Next action: Keep as infrastructure support for integration samples.
 
 ### Maintenance:
 1. Update this section whenever a missing sample is created, placeholder documentation is completed, or sample numbering/topic mapping changes.
