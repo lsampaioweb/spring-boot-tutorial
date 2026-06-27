@@ -1,0 +1,32 @@
+---
+networks:
+  tutorial-network:
+    external: true
+
+services:
+  postgres:
+    image: "postgres:latest"
+    # Pinned example: image: "postgres:18-alpine"
+    # Docs: https://hub.docker.com/_/postgres
+    container_name: "tutorial-postgres"
+    restart: "unless-stopped"
+    cap_drop:
+      - "ALL"
+    security_opt:
+      - "no-new-privileges:true"
+    ports:
+      - "5432:5432"
+    environment:
+      - "POSTGRES_DB=tutorial"
+      - "POSTGRES_USER=tutorial"
+      - "POSTGRES_PASSWORD=tutorial"
+    networks:
+      - "tutorial-network"
+    volumes:
+      - "./volumes:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -h 127.0.0.1"]
+      start_period: "10s"
+      interval: "10s"
+      timeout: "5s"
+      retries: 10

@@ -1,0 +1,29 @@
+---
+networks:
+  tutorial-network:
+    external: true
+
+services:
+  redis:
+    image: "redis:latest"
+    # Pinned example: image: "redis:8.2-alpine"
+    # Docs: https://hub.docker.com/_/redis
+    container_name: "tutorial-redis"
+    restart: "unless-stopped"
+    cap_drop:
+      - "ALL"
+    security_opt:
+      - "no-new-privileges:true"
+    ports:
+      - "6379:6379"
+    networks:
+      - "tutorial-network"
+    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1"]
+    volumes:
+      - "./volumes:/data"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: "5s"
+      interval: "10s"
+      timeout: "3s"
+      retries: 10

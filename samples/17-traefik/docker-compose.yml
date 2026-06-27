@@ -1,6 +1,7 @@
 networks:
-  # Defines the external network used by Traefik for reverse proxying.
-  reverse-proxy:
+  # Uses the infrastructure network created by samples/infrastructure/traefik.
+  tutorial-network:
+    name: "tutorial-network"
     external: true
 
 services:
@@ -22,10 +23,8 @@ services:
     # Configures Traefik labels to enable reverse proxying with TLS and custom routing.
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.tls=true"
-      - "traefik.http.routers.app.rule=Host(`app.lan.homelab`)"
-      - "traefik.http.routers.app.middlewares=headers-rate-limit@file,headers-default@file,headers-security@file"
+      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.routers.app.rule=Host(`app.localhost`)"
       - "traefik.http.services.app.loadbalancer.server.port=${SERVER_PORT:-8080}"
       # - "traefik.http.services.app.loadbalancer.server.port=${SERVER_PORT:-9443}"
 
@@ -36,7 +35,7 @@ services:
 
     # Connects the app to the external Traefik network for routing.
     networks:
-      - "reverse-proxy"
+      - "tutorial-network"
 
     # Maps host directories to the container.
     volumes:

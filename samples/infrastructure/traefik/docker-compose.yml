@@ -1,0 +1,39 @@
+---
+networks:
+  tutorial-network:
+    external: true
+
+services:
+  traefik:
+    image: "traefik:latest"
+    # Pinned example: image: "traefik:v3.1"
+    # Docs: https://hub.docker.com/_/traefik
+    container_name: "tutorial-traefik"
+    restart: "unless-stopped"
+    cap_drop:
+      - "ALL"
+    security_opt:
+      - "no-new-privileges:true"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    environment:
+      - "TZ=UTC"
+    networks:
+      - "tutorial-network"
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=tutorial-network"
+      - "--entrypoints.web.address=:80"
+      - "--ping=true"
+    volumes:
+      - "${CONTAINER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro"
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      start_period: "10s"
+      interval: "10s"
+      timeout: "3s"
+      retries: 10
