@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: "redis"
+  messages:
+    basename: "i18n/messages"
+  threads:
+    virtual:
+      enabled: true
+  profiles:
+    active:
+      # - "development"
+      - "production"
+  data:
+    redis:
+      host: "${REDIS_HOST:localhost}"
+      port: "${REDIS_PORT:6379}"
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      show-details: "when-authorized"
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: "never"

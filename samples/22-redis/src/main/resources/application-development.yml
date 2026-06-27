@@ -1,0 +1,12 @@
+management:
+  endpoint:
+    health:
+      show-details: "always"
+
+server:
+  error:
+    include-stacktrace: "always"
+
+springdoc:
+  swagger-ui:
+    enabled: true
