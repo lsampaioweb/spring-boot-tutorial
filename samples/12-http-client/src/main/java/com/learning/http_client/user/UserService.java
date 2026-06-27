@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.learning.http_client.config.ExternalApiProperties;
+
 import jakarta.annotation.PostConstruct;
 
 @Service
@@ -24,19 +25,18 @@ class UserService {
 
   private static final String ID_PARAMETER = "/{id}";
   private final RestClient.Builder restClientBuilder;
+  private final ExternalApiProperties apiProperties;
   private RestClient restClient;
 
-  @Value("${external.api.users}")
-  private String usersUrl;
-
-  public UserService(RestClient.Builder restClientBuilder) {
+  UserService(RestClient.Builder restClientBuilder, ExternalApiProperties apiProperties) {
     this.restClientBuilder = restClientBuilder;
+    this.apiProperties = apiProperties;
   }
 
   @PostConstruct
   private void init() {
     this.restClient = restClientBuilder
-        .baseUrl(Objects.requireNonNull(usersUrl))
+        .baseUrl(apiProperties.users())
         .build();
   }
 
@@ -92,7 +92,7 @@ class UserService {
   }
 
   private String getPagingAndSortingUrl(Pageable pageable) {
-    return UriComponentsBuilder.fromUriString(Objects.requireNonNull(usersUrl))
+    return UriComponentsBuilder.fromUriString(apiProperties.users())
         .queryParam("page", pageable.getPageNumber())
         .queryParam("size", pageable.getPageSize())
         .queryParam("sort", formatSort(pageable.getSort()))
