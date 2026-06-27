@@ -1,17 +1,13 @@
+server:
+  port: 8090
+  error:
+    include-stacktrace: "always"
+
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "health,metrics"
   endpoint:
     health:
       show-details: "always"
 
-server:
-  error:
-    include-stacktrace: "always"
-
-app:
-  websocket:
-    allowed-origins:
-      - "*"
+springdoc:
+  swagger-ui:
+    enabled: true

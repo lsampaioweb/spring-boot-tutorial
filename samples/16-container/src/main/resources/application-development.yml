@@ -1,3 +1,13 @@
 server:
-  # port: 443
   port: 8080
+  error:
+    include-stacktrace: "always"
+
+management:
+  endpoint:
+    health:
+      show-details: "always"
+
+springdoc:
+  swagger-ui:
+    enabled: true

@@ -1,5 +1,7 @@
 server:
   port: 9443
+  error:
+    include-stacktrace: "never"
 
 springdoc:
   swagger-ui:

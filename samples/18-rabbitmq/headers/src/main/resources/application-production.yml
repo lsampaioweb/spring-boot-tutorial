@@ -1,15 +1,16 @@
+server:
+  port: 9443
+  error:
+    include-stacktrace: "never"
+
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "health,metrics"
   endpoint:
     health:
       show-details: "never"
 
-server:
-  error:
-    include-stacktrace: "never"
+springdoc:
+  swagger-ui:
+    enabled: false
 
 app:
   rabbitmq:
