@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/ops")
-public class OpsController {
+class OpsPageController {
 
   @GetMapping
   public String getPage(Model model) {
@@ -20,7 +20,7 @@ public class OpsController {
 
   @PostMapping
   public String postPage(@ModelAttribute("ops") OperatingSystem ops, Model model) {
-    String attributeValue = ops.getOS1() + " " + ops.getOS2() + " " + ops.getOS3();
+    String attributeValue = ops.getOs1() + " " + ops.getOs2() + " " + ops.getOs3();
 
     model.addAttribute("message", attributeValue);
 
