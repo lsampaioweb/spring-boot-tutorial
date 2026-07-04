@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Task Form — Thymeleaf Validation</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+
+<body>
+  <h1>Add Task</h1>
+
+  <form method="POST" th:action="@{/tasks}" th:object="${task}">
+    <div class="form-group" th:classappend="${#fields.hasErrors('title')} ? 'has-error'">
+      <label for="title">Title</label>
+      <input id="title" type="text" th:field="*{title}" placeholder="Task title" />
+      <span class="error-message" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+    </div>
+
+    <div class="form-group" th:classappend="${#fields.hasErrors('description')} ? 'has-error'">
+      <label for="description">Description</label>
+      <textarea id="description" th:field="*{description}" placeholder="Optional, max 200 characters"></textarea>
+      <span class="error-message" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+    </div>
+
+    <div class="form-group" th:classappend="${#fields.hasErrors('assignedTo')} ? 'has-error'">
+      <label for="assignedTo">Assigned To (email)</label>
+      <input id="assignedTo" type="text" th:field="*{assignedTo}" placeholder="user@example.com" />
+      <span class="error-message" th:if="${#fields.hasErrors('assignedTo')}" th:errors="*{assignedTo}"></span>
+    </div>
+
+    <button type="submit">Add Task</button>
+  </form>
+
+  <hr />
+
+  <h2>Tasks</h2>
+
+  <p th:if="${#lists.isEmpty(tasks)}">No tasks yet.</p>
+
+  <table th:unless="${#lists.isEmpty(tasks)}">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Assigned To</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="t : ${tasks}">
+        <td th:text="${t.id}"></td>
+        <td th:text="${t.title}"></td>
+        <td th:text="${t.description}"></td>
+        <td th:text="${t.assignedTo}"></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+</html>
