@@ -23,22 +23,29 @@ Prepare the application to log debug, information, warning and error messages.
 
     2.2. Configuring the log level based on the profile.
 
-    In this example, both the `default` and `production` profiles will have the log level set to `INFO`, and the output will be sent to a file. On the other hand, the `development` profile will have the log level set to `DEBUG` and will send the output to the console and to a file.
+    In the `development` profile, we log to both the console and a file, while in the `production` profile, we log only to a file. The default profile is set to `development`.
 
     The `File` appender will operate in `asynchronous` mode.
 
     Additional `springProfile` elements can be added as needed.
 
     ```xml
-    <springProfile name="default | production">
-      <root level="INFO">
+    <springProfile name="debug">
+      <root level="DEBUG">
+        <appender-ref ref="Console" />
         <appender-ref ref="File" />
       </root>
     </springProfile>
 
-    <springProfile name="development">
-      <root level="DEBUG">
+    <springProfile name="default | development">
+      <root level="INFO">
         <appender-ref ref="Console" />
+        <appender-ref ref="File" />
+      </root>
+    </springProfile>
+
+    <springProfile name="production">
+      <root level="INFO">
         <appender-ref ref="File" />
       </root>
     </springProfile>

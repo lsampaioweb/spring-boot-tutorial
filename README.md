@@ -61,6 +61,7 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
     - Handle sorting.
 1. [Thymeleaf](documentation/spring/basic/thymeleaf.md)
     - Using Thymeleaf as the templating engine.
+    - Server-side HTML rendering with form binding and i18n support.
 1. [Validation](documentation/spring/intermediate/validation.md)
     - Input validation for REST APIs and web forms.
 1. [Exception Handling](documentation/spring/intermediate/exception-handling.md)
