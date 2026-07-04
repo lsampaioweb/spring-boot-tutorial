@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequestMapping("/tasks")
-class TaskController {
+class TaskPageController {
 
   private static final String LOG_TASK_ADDED = "log.task.added";
   private static final String LOG_TASK_REMOVED = "log.task.removed";
@@ -27,7 +27,7 @@ class TaskController {
   private final TaskService taskService;
   private final LogMessages logMessages;
 
-  TaskController(TaskService taskService, LogMessages logMessages) {
+  TaskPageController(TaskService taskService, LogMessages logMessages) {
     this.taskService = taskService;
     this.logMessages = logMessages;
   }

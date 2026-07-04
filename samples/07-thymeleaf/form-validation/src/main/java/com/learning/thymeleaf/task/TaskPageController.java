@@ -2,6 +2,8 @@ package com.learning.thymeleaf.task;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,15 +12,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.learning.thymeleaf.i18n.LogMessages;
-
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+
+import com.learning.thymeleaf.i18n.LogMessages;
 
 @Slf4j
 @Controller
 @RequestMapping("/tasks")
-class TaskController {
+class TaskPageController {
 
   private static final String LOG_TASK_ADDED = "log.task.added";
   private static final String LOG_TASK_LIST = "log.task.list";
@@ -30,7 +31,7 @@ class TaskController {
   private final TaskService taskService;
   private final LogMessages logMessages;
 
-  TaskController(TaskService taskService, LogMessages logMessages) {
+  TaskPageController(TaskService taskService, LogMessages logMessages) {
     this.taskService = taskService;
     this.logMessages = logMessages;
   }

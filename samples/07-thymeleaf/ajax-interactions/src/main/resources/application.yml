@@ -6,6 +6,21 @@ spring:
   threads:
     virtual:
       enabled: true
+  profiles:
+    active:
+      # - "development"
+      - "production"
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      show-details: "when-authorized"
+      probes:
+        enabled: true

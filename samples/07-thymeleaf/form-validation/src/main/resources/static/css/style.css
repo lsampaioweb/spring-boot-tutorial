@@ -6,7 +6,8 @@ body {
   color: #333;
 }
 
-h1, h2 {
+h1,
+h2 {
   color: #444;
 }
 
@@ -71,7 +72,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   text-align: left;
   padding: 8px 12px;
   border-bottom: 1px solid #ddd;
