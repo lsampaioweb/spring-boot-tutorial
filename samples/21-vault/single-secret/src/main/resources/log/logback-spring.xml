@@ -11,13 +11,15 @@
   </appender>
 
   <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${LOG_PATH}/${APPLICATION_NAME}.log</file>
+    <file>${LOG_DIR}/${APPLICATION_NAME}.log</file>
     <encoder>
       <Pattern>%d{ISO8601} %-5level [%t] %logger{60}: %msg%n%throwable</Pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${LOG_PATH}/archived/${APPLICATION_NAME}-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+      <fileNamePattern>${LOG_DIR}/archived/${APPLICATION_NAME}-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+      <!-- Each file is capped at 10MB -->
       <maxFileSize>10MB</maxFileSize>
+      <!-- Keeps 7 days of history, up to 1GB total -->
       <maxHistory>7</maxHistory>
       <totalSizeCap>1GB</totalSizeCap>
     </rollingPolicy>
@@ -34,14 +36,14 @@
     </root>
   </springProfile>
 
-  <springProfile name="default | development">
-    <root level="DEBUG">
+  <springProfile name="development">
+    <root level="INFO">
       <appender-ref ref="Console" />
       <appender-ref ref="File" />
     </root>
   </springProfile>
 
-  <springProfile name="production">
+  <springProfile name="default | production">
     <root level="INFO">
       <appender-ref ref="File" />
     </root>

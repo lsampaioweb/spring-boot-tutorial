@@ -36,14 +36,14 @@
     </root>
   </springProfile>
 
-  <springProfile name="default | development">
+  <springProfile name="development">
     <root level="INFO">
       <appender-ref ref="Console" />
       <appender-ref ref="File" />
     </root>
   </springProfile>
 
-  <springProfile name="production">
+  <springProfile name="default | production">
     <root level="INFO">
       <appender-ref ref="File" />
     </root>
