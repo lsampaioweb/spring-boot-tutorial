@@ -4,16 +4,15 @@
 
 ## Overview
 
-Redis is an open-source, in-memory data structure store. It can act as a **database**, **cache**, or **message broker**. This tutorial demonstrates Redis as a **data store** — objects are persisted directly in Redis Hash structures using `RedisTemplate`. No SQL database is involved.
+Redis is an open-source, in-memory data structure store. It can act as a **database**, **cache**, or **message broker**.
 
-**When to use Redis as a data store vs. a cache layer:**
+The Redis sample is split into three focused sub-projects:
 
-| Approach | When to use |
-|----------|-------------|
-| **Data store** (this sample) | Redis is the primary source of truth; data lives in Redis permanently |
-| **Cache layer** | Redis sits in front of a primary database (e.g. PostgreSQL); data has TTL and can be evicted |
-
-The `samples/22-redis` project implements the data store approach and provides a production-ready pattern you can adapt for either use case.
+| Sub-project | Path | Demonstrates |
+|-------------|------|--------------|
+| `datastore` | `samples/22-redis/datastore` | Redis as the primary data store using `RedisTemplate` and Hash operations |
+| `cache-layer` | `samples/22-redis/cache-layer` | Redis as a cache in front of a primary database using `@Cacheable` / `@CacheEvict` |
+| `pubsub-events` | `samples/22-redis/pubsub-events` | Pub/Sub messaging using Redis channels and `MessageListenerAdapter` |
 
 ## Prerequisites
 
@@ -129,8 +128,19 @@ PONG
 
 ## Running the Sample
 
+Choose the sub-project:
+
 ```bash
-cd samples/22-redis
+# Datastore
+cd samples/22-redis/datastore
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+
+# Cache layer
+cd samples/22-redis/cache-layer
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+
+# Pub/Sub events
+cd samples/22-redis/pubsub-events
 mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 

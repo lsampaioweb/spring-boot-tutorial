@@ -2,7 +2,15 @@
 
 # Spring Boot + HashiCorp Vault
 
-This tutorial shows how to read secrets from HashiCorp Vault using the sample application in `samples/21-vault`. On startup, the `VaultSecretRegistry` loads all configured secrets into an in-memory cache. No further requests are made to Vault after startup.
+This tutorial shows how to read secrets from HashiCorp Vault using the sample applications in `samples/21-vault`. On startup, the `VaultSecretRegistry` loads all configured secrets into an in-memory cache. No further requests are made to Vault after startup.
+
+The Vault sample is split into three focused sub-projects:
+
+| Sub-project | Path | Demonstrates |
+|-------------|------|--------------|
+| `single-secret` | `samples/21-vault/single-secret` | Load a single secret at startup |
+| `multiple-secrets` | `samples/21-vault/multiple-secrets` | Load a list of secrets defined in `application.yml` |
+| `secret-rotation` | `samples/21-vault/secret-rotation` | Reload secrets at runtime without restarting the application |
 
 ## Prerequisites
 1. Podman with Podman Compose
@@ -33,10 +41,11 @@ podman exec tutorial-vault vault kv put secret/spring-boot-tutorial api-secret=m
 ```
 
 ## 3. Configure Environment
-Go to the sample folder:
+
+Go to the sub-project folder you want to run (e.g. `multiple-secrets`):
 
 ```bash
-cd samples/21-vault
+cd samples/21-vault/multiple-secrets
 ```
 
 Edit `.env` and uncomment `VAULT_TOKEN`:
@@ -52,7 +61,7 @@ Load the environment variables and start with the development profile:
 set -a && source .env && set +a && mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 
-On startup, the application reads all secrets listed under `app.vault.secrets` in `application.yml` and caches them. Check `logs/vault.log` to confirm successful loading.
+Repeat from step 3 for the other sub-projects (`single-secret`, `secret-rotation`) to explore each pattern.
 
 ## 5. Configuration Reference
 Environment variables (set in `.env` or exported before running):

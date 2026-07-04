@@ -91,11 +91,11 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 1. [Traefik](documentation/spring/integrations/traefik.md)
     - Integrating Traefik as a reverse proxy for container routing.
 1. [Vault](documentation/spring/integrations/vault.md)
-    - Reading secrets from HashiCorp Vault with startup caching.
+    - Three sub-projects: `single-secret`, `multiple-secrets`, `secret-rotation` — startup-cached secret loading from HashiCorp Vault.
 1. [PostgreSQL](documentation/spring/integrations/postgresql.md)
-    - Integrating PostgreSQL database via JdbcClient.
+    - Three sub-projects: `crud` (single-record CRUD), `batch` (bulk inserts via `NamedParameterJdbcTemplate`), `transactions` (atomic transfers with `@Transactional`).
 1. [Redis](documentation/spring/integrations/redis.md)
-    - Using Redis for caching and data storage.
+    - Three sub-projects: `datastore` (Redis as primary store), `cache-layer` (Redis in front of a database), `pubsub-events` (Redis pub/sub messaging).
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
     - Messaging with RabbitMQ (direct, fanout, topic, headers exchanges).
 
