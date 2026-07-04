@@ -1,0 +1,13 @@
+server:
+  port: 9443
+  error:
+    include-stacktrace: "never"
+
+management:
+  endpoint:
+    health:
+      show-details: "never"
+
+springdoc:
+  swagger-ui:
+    enabled: false

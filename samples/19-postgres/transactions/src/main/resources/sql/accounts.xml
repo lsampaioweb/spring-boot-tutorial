@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <entry key="sql.accounts.find-by-id">SELECT id, owner_name, balance FROM accounts WHERE id = :id</entry>
+  <entry key="sql.accounts.decrease-balance">UPDATE accounts SET balance = balance - :amount WHERE id = :id AND balance >= :amount</entry>
+  <entry key="sql.accounts.increase-balance">UPDATE accounts SET balance = balance + :amount WHERE id = :id</entry>
+</properties>
