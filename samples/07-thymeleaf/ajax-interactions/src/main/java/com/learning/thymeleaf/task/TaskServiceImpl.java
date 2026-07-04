@@ -21,6 +21,7 @@ class TaskServiceImpl implements TaskService {
   public Task add(String title) {
     Task task = new Task(counter.getAndIncrement(), title);
     tasks.add(task);
+
     return task;
   }
 

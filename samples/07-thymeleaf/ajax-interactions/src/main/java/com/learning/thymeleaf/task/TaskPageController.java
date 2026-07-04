@@ -1,5 +1,7 @@
 package com.learning.thymeleaf.task;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.http.HttpStatus;
@@ -35,7 +37,7 @@ class TaskPageController {
   // Full page — initial load.
   @GetMapping
   String list(Model model) {
-    var tasks = taskService.findAll();
+    List<Task> tasks = taskService.findAll();
     log.info(logMessages.get(LOG_TASK_LIST, tasks.size()));
 
     model.addAttribute("tasks", tasks);
@@ -49,7 +51,7 @@ class TaskPageController {
     Task task = taskService.add(title);
     log.info(logMessages.get(LOG_TASK_ADDED, task.title()));
 
-    model.addAttribute("task", task);
+    model.addAttribute("tasks", List.of(task));
     return "task/index :: task-row";
   }
 
