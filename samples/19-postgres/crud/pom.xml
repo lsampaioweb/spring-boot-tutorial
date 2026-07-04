@@ -32,12 +32,14 @@
   </scm>
 
   <dependencies>
+    <!-- Unit and integration testing support -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
 
+    <!-- Live reload and developer tools; excluded from production builds -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -45,42 +47,52 @@
       <optional>true</optional>
     </dependency>
 
+    <!-- Boilerplate reduction via annotations (@Slf4j, @Data, etc.) -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
 
+    <!-- Health and info endpoints via Spring Boot Actuator -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
+    <!-- Embedded web server, MVC, REST support -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
+    <!-- Input validation: @NotNull, @NotBlank, @Email, etc. for form/request validation -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- OpenAPI 3 documentation with Swagger UI; auto-generates /swagger-ui.html -->
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${springdoc.version}</version>
     </dependency>
 
-    <!-- Spring Boot Starter for JDBC -->
+    <!-- Spring JDBC for database access without ORM; row mapper for result sets -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-jdbc</artifactId>
     </dependency>
 
-    <!-- PostgreSQL Driver -->
+    <!-- PostgreSQL JDBC driver; enables connection to PostgreSQL databases -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!-- HikariCP Connection Pool (included by default in Spring Boot JDBC) -->
+    <!-- Connection pooling: manages database connection lifecycle and reuse -->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>

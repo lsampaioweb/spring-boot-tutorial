@@ -15,6 +15,10 @@ public class LogMessages {
   }
 
   public String get(String key, Object... args) {
-    return messageSource.getMessage(key, args, Locale.ENGLISH);
+    return get(Locale.ENGLISH, key, args);
+  }
+
+  public String get(Locale locale, String key, Object... args) {
+    return messageSource.getMessage(key, args, locale);
   }
 }

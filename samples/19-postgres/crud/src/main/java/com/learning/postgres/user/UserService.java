@@ -2,40 +2,33 @@ package com.learning.postgres.user;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+/**
+ * Service interface for user business logic.
+ */
+interface UserService {
 
-@Service
-class UserService {
+  /**
+   * Retrieve all users.
+   */
+  List<UserResponse> findAll();
 
-  private final UserRepository userRepository;
+  /**
+   * Retrieve a user by ID.
+   */
+  UserResponse findById(Long id);
 
-  UserService(UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
+  /**
+   * Create a new user.
+   */
+  UserResponse create(CreateUserRequest request);
 
-  @Transactional(readOnly = true)
-  List<Model> findAll() {
-    return userRepository.findAll();
-  }
+  /**
+   * Update an existing user.
+   */
+  UserResponse update(Long id, UpdateUserRequest request);
 
-  @Transactional(readOnly = true)
-  Model findById(Long id) {
-    return userRepository.findById(id);
-  }
-
-  @Transactional
-  void insert(Model model) {
-    userRepository.insert(model);
-  }
-
-  @Transactional
-  void insertAll(List<Model> list) {
-    userRepository.insertAll(list);
-  }
-
-  @Transactional
-  void deleteById(Long id) {
-    userRepository.deleteById(id);
-  }
+  /**
+   * Delete a user by ID.
+   */
+  int delete(Long id);
 }

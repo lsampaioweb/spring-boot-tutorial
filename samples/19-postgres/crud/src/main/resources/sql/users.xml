@@ -4,5 +4,6 @@
   <entry key="sql.users.find-all">SELECT id, name, email FROM users</entry>
   <entry key="sql.users.find-by-id">SELECT id, name, email FROM users WHERE id = :id</entry>
   <entry key="sql.users.insert">INSERT INTO users (name, email) VALUES (:name, :email)</entry>
+  <entry key="sql.users.update">UPDATE users SET name = :name, email = :email WHERE id = :id</entry>
   <entry key="sql.users.delete-by-id">DELETE FROM users WHERE id = :id</entry>
 </properties>

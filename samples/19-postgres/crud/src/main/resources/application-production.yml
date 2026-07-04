@@ -2,7 +2,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,metrics"
+        include: "health,info"
   endpoint:
     health:
       show-details: "never"
