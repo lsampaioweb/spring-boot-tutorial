@@ -1,22 +1,12 @@
 package com.learning.postgres.user;
 
-public class UserNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-  private static final String MESSAGE_KEY = "error.user.not.found";
+import com.learning.postgres.exception.AppException;
 
-  private final transient Object[] args;
+class UserNotFoundException extends AppException {
 
-  public UserNotFoundException(Long id) {
-    super(MESSAGE_KEY);
-
-    this.args = new Object[] { id };
-  }
-
-  public String getMessageKey() {
-    return MESSAGE_KEY;
-  }
-
-  public Object[] getArgs() {
-    return args;
+  UserNotFoundException(Long id) {
+    super("error.user.not.found", new Object[] { id }, HttpStatus.NOT_FOUND);
   }
 }

@@ -1,22 +1,12 @@
 package com.learning.postgres.db;
 
-public class DatabaseException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-  private final String messageKey;
-  private final transient Object[] args;
+import com.learning.postgres.exception.AppException;
+
+public class DatabaseException extends AppException {
 
   public DatabaseException(String messageKey, Throwable cause, Object... args) {
-    super(messageKey, cause);
-
-    this.messageKey = messageKey;
-    this.args = args;
-  }
-
-  public String getMessageKey() {
-    return messageKey;
-  }
-
-  public Object[] getArgs() {
-    return args == null ? null : args.clone();
+    super(messageKey, args, HttpStatus.INTERNAL_SERVER_ERROR, cause);
   }
 }
