@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <entry key="sql.users.find-all">SELECT id, name, email FROM users</entry>
+  <entry key="sql.users.insert">INSERT INTO users (name, email) VALUES (:name, :email)</entry>
+</properties>
