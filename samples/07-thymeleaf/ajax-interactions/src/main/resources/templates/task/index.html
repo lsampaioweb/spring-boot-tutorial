@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Tasks — Thymeleaf AJAX</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+
+<body>
+  <h1>Tasks</h1>
+
+  <div class="add-form">
+    <input id="title-input" type="text" placeholder="New task title" />
+    <button id="add-btn">Add</button>
+  </div>
+
+  <!--
+    th:fragment="task-list" marks this element so the controller can return
+    just this section as a fragment response if needed in the future.
+    Currently we return individual rows (task-row) for adds.
+  -->
+  <table id="task-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Title</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="task-body" th:fragment="task-list">
+      <tr th:if="${#lists.isEmpty(tasks)}">
+        <td colspan="3">No tasks yet.</td>
+      </tr>
+      <tr th:each="t : ${tasks}" th:fragment="task-row" th:id="'row-' + ${t.id()}">
+        <td th:text="${t.id()}"></td>
+        <td th:text="${t.title()}"></td>
+        <td><button class="delete-btn" th:data-id="${t.id()}">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!--
+    When the controller returns "task/index :: task-row" for a single task,
+    Thymeleaf renders only the <tr th:fragment="task-row"> element.
+    JS appends that HTML to #task-body without a full page reload.
+  -->
+  <script th:src="@{/js/tasks.js}"></script>
+</body>
+
+</html>

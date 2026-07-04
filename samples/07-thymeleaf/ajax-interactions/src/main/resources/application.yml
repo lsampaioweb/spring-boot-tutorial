@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: "thymeleaf-ajax-interactions"
+  messages:
+    basename: "i18n/messages"
+  threads:
+    virtual:
+      enabled: true
+
+logging:
+  config: "classpath:log/logback-spring.xml"
