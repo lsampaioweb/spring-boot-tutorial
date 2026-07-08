@@ -103,6 +103,8 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
     - Three sub-projects: `datastore` (Redis as primary store), `cache-layer` (Redis in front of a database), `pubsub-events` (Redis pub/sub messaging).
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
     - Messaging with RabbitMQ (direct, fanout, topic, headers exchanges).
+1. [Geography](samples/23-geography/README.md)
+    - PostgreSQL-backed REST sample for countries, states, and cities CRUD.
 
 ## Infrastructure Services
 
@@ -143,6 +145,7 @@ The following samples expose Swagger UI when running with the `development` prof
 - `samples/19-postgres/transactions` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/20-websocket/server` → `http://localhost:8090/swagger-ui/index.html`
 - `samples/22-redis/datastore` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/23-geography` → `http://localhost:8080/swagger-ui/index.html`
 
 Run each sample from its own folder:
 
