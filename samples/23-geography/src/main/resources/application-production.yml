@@ -1,0 +1,8 @@
+server:
+  port: 8080
+  error:
+    include-stacktrace: "never"
+
+springdoc:
+  swagger-ui:
+    enabled: false

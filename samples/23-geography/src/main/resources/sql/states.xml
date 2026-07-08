@@ -1,0 +1,8 @@
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <entry key="sql.states.find-all">SELECT id, country_id, name, abbreviation FROM states ORDER BY name</entry>
+  <entry key="sql.states.find-by-id">SELECT id, country_id, name, abbreviation FROM states WHERE id = :id</entry>
+  <entry key="sql.states.insert">INSERT INTO states (country_id, name, abbreviation) VALUES (:countryId, :name, :abbreviation)</entry>
+  <entry key="sql.states.update">UPDATE states SET country_id = :countryId, name = :name, abbreviation = :abbreviation WHERE id = :id</entry>
+  <entry key="sql.states.delete-by-id">DELETE FROM states WHERE id = :id</entry>
+</properties>

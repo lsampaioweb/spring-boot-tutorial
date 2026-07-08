@@ -1,0 +1,8 @@
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <entry key="sql.countries.find-all">SELECT id, name, iso_code FROM countries ORDER BY name</entry>
+  <entry key="sql.countries.find-by-id">SELECT id, name, iso_code FROM countries WHERE id = :id</entry>
+  <entry key="sql.countries.insert">INSERT INTO countries (name, iso_code) VALUES (:name, :isoCode)</entry>
+  <entry key="sql.countries.update">UPDATE countries SET name = :name, iso_code = :isoCode WHERE id = :id</entry>
+  <entry key="sql.countries.delete-by-id">DELETE FROM countries WHERE id = :id</entry>
+</properties>

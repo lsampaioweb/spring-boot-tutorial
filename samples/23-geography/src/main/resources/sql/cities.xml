@@ -1,0 +1,8 @@
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <entry key="sql.cities.find-all">SELECT id, state_id, name FROM cities ORDER BY name</entry>
+  <entry key="sql.cities.find-by-id">SELECT id, state_id, name FROM cities WHERE id = :id</entry>
+  <entry key="sql.cities.insert">INSERT INTO cities (state_id, name) VALUES (:stateId, :name)</entry>
+  <entry key="sql.cities.update">UPDATE cities SET state_id = :stateId, name = :name WHERE id = :id</entry>
+  <entry key="sql.cities.delete-by-id">DELETE FROM cities WHERE id = :id</entry>
+</properties>
