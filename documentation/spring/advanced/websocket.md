@@ -52,8 +52,16 @@ Main decisions:
 Core flow:
 
 1. Client sends to `/app/chat.send`.
-1. Server handles the payload and forwards to `/topic/messages`.
+1. Server handles the payload, publishes an internal `ChatMessagePublishedEvent`, and forwards to `/topic/messages`.
 1. All subscribed clients receive the message.
+
+Internal event flow:
+
+1. `ChatSocketEndpoint` publishes `ChatMessagePublishedEvent` through `ChatMessageEventPublisher`.
+1. `ChatMessageAuditListener` consumes the event with `@Async` for non-blocking audit processing.
+1. Locale is extracted before publish and carried inside the immutable event payload.
+
+This demonstrates cross-package decoupling with Spring Application Events.
 
 The sample also tracks active session count and exposes:
 

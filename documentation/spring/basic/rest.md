@@ -154,7 +154,10 @@ This guide will walk you through setting up a Spring Boot application with a `RE
               comparator = Comparator.comparing(User::getEmail);
               break;
             default:
-              throw new IllegalArgumentException("Invalid sort property: " + order.getProperty());
+              throw new IllegalArgumentException(messageSource.getMessage(
+                  "error.sort.property.invalid",
+                  new Object[] { order.getProperty() },
+                  Locale.ENGLISH));
           }
 
           if (order.getDirection() == Sort.Direction.DESC) {
@@ -182,41 +185,41 @@ This guide will walk you through setting up a Spring Boot application with a `RE
     public class UserController {
 
       private final UserService userService;
-      private final PagedResourcesAssembler<User> pagedResourcesAssembler;
+      private final PagedResourcesAssembler<UserResponse> pagedResourcesAssembler;
 
-      public UserController(UserService userService, PagedResourcesAssembler<User> pagedResourcesAssembler) {
+      public UserController(UserService userService, PagedResourcesAssembler<UserResponse> pagedResourcesAssembler) {
         this.userService = userService;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
       }
 
       @GetMapping
-      public ResponseEntity<PagedModel<EntityModel<User>>> findAll(Pageable pageable) {
-        Page<User> users = userService.findAll(pageable);
-        PagedModel<EntityModel<User>> pagedModel = pagedResourcesAssembler.toModel(users);
+      public ResponseEntity<PagedModel<EntityModel<UserResponse>>> findAll(Pageable pageable) {
+        Page<UserResponse> users = userService.findAll(pageable);
+        PagedModel<EntityModel<UserResponse>> pagedModel = pagedResourcesAssembler.toModel(users);
 
         return ResponseEntity.ok(pagedModel);
       }
 
       @GetMapping("/{id}")
-      public ResponseEntity<User> findById(@PathVariable Long id) {
-        Optional<User> user = userService.findById(id);
+      public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+        Optional<UserResponse> user = userService.findById(id);
 
         return user.map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
       }
 
       @PostMapping
-      public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
-        User createdUser = userService.create(user);
+      public ResponseEntity<UserResponse> create(@Valid @RequestBody UserRequest request, UriComponentsBuilder uriBuilder) {
+        UserResponse createdUser = userService.create(request);
 
-        URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
+        URI location = getLocation(uriBuilder, "/{id}", createdUser.id());
 
         return ResponseEntity.created(location).body(createdUser);
       }
 
       @PutMapping("/{id}")
-      public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
-        Optional<User> updatedUser = userService.update(id, user);
+      public ResponseEntity<UserResponse> update(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+        Optional<UserResponse> updatedUser = userService.update(id, request);
 
         return updatedUser.map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
@@ -227,7 +230,7 @@ This guide will walk you through setting up a Spring Boot application with a `RE
         boolean userRemoved = userService.delete(id);
 
         if (userRemoved) {
-          return ResponseEntity.ok().build();
+          return ResponseEntity.noContent().build();
         } else {
           return ResponseEntity.notFound().build();
         }

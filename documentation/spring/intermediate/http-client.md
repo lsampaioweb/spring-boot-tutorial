@@ -79,19 +79,18 @@ Spring Boot 3.1 and later versions include the new HTTP Client, which provides a
     class UserService {
 
       private final RestClient.Builder restClientBuilder;
+      private final ExternalApiProperties apiProperties;
       private RestClient restClient;
 
-      @Value("${external.api.users}")
-      private String usersUrl;
-
-      public UserService(RestClient.Builder restClientBuilder) {
+      public UserService(RestClient.Builder restClientBuilder, ExternalApiProperties apiProperties) {
         this.restClientBuilder = restClientBuilder;
+        this.apiProperties = apiProperties;
       }
 
       @PostConstruct
       private void init() {
         this.restClient = restClientBuilder
-            .baseUrl(usersUrl)
+            .baseUrl(apiProperties.users())
             .build();
       }
 

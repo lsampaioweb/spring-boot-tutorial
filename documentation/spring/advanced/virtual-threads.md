@@ -44,7 +44,7 @@ Virtual Threads are a lightweight concurrency mechanism introduced in Java as pa
       }
 
       @GetMapping("/block/{seconds}")
-      public String delay(@PathVariable int seconds) {
+      public ResponseEntity<DelayResponse> delay(@PathVariable int seconds) {
         ResponseEntity<Void> result = restClient
             .get()
             .uri("/delay/" + seconds)
@@ -55,7 +55,7 @@ Virtual Threads are a lightweight concurrency mechanism introduced in Java as pa
 
         log.info(message);
 
-        return message;
+        return ResponseEntity.ok(new DelayResponse(result.getStatusCode().value(), Thread.currentThread().toString()));
       }
     }
     ```

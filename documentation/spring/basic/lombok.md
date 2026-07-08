@@ -65,6 +65,8 @@ Lombok is a Java library that provides annotations to simplify Java development 
     }
     ```
 
+    For Spring configuration binding (`@ConfigurationProperties`), prefer immutable Java records instead of mutable `@Getter`/`@Setter` classes.
+
 1. @ToString.
 
     Generate a `toString()` method that includes all fields of the class.
@@ -164,8 +166,11 @@ Lombok is a Java library that provides annotations to simplify Java development 
 
     @Slf4j
     public class UserService {
+
+      private static final String LOG_USER_MESSAGE = "log.user.message";
+
       public void logMessage() {
-        log.info("This is a log message");
+        log.info(logMessages.get(LOG_USER_MESSAGE));
       }
     }
     ```

@@ -66,12 +66,17 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
     - Input validation for REST APIs and web forms.
 1. [Exception Handling](documentation/spring/intermediate/exception-handling.md)
     - Handling exceptions in Spring Boot applications.
+1. [Events](documentation/spring/intermediate/events.md)
+    - Decoupling cross-package communication with Spring Application Events and async listeners.
 1. [HTTPS](documentation/spring/intermediate/https.md)
     - Securing your application with HTTPS.
 1. [HTTP Client](documentation/spring/intermediate/http-client.md)
     - Making HTTP requests using the new HTTP Client in Spring Boot.
     - Handle pagination.
     - Handle sorting.
+1. [MapStruct](documentation/spring/intermediate/mapstruct.md)
+    - Compile-time DTO mapping generation.
+    - Explanation of @Mapper and @Mapping options.
 
 ### Spring Boot Advanced:
 1. [Cloud Config](documentation/spring/advanced/cloud-config.md)
@@ -133,9 +138,11 @@ The following samples expose Swagger UI when running with the `development` prof
 - `samples/18-rabbitmq/fanout` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/18-rabbitmq/headers` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/18-rabbitmq/topic` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/19-postgres` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/19-postgres/crud` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/19-postgres/batch` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/19-postgres/transactions` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/20-websocket/server` → `http://localhost:8090/swagger-ui/index.html`
-- `samples/22-redis` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/22-redis/datastore` → `http://localhost:8080/swagger-ui/index.html`
 
 Run each sample from its own folder:
 

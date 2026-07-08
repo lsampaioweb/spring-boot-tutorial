@@ -178,17 +178,17 @@ Centralizing application configuration using Spring Boot Config Server simplifie
         @Slf4j
         public class helloController {
 
-          @Value("${user.role}")
-          private String role;
+          private final HelloConfigurationProperties properties;
 
-          @Value("${server.port}")
-          private int port;
+          public helloController(HelloConfigurationProperties properties) {
+            this.properties = properties;
+          }
 
           @GetMapping("/hello")
-          public String sayHello() {
-            String message = String.format("Message: %s - %d", role, port);
+          public ResponseEntity<HelloResponse> sayHello() {
+            String message = String.format("Message: %s - %d", properties.role(), properties.serverPort());
 
-            return message;
+            return ResponseEntity.ok(new HelloResponse(message));
           }
         }
         ```
