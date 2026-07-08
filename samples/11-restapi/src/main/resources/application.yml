@@ -1,6 +1,11 @@
 spring:
   application:
     name: "restapi"
+  messages:
+    basename: "i18n/messages"
+  threads:
+    virtual:
+      enabled: true
   autoconfigure:
     exclude: "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
   profiles:
@@ -15,7 +20,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,metrics"
+        include: "health,info,metrics"
   endpoint:
     health:
       show-details: "when-authorized"

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import jakarta.validation.Valid;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import jakarta.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,35 +36,36 @@ class ProductController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Product>> findAll() {
+  public ResponseEntity<List<ProductResponse>> findAll() {
     log.info(getMethodCalledMessage("findAll"));
 
     return ResponseEntity.ok(service.findAll());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Product> findById(@PathVariable Long id) {
+  public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
     log.info(getMethodCalledMessage("findById"));
 
     return ResponseEntity.ok(service.findById(id));
   }
 
   @PostMapping
-  public ResponseEntity<Product> create(@Valid @RequestBody Product entity, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<ProductResponse> create(@Valid @RequestBody ProductRequest request,
+      UriComponentsBuilder uriBuilder) {
     log.info(getMethodCalledMessage("create"));
 
-    Product createdEntity = service.create(entity);
+    ProductResponse createdEntity = service.create(request);
 
-    URI location = getLocation(uriBuilder, "/{id}", createdEntity.getId());
+    URI location = getLocation(uriBuilder, "/{id}", createdEntity.id());
 
     return ResponseEntity.created(Objects.requireNonNull(location)).body(createdEntity);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Product> update(@PathVariable Long id, @Valid @RequestBody Product entity) {
+  public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
     log.info(getMethodCalledMessage("update"));
 
-    Product updatedEntity = service.update(id, entity);
+    ProductResponse updatedEntity = service.update(id, request);
 
     return ResponseEntity.ok(updatedEntity);
   }
@@ -75,7 +76,7 @@ class ProductController {
 
     service.delete(id);
 
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {

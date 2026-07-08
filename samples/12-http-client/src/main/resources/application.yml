@@ -2,6 +2,9 @@
 spring:
   application:
     name: "http-client"
+  threads:
+    virtual:
+      enabled: true
   autoconfigure:
     exclude: "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
   profiles:
@@ -21,7 +24,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,metrics"
+        include: "health,info,metrics"
   endpoint:
     health:
       show-details: "when-authorized"

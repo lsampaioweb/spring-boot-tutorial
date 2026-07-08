@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 class UserService {
 
+  private final UserDtoMapper mapper;
   private List<User> users = new ArrayList<>();
   private AtomicLong idCounter = new AtomicLong();
 
-  public UserService() {
+  UserService(UserDtoMapper mapper) {
+    this.mapper = mapper;
+
     users.add(new User(idCounter.incrementAndGet(), "user-01", "user-01@example.com"));
     users.add(new User(idCounter.incrementAndGet(), "user-02", "user-02@example.com"));
     users.add(new User(idCounter.incrementAndGet(), "user-03", "user-03@example.com"));
@@ -27,54 +30,58 @@ class UserService {
     users.add(new User(idCounter.incrementAndGet(), "user-10", "user-10@example.com"));
   }
 
-  List<User> findAll() {
-    return users;
+  List<UserResponse> findAll() {
+    return users.stream().map(mapper::toResponse).toList();
   }
 
-  User findById(Long id) {
+  UserResponse findById(Long id) {
+    return mapper.toResponse(findEntityById(id));
+  }
+
+  UserResponse create(UserRequest request) {
+    User entity = mapper.toEntity(request);
+    boolean entityExists = users.stream().anyMatch(hasSameIdentity(entity));
+
+    if (entityExists) {
+      throw new UserAlreadyExistsException(entity);
+    }
+
+    entity.setId(idCounter.incrementAndGet());
+    users.add(entity);
+
+    return mapper.toResponse(entity);
+  }
+
+  UserResponse update(Long id, UserRequest request) {
+    User entity = findEntityById(id);
+
+    entity.setName(request.name());
+    entity.setEmail(request.email());
+
+    return mapper.toResponse(entity);
+  }
+
+  boolean delete(Long id) {
+    User entity = findEntityById(id);
+
+    return users.remove(entity);
+  }
+
+  private User findEntityById(Long id) {
     Optional<User> entity = users.stream().filter(getById(id)).findFirst();
 
     if (entity.isPresent()) {
       return entity.get();
-    } else {
-      throw new UserNotFoundException(id);
     }
-  }
 
-  User create(User entity) {
-    boolean entityExists = users.stream().anyMatch(equals(entity));
-
-    if (entityExists) {
-      throw new UserAlreadyExistsException(entity);
-    } else {
-      entity.setId(idCounter.incrementAndGet());
-
-      users.add(entity);
-
-      return entity;
-    }
-  }
-
-  User update(Long id, User entityDetails) {
-    User entity = findById(id);
-
-    entity.setName(entityDetails.getName());
-    entity.setEmail(entityDetails.getEmail());
-
-    return entity;
-  }
-
-  boolean delete(Long id) {
-    User entity = findById(id);
-
-    return users.remove(entity);
+    throw new UserNotFoundException(id);
   }
 
   private Predicate<? super User> getById(Long id) {
     return u -> u.getId().equals(id);
   }
 
-  private Predicate<? super User> equals(User entity) {
+  private Predicate<? super User> hasSameIdentity(User entity) {
     return u -> u.getName().equals(entity.getName()) &&
         u.getEmail().equals(entity.getEmail());
   }

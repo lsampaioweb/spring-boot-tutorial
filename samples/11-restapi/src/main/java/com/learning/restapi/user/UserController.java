@@ -1,11 +1,9 @@
 package com.learning.restapi.user;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -34,19 +32,7 @@ class UserController {
 
   @GetMapping
   public ResponseEntity<PagedModel<EntityModel<UserResponse>>> findAll(Pageable pageable) {
-    Page<UserResponse> users = userService.findAll(pageable);
-    List<EntityModel<UserResponse>> content = users.getContent()
-        .stream()
-        .map(EntityModel::of)
-        .toList();
-
-    PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(
-        users.getSize(),
-        users.getNumber(),
-        users.getTotalElements(),
-        users.getTotalPages());
-
-    PagedModel<EntityModel<UserResponse>> pagedModel = PagedModel.of(content, metadata);
+    PagedModel<EntityModel<UserResponse>> pagedModel = userService.findAllPaged(pageable);
 
     return ResponseEntity.ok(pagedModel);
   }
@@ -81,7 +67,7 @@ class UserController {
     boolean userRemoved = userService.delete(id);
 
     if (userRemoved) {
-      return ResponseEntity.ok().build();
+      return ResponseEntity.noContent().build();
     } else {
       return ResponseEntity.notFound().build();
     }

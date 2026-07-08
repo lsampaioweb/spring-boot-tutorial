@@ -8,6 +8,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Links;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -26,11 +27,13 @@ class UserService {
   private static final String ID_PARAMETER = "/{id}";
   private final RestClient.Builder restClientBuilder;
   private final ExternalApiProperties apiProperties;
+  private final UserDtoMapper mapper;
   private RestClient restClient;
 
-  UserService(RestClient.Builder restClientBuilder, ExternalApiProperties apiProperties) {
+  UserService(RestClient.Builder restClientBuilder, ExternalApiProperties apiProperties, UserDtoMapper mapper) {
     this.restClientBuilder = restClientBuilder;
     this.apiProperties = apiProperties;
+    this.mapper = mapper;
   }
 
   @PostConstruct
@@ -40,44 +43,61 @@ class UserService {
         .build();
   }
 
-  PagedModel<EntityModel<User>> findAll(Pageable pageable) {
-    return restClient
+  PagedModel<EntityModel<UserResponse>> findAll(Pageable pageable) {
+    PagedModel<EntityModel<User>> users = restClient
         .get()
         .uri(Objects.requireNonNull(getPagingAndSortingUrl(pageable)))
         .retrieve()
         .body(new ParameterizedTypeReference<PagedModel<EntityModel<User>>>() {
         });
+
+    if (users == null) {
+      return PagedModel.empty();
+    }
+
+    return PagedModel.of(
+        users.getContent().stream()
+            .map(entityModel -> {
+              UserResponse content = mapper.toResponse(Objects.requireNonNull(entityModel.getContent()));
+              Links links = entityModel.getLinks();
+              return EntityModel.of(content, links);
+            })
+            .toList(),
+        users.getMetadata(),
+        users.getLinks());
   }
 
-  Optional<User> findById(Integer id) {
+  Optional<UserResponse> findById(Integer id) {
     User user = restClient
         .get()
         .uri(ID_PARAMETER, id)
         .retrieve()
         .body(User.class);
 
-    return Optional.ofNullable(user);
+    return Optional.ofNullable(user).map(mapper::toResponse);
   }
 
-  User create(User user) {
-    return restClient
+  UserResponse create(UserRequest request) {
+    User user = restClient
         .post()
         .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
-        .body(Objects.requireNonNull(user))
+        .body(mapper.toEntity(Objects.requireNonNull(request)))
         .retrieve()
         .body(User.class);
+
+    return mapper.toResponse(Objects.requireNonNull(user));
   }
 
-  Optional<User> update(Integer id, User user) {
+  Optional<UserResponse> update(Integer id, UserRequest request) {
     User updatedUser = restClient
         .put()
         .uri(ID_PARAMETER, id)
         .contentType(Objects.requireNonNull(MediaType.APPLICATION_JSON))
-        .body(Objects.requireNonNull(user))
+        .body(mapper.toEntity(Objects.requireNonNull(request)))
         .retrieve()
         .body(User.class);
 
-    return Optional.ofNullable(updatedUser);
+    return Optional.ofNullable(updatedUser).map(mapper::toResponse);
   }
 
   boolean delete(Integer id) {

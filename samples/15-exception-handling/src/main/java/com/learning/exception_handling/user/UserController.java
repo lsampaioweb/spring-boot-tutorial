@@ -4,6 +4,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import jakarta.validation.Valid;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import jakarta.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,35 +36,35 @@ class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<List<User>> findAll() {
+  public ResponseEntity<List<UserResponse>> findAll() {
     log.info(getMethodCalledMessage("findAll"));
 
     return ResponseEntity.ok(service.findAll());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> findById(@PathVariable Long id) {
+  public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
     log.info(getMethodCalledMessage("findById"));
 
     return ResponseEntity.ok(service.findById(id));
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@Valid @RequestBody User entity, UriComponentsBuilder uriBuilder) {
+  public ResponseEntity<UserResponse> create(@Valid @RequestBody UserRequest request, UriComponentsBuilder uriBuilder) {
     log.info(getMethodCalledMessage("create"));
 
-    User createdEntity = service.create(entity);
+    UserResponse createdEntity = service.create(request);
 
-    URI location = getLocation(uriBuilder, "/{id}", createdEntity.getId());
+    URI location = getLocation(uriBuilder, "/{id}", createdEntity.id());
 
     return ResponseEntity.created(Objects.requireNonNull(location)).body(createdEntity);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody User entity) {
+  public ResponseEntity<UserResponse> update(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
     log.info(getMethodCalledMessage("update"));
 
-    User updatedEntity = service.update(id, entity);
+    UserResponse updatedEntity = service.update(id, request);
 
     return ResponseEntity.ok(updatedEntity);
   }
@@ -74,7 +75,7 @@ class UserController {
 
     service.delete(id);
 
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {

@@ -4,24 +4,33 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 @Service
 class UserServiceImpl implements UserService {
 
+  private static final String ERROR_SORT_PROPERTY_INVALID = "error.sort.property.invalid";
+
   private final List<User> users = new ArrayList<>();
   private final AtomicLong idCounter = new AtomicLong();
+  private final MessageSource messageSource;
 
-  UserServiceImpl() {
+  UserServiceImpl(MessageSource messageSource) {
+    this.messageSource = messageSource;
+
     users.add(new User(idCounter.incrementAndGet(), "user-01", "user-01@example.com"));
     users.add(new User(idCounter.incrementAndGet(), "user-02", "user-02@example.com"));
     users.add(new User(idCounter.incrementAndGet(), "user-03", "user-03@example.com"));
@@ -41,6 +50,23 @@ class UserServiceImpl implements UserService {
     List<UserResponse> responses = sortedPaginatedUsers.stream().map(this::toResponse).toList();
 
     return new PageImpl<>(responses, Objects.requireNonNull(pageable), users.size());
+  }
+
+  @Override
+  public PagedModel<EntityModel<UserResponse>> findAllPaged(Pageable pageable) {
+    Page<UserResponse> usersPage = findAll(pageable);
+    List<EntityModel<UserResponse>> content = usersPage.getContent()
+        .stream()
+        .map(EntityModel::of)
+        .toList();
+
+    PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(
+        usersPage.getSize(),
+        usersPage.getNumber(),
+        usersPage.getTotalElements(),
+        usersPage.getTotalPages());
+
+    return PagedModel.of(content, metadata);
   }
 
   @Override
@@ -107,7 +133,7 @@ class UserServiceImpl implements UserService {
         case "id" -> Comparator.comparing(User::id);
         case "name" -> Comparator.comparing(User::name);
         case "email" -> Comparator.comparing(User::email);
-        default -> throw new IllegalArgumentException("Invalid sort property: " + order.getProperty());
+        default -> throw new IllegalArgumentException(getMessage(ERROR_SORT_PROPERTY_INVALID, order.getProperty()));
       };
 
       if (order.getDirection() == Sort.Direction.DESC) {
@@ -118,5 +144,9 @@ class UserServiceImpl implements UserService {
     }
 
     return sortedUsers;
+  }
+
+  private String getMessage(String key, Object... args) {
+    return messageSource.getMessage(key, args, Locale.ENGLISH);
   }
 }

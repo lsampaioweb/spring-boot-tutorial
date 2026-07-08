@@ -5,36 +5,32 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClient;
+
+import com.learning.virtual_threads.i18n.LogMessages;
 
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/httpbin")
+@RequestMapping("/api/v1/httpbins")
 @Slf4j
 public class HttpBinController {
 
-  private static final String HTTPBIN_BASE_URL = "https://httpbin.org/";
+  private static final String LOG_HTTPBIN_DELAY_COMPLETED = "log.httpbin.delay.completed";
 
-  private final RestClient restClient;
+  private final HttpBinService httpBinService;
+  private final LogMessages logMessages;
 
-  public HttpBinController(RestClient.Builder restClientBuilder) {
-    restClient = restClientBuilder.baseUrl(HTTPBIN_BASE_URL).build();
+  public HttpBinController(HttpBinService httpBinService, LogMessages logMessages) {
+    this.httpBinService = httpBinService;
+    this.logMessages = logMessages;
   }
 
   @GetMapping("/block/{seconds}")
-  public String delay(@PathVariable int seconds) {
-    ResponseEntity<Void> result = restClient
-        .get()
-        .uri("/delay/" + seconds)
-        .retrieve()
-        .toBodilessEntity();
+  public ResponseEntity<DelayResponse> delay(@PathVariable int seconds) {
+    DelayResponse response = httpBinService.delay(seconds);
+    log.info(logMessages.get(LOG_HTTPBIN_DELAY_COMPLETED, response.statusCode(), response.thread()));
 
-    String message = String.format("%d on %s", result.getStatusCode().value(), Thread.currentThread());
-
-    log.info(message);
-
-    return message;
+    return ResponseEntity.ok(response);
   }
 
 }

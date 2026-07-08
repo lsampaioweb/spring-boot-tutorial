@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
+import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
@@ -29,23 +31,23 @@ class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<PagedModel<EntityModel<User>>> findAll(Pageable pageable) {
-    PagedModel<EntityModel<User>> users = userService.findAll(pageable);
+  public ResponseEntity<PagedModel<EntityModel<UserResponse>>> findAll(Pageable pageable) {
+    PagedModel<EntityModel<UserResponse>> users = userService.findAll(pageable);
 
     return ResponseEntity.ok(users);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<User> findById(@PathVariable Integer id) {
-    Optional<User> user = userService.findById(id);
+  public ResponseEntity<UserResponse> findById(@PathVariable Integer id) {
+    Optional<UserResponse> user = userService.findById(id);
 
     return user.map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @PostMapping
-  public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
-    User createdUser = userService.create(user);
+  public ResponseEntity<UserResponse> create(@Valid @RequestBody UserRequest request, UriComponentsBuilder uriBuilder) {
+    UserResponse createdUser = userService.create(request);
 
     URI location = getLocation(uriBuilder, "/{id}", createdUser.id());
 
@@ -53,8 +55,8 @@ class UserController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<User> update(@PathVariable Integer id, @RequestBody User user) {
-    Optional<User> updatedUser = userService.update(id, user);
+  public ResponseEntity<UserResponse> update(@PathVariable Integer id, @Valid @RequestBody UserRequest request) {
+    Optional<UserResponse> updatedUser = userService.update(id, request);
 
     return updatedUser.map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
@@ -65,7 +67,7 @@ class UserController {
     boolean userRemoved = userService.delete(id);
 
     if (userRemoved) {
-      return ResponseEntity.ok().build();
+      return ResponseEntity.noContent().build();
     } else {
       return ResponseEntity.notFound().build();
     }

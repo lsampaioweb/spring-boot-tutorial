@@ -11,10 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 class ProductService {
 
+  private final ProductDtoMapper mapper;
   private List<Product> products = new ArrayList<>();
   private AtomicLong idCounter = new AtomicLong();
 
-  public ProductService() {
+  ProductService(ProductDtoMapper mapper) {
+    this.mapper = mapper;
+
     products.add(new Product(idCounter.incrementAndGet(), "product-01"));
     products.add(new Product(idCounter.incrementAndGet(), "product-02"));
     products.add(new Product(idCounter.incrementAndGet(), "product-03"));
@@ -27,53 +30,57 @@ class ProductService {
     products.add(new Product(idCounter.incrementAndGet(), "product-10"));
   }
 
-  List<Product> findAll() {
-    return products;
+  List<ProductResponse> findAll() {
+    return products.stream().map(mapper::toResponse).toList();
   }
 
-  Product findById(Long id) {
+  ProductResponse findById(Long id) {
+    return mapper.toResponse(findEntityById(id));
+  }
+
+  ProductResponse create(ProductRequest request) {
+    Product entity = mapper.toEntity(request);
+    boolean entityExists = products.stream().anyMatch(hasSameIdentity(entity));
+
+    if (entityExists) {
+      throw new ProductAlreadyExistsException(entity);
+    }
+
+    entity.setId(idCounter.incrementAndGet());
+    products.add(entity);
+
+    return mapper.toResponse(entity);
+  }
+
+  ProductResponse update(Long id, ProductRequest request) {
+    Product entity = findEntityById(id);
+
+    entity.setName(request.name());
+
+    return mapper.toResponse(entity);
+  }
+
+  boolean delete(Long id) {
+    Product entity = findEntityById(id);
+
+    return products.remove(entity);
+  }
+
+  private Product findEntityById(Long id) {
     Optional<Product> entity = products.stream().filter(getById(id)).findFirst();
 
     if (entity.isPresent()) {
       return entity.get();
-    } else {
-      throw new ProductNotFoundException(id);
     }
-  }
 
-  Product create(Product entity) {
-    boolean entityExists = products.stream().anyMatch(equals(entity));
-
-    if (entityExists) {
-      throw new ProductAlreadyExistsException(entity);
-    } else {
-      entity.setId(idCounter.incrementAndGet());
-
-      products.add(entity);
-
-      return entity;
-    }
-  }
-
-  Product update(Long id, Product entityDetails) {
-    Product entity = findById(id);
-
-    entity.setName(entityDetails.getName());
-
-    return entity;
-  }
-
-  boolean delete(Long id) {
-    Product entity = findById(id);
-
-    return products.remove(entity);
+    throw new ProductNotFoundException(id);
   }
 
   private Predicate<? super Product> getById(Long id) {
     return u -> u.getId().equals(id);
   }
 
-  private Predicate<? super Product> equals(Product entity) {
+  private Predicate<? super Product> hasSameIdentity(Product entity) {
     return u -> u.getName().equals(entity.getName());
   }
 
