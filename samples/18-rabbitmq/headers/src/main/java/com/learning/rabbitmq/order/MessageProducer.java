@@ -24,10 +24,10 @@ public class MessageProducer {
 
   public void sendOrder(OrderMessage message, String headerValue) {
     try {
-      rabbitTemplate.convertAndSend(rabbitMQConfigurationProperties.getExchange(), "", message, sentMessage -> {
+      rabbitTemplate.convertAndSend(rabbitMQConfigurationProperties.exchange(), "", message, sentMessage -> {
         sentMessage
             .getMessageProperties()
-            .setHeader(rabbitMQConfigurationProperties.getHeaderName(), resolveHeaderValue(headerValue));
+            .setHeader(rabbitMQConfigurationProperties.headerName(), resolveHeaderValue(headerValue));
 
         return sentMessage;
       });
@@ -41,7 +41,7 @@ public class MessageProducer {
 
   private String resolveHeaderValue(String headerValue) {
     if (headerValue == null || headerValue.isBlank()) {
-      return rabbitMQConfigurationProperties.getHeaderValueOne();
+      return rabbitMQConfigurationProperties.headerValueOne();
     }
 
     return headerValue;

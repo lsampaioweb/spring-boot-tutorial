@@ -25,8 +25,8 @@ public class MessageProducer {
   public void sendOrder(OrderMessage message) {
     try {
       rabbitTemplate.convertAndSend(
-          rabbitMQConfigurationProperties.getExchange(),
-          rabbitMQConfigurationProperties.getRoutingKey(),
+          rabbitMQConfigurationProperties.exchange(),
+          rabbitMQConfigurationProperties.routingKey(),
           message);
 
       log.info(logMessages.get(LOG_ORDER_SENT, message.orderId(), message.customerName()));

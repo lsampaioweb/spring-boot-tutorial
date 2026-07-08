@@ -20,31 +20,31 @@ public class RabbitMQConfiguration {
 
   @Bean
   public TopicExchange ordersExchange() {
-    return new TopicExchange(rabbitMQConfigurationProperties.getExchange(), true, false);
+    return new TopicExchange(rabbitMQConfigurationProperties.exchange(), true, false);
   }
 
   @Bean
   public Queue ordersQueueOne() {
-    return new Queue(rabbitMQConfigurationProperties.getQueueOne(), true, false, false);
+    return new Queue(rabbitMQConfigurationProperties.queueOne(), true, false, false);
   }
 
   @Bean
   public Queue ordersQueueTwo() {
-    return new Queue(rabbitMQConfigurationProperties.getQueueTwo(), true, false, false);
+    return new Queue(rabbitMQConfigurationProperties.queueTwo(), true, false, false);
   }
 
   @Bean
   public Binding ordersBindingOne(Queue ordersQueueOne, TopicExchange ordersExchange) {
     return BindingBuilder.bind(ordersQueueOne)
         .to(ordersExchange)
-        .with(rabbitMQConfigurationProperties.getRoutingKeyOne());
+        .with(rabbitMQConfigurationProperties.routingKeyOne());
   }
 
   @Bean
   public Binding ordersBindingTwo(Queue ordersQueueTwo, TopicExchange ordersExchange) {
     return BindingBuilder.bind(ordersQueueTwo)
         .to(ordersExchange)
-        .with(rabbitMQConfigurationProperties.getRoutingKeyTwo());
+        .with(rabbitMQConfigurationProperties.routingKeyTwo());
   }
 
   @Bean

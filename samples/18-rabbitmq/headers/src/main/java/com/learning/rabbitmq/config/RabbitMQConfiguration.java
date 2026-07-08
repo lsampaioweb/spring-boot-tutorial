@@ -22,24 +22,24 @@ public class RabbitMQConfiguration {
 
   @Bean
   public HeadersExchange ordersExchange() {
-    return new HeadersExchange(rabbitMQConfigurationProperties.getExchange(), true, false);
+    return new HeadersExchange(rabbitMQConfigurationProperties.exchange(), true, false);
   }
 
   @Bean
   public Queue ordersQueueOne() {
-    return new Queue(rabbitMQConfigurationProperties.getQueueOne(), true, false, false);
+    return new Queue(rabbitMQConfigurationProperties.queueOne(), true, false, false);
   }
 
   @Bean
   public Queue ordersQueueTwo() {
-    return new Queue(rabbitMQConfigurationProperties.getQueueTwo(), true, false, false);
+    return new Queue(rabbitMQConfigurationProperties.queueTwo(), true, false, false);
   }
 
   @Bean
   public Binding ordersBindingOne(Queue ordersQueueOne, HeadersExchange ordersExchange) {
     return BindingBuilder.bind(ordersQueueOne)
         .to(ordersExchange)
-        .whereAll(createHeadersMap(rabbitMQConfigurationProperties.getHeaderValueOne()))
+        .whereAll(createHeadersMap(rabbitMQConfigurationProperties.headerValueOne()))
         .match();
   }
 
@@ -47,7 +47,7 @@ public class RabbitMQConfiguration {
   public Binding ordersBindingTwo(Queue ordersQueueTwo, HeadersExchange ordersExchange) {
     return BindingBuilder.bind(ordersQueueTwo)
         .to(ordersExchange)
-        .whereAll(createHeadersMap(rabbitMQConfigurationProperties.getHeaderValueTwo()))
+        .whereAll(createHeadersMap(rabbitMQConfigurationProperties.headerValueTwo()))
         .match();
   }
 
@@ -57,6 +57,6 @@ public class RabbitMQConfiguration {
   }
 
   private Map<String, Object> createHeadersMap(String headerValue) {
-    return Map.of(rabbitMQConfigurationProperties.getHeaderName(), headerValue);
+    return Map.of(rabbitMQConfigurationProperties.headerName(), headerValue);
   }
 }

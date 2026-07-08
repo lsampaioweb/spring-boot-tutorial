@@ -3,7 +3,6 @@ package com.learning.postgres.user;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -28,20 +27,17 @@ class UserRepository {
   private final JdbcClient jdbcClient;
   private final NamedParameterJdbcTemplate namedJdbcTemplate;
   private final LogMessages logMessages;
-  private final String findAllSql;
-  private final String batchInsertSql;
+  private final UserSqlConfigurationProperties sqlProperties;
 
   UserRepository(
       JdbcClient jdbcClient,
       NamedParameterJdbcTemplate namedJdbcTemplate,
       LogMessages logMessages,
-      @Value("${sql.users.find-all}") String findAllSql,
-      @Value("${sql.users.insert}") String batchInsertSql) {
+      UserSqlConfigurationProperties sqlProperties) {
     this.jdbcClient = jdbcClient;
     this.namedJdbcTemplate = namedJdbcTemplate;
     this.logMessages = logMessages;
-    this.findAllSql = findAllSql;
-    this.batchInsertSql = batchInsertSql;
+    this.sqlProperties = sqlProperties;
   }
 
   /**
@@ -49,7 +45,7 @@ class UserRepository {
    */
   List<User> findAll() {
     return jdbcClient
-        .sql(findAllSql)
+        .sql(sqlProperties.findAll())
         .query(User.class)
         .list();
   }
@@ -70,7 +66,7 @@ class UserRepository {
           .map(MapSqlParameterSource::new)
           .toArray(SqlParameterSource[]::new);
 
-      return namedJdbcTemplate.batchUpdate(batchInsertSql, batchArguments);
+      return namedJdbcTemplate.batchUpdate(sqlProperties.insert(), batchArguments);
     } catch (Exception e) {
       throw new DatabaseException(ERROR_USER_BATCH_INSERT, e);
     }

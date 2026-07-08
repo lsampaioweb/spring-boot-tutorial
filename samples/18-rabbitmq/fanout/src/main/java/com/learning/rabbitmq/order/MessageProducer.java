@@ -24,7 +24,7 @@ public class MessageProducer {
 
   public void sendOrder(OrderMessage message) {
     try {
-      rabbitTemplate.convertAndSend(rabbitMQConfigurationProperties.getExchange(), "", message);
+      rabbitTemplate.convertAndSend(rabbitMQConfigurationProperties.exchange(), "", message);
 
       log.info(logMessages.get(LOG_ORDER_SENT, message.orderId(), message.customerName()));
     } catch (AmqpException e) {

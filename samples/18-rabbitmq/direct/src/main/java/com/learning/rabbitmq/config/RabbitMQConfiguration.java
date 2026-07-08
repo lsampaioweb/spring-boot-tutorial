@@ -20,19 +20,19 @@ public class RabbitMQConfiguration {
 
   @Bean
   public DirectExchange ordersExchange() {
-    return new DirectExchange(rabbitMQConfigurationProperties.getExchange(), true, false);
+    return new DirectExchange(rabbitMQConfigurationProperties.exchange(), true, false);
   }
 
   @Bean
   public Queue ordersQueue() {
-    return new Queue(rabbitMQConfigurationProperties.getQueue(), true, false, false);
+    return new Queue(rabbitMQConfigurationProperties.queue(), true, false, false);
   }
 
   @Bean
   public Binding ordersBinding(Queue ordersQueue, DirectExchange ordersExchange) {
     return BindingBuilder.bind(ordersQueue)
         .to(ordersExchange)
-        .with(rabbitMQConfigurationProperties.getRoutingKey());
+        .with(rabbitMQConfigurationProperties.routingKey());
   }
 
   @Bean

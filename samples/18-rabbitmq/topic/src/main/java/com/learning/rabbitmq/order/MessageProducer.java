@@ -25,7 +25,7 @@ public class MessageProducer {
   public void sendOrder(OrderMessage message, String routingKey) {
     try {
       rabbitTemplate.convertAndSend(
-          rabbitMQConfigurationProperties.getExchange(),
+          rabbitMQConfigurationProperties.exchange(),
           resolveRoutingKey(routingKey),
           message);
 
@@ -38,7 +38,7 @@ public class MessageProducer {
 
   private String resolveRoutingKey(String routingKey) {
     if (routingKey == null || routingKey.isBlank()) {
-      return rabbitMQConfigurationProperties.getRoutingKeyOne();
+      return rabbitMQConfigurationProperties.routingKeyOne();
     }
 
     return routingKey;

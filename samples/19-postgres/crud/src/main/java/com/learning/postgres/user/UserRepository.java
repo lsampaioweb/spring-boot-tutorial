@@ -2,7 +2,6 @@ package com.learning.postgres.user;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -29,27 +28,15 @@ class UserRepository {
 
   private final JdbcClient jdbcClient;
   private final LogMessages logMessages;
-  private final String findAllSql;
-  private final String findByIdSql;
-  private final String insertSql;
-  private final String updateSql;
-  private final String deleteByIdSql;
+  private final UserSqlConfigurationProperties sqlProperties;
 
   UserRepository(
       JdbcClient jdbcClient,
       LogMessages logMessages,
-      @Value("${sql.users.find-all}") String findAllSql,
-      @Value("${sql.users.find-by-id}") String findByIdSql,
-      @Value("${sql.users.insert}") String insertSql,
-      @Value("${sql.users.update}") String updateSql,
-      @Value("${sql.users.delete-by-id}") String deleteByIdSql) {
+      UserSqlConfigurationProperties sqlProperties) {
     this.jdbcClient = jdbcClient;
     this.logMessages = logMessages;
-    this.findAllSql = findAllSql;
-    this.findByIdSql = findByIdSql;
-    this.insertSql = insertSql;
-    this.updateSql = updateSql;
-    this.deleteByIdSql = deleteByIdSql;
+    this.sqlProperties = sqlProperties;
   }
 
   /**
@@ -58,7 +45,7 @@ class UserRepository {
   List<User> findAll() {
     log.info(logMessages.get(LOG_USER_FETCHING_ALL));
     return jdbcClient
-        .sql(findAllSql)
+        .sql(sqlProperties.findAll())
         .query(User.class)
         .list();
   }
@@ -69,7 +56,7 @@ class UserRepository {
   User findById(Long id) {
     log.info(logMessages.get(LOG_USER_FETCHING_ID, id));
     return jdbcClient
-        .sql(findByIdSql)
+        .sql(sqlProperties.findById())
         .param(UserSqlColumns.ID, id)
         .query(User.class)
         .optional()
@@ -83,7 +70,7 @@ class UserRepository {
     log.info(logMessages.get(LOG_USER_INSERTING));
     try {
       return jdbcClient
-          .sql(insertSql)
+          .sql(sqlProperties.insert())
           .param(UserSqlColumns.NAME, user.name())
           .param(UserSqlColumns.EMAIL, user.email())
           .update();
@@ -99,7 +86,7 @@ class UserRepository {
     log.info(logMessages.get(LOG_USER_UPDATING, user.id()));
     try {
       int rowsAffected = jdbcClient
-          .sql(updateSql)
+          .sql(sqlProperties.update())
           .param(UserSqlColumns.ID, user.id())
           .param(UserSqlColumns.NAME, user.name())
           .param(UserSqlColumns.EMAIL, user.email())
@@ -123,7 +110,7 @@ class UserRepository {
     log.info(logMessages.get(LOG_USER_DELETING, id));
     try {
       int rowsAffected = jdbcClient
-          .sql(deleteByIdSql)
+          .sql(sqlProperties.deleteById())
           .param(UserSqlColumns.ID, id)
           .update();
 

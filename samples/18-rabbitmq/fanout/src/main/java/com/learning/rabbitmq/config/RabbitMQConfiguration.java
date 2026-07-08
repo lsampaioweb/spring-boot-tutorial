@@ -20,17 +20,17 @@ public class RabbitMQConfiguration {
 
   @Bean
   public FanoutExchange ordersExchange() {
-    return new FanoutExchange(rabbitMQConfigurationProperties.getExchange(), true, false);
+    return new FanoutExchange(rabbitMQConfigurationProperties.exchange(), true, false);
   }
 
   @Bean
   public Queue ordersQueueOne() {
-    return new Queue(rabbitMQConfigurationProperties.getQueueOne(), true, false, false);
+    return new Queue(rabbitMQConfigurationProperties.queueOne(), true, false, false);
   }
 
   @Bean
   public Queue ordersQueueTwo() {
-    return new Queue(rabbitMQConfigurationProperties.getQueueTwo(), true, false, false);
+    return new Queue(rabbitMQConfigurationProperties.queueTwo(), true, false, false);
   }
 
   @Bean

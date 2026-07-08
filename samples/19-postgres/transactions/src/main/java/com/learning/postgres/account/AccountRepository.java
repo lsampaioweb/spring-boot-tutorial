@@ -3,7 +3,6 @@ package com.learning.postgres.account;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -11,24 +10,18 @@ import org.springframework.stereotype.Repository;
 class AccountRepository {
 
   private final JdbcClient jdbcClient;
-  private final String findByIdSql;
-  private final String decreaseBalanceSql;
-  private final String increaseBalanceSql;
+  private final AccountSqlConfigurationProperties sqlProperties;
 
   AccountRepository(
       JdbcClient jdbcClient,
-      @Value("${sql.accounts.find-by-id}") String findByIdSql,
-      @Value("${sql.accounts.decrease-balance}") String decreaseBalanceSql,
-      @Value("${sql.accounts.increase-balance}") String increaseBalanceSql) {
+      AccountSqlConfigurationProperties sqlProperties) {
     this.jdbcClient = jdbcClient;
-    this.findByIdSql = findByIdSql;
-    this.decreaseBalanceSql = decreaseBalanceSql;
-    this.increaseBalanceSql = increaseBalanceSql;
+    this.sqlProperties = sqlProperties;
   }
 
   Optional<Account> findById(Long id) {
     return jdbcClient
-        .sql(findByIdSql)
+        .sql(sqlProperties.findById())
         .param("id", id)
         .query(Account.class)
         .optional();
@@ -36,7 +29,7 @@ class AccountRepository {
 
   int decreaseBalance(Long id, BigDecimal amount) {
     return jdbcClient
-        .sql(decreaseBalanceSql)
+        .sql(sqlProperties.decreaseBalance())
         .param("id", id)
         .param("amount", amount)
         .update();
@@ -44,7 +37,7 @@ class AccountRepository {
 
   int increaseBalance(Long id, BigDecimal amount) {
     return jdbcClient
-        .sql(increaseBalanceSql)
+        .sql(sqlProperties.increaseBalance())
         .param("id", id)
         .param("amount", amount)
         .update();
