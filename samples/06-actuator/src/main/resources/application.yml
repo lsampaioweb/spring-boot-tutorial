@@ -1,19 +1,26 @@
 spring:
   application:
     name: "actuator"
+  threads:
+    virtual:
+      enabled: true
+  profiles:
+    active:
+      # - "development"
+      - "production"
 
 # Add if you want to have a username and password for the actuator endpoint.
-  # security:
-  #   user:
-  #     name: "${USERNAME}"
-  #     password: "${PASSWORD}"
+# security:
+#   user:
+#     name: "${USERNAME}"
+#     password: "${PASSWORD}"
 
 management:
   endpoints:
     web:
       exposure:
         # include: "*"
-        include: "health,info"
+        include: "health,info,metrics"
 
   endpoint:
     health:

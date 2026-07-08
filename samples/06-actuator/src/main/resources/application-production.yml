@@ -1,0 +1,13 @@
+server:
+  port: 9443
+  error:
+    include-stacktrace: "never"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+  endpoint:
+    health:
+      show-details: "never"

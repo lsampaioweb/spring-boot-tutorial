@@ -25,6 +25,7 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Spring Cloud BOM to manage compatible cloud dependency versions. -->
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
@@ -36,23 +37,33 @@
   </dependencyManagement>
 
   <dependencies>
+    <!-- Web starter for REST endpoints and embedded servlet container. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
+    <!-- Actuator starter for operational endpoints and health checks. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <!-- Springdoc UI starter to expose OpenAPI documentation in the browser. -->
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${springdoc.version}</version>
     </dependency>
 
+    <!-- Spring Boot test starter for unit and integration testing support. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
 
+    <!-- Devtools for local development hot reload support only. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -60,12 +71,14 @@
       <optional>true</optional>
     </dependency>
 
+    <!-- Lombok for reducing boilerplate code at compile time. -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
     </dependency>
 
+    <!-- Spring Cloud Config client to consume centralized externalized configuration. -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-config</artifactId>

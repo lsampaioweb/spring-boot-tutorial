@@ -1,6 +1,9 @@
 spring:
   application:
     name: "i18n"
+  threads:
+    virtual:
+      enabled: true
   messages:
     basename: "i18n/messages"
   profiles:
@@ -15,7 +18,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,metrics"
+        include: "health,info,metrics"
   endpoint:
     health:
       show-details: "when-authorized"
