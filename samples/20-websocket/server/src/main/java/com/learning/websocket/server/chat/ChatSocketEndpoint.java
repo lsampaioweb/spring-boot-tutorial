@@ -19,15 +19,19 @@ public class ChatSocketEndpoint {
   private static final String LOG_CHAT_MESSAGE_PUBLISHED = "log.websocket.chat.message.published";
 
   private final LogMessages logMessages;
+  private final ChatMessageEventPublisher chatMessageEventPublisher;
 
-  public ChatSocketEndpoint(LogMessages logMessages) {
+  public ChatSocketEndpoint(LogMessages logMessages, ChatMessageEventPublisher chatMessageEventPublisher) {
     this.logMessages = logMessages;
+    this.chatMessageEventPublisher = chatMessageEventPublisher;
   }
 
   @MessageMapping("/chat.send")
   @SendTo("/topic/messages")
   public ChatMessage publish(@Payload ChatMessage message) {
     log.debug(logMessages.get(LOG_CHAT_MESSAGE_PUBLISHED, message.sender()));
+
+    chatMessageEventPublisher.publishChatMessageEvent(message.sender(), message.content());
 
     return new ChatMessage(message.sender(), message.content(), Instant.now(Clock.systemUTC()));
   }
