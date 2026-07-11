@@ -13,7 +13,7 @@ class I18nLocaleResolverConfig implements WebMvcConfigurer {
 
   @Bean
   LocaleResolver localeResolver() {
-    var resolver = new I18nAcceptHeaderLocaleResolver();
+    I18nAcceptHeaderLocaleResolver resolver = new I18nAcceptHeaderLocaleResolver();
     resolver.setDefaultLocale(Locale.ENGLISH);
     resolver.setSupportedLocales(List.of(Locale.ENGLISH, Locale.forLanguageTag("pt-BR")));
 

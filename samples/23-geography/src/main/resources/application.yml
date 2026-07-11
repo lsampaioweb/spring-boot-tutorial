@@ -17,18 +17,31 @@ spring:
     password: "${DB_PASSWORD}"
     hikari:
       maximum-pool-size: 10
-      minimum-idle: 2
+      minimum-idle: 5
       idle-timeout: 30000
-      connection-timeout: 20000
+      connection-timeout: 5000
 
 logging:
   config: "classpath:log/logback-spring.xml"
+
+server:
+  error:
+    include-stacktrace: "never"
 
 management:
   endpoints:
     web:
       exposure:
-        include: "health,info"
+        include: "health,info,metrics"
   endpoint:
     health:
       show-details: "when-authorized"
+
+app:
+  pagination:
+    default-page-size: 20
+    max-page-size: 100
+  security:
+    user:
+      username: "${APP_SECURITY_USERNAME}"
+      password: "${APP_SECURITY_PASSWORD}"

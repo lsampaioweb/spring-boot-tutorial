@@ -1,16 +1,21 @@
 package com.learning.geography.city;
 
-import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import com.learning.geography.common.PagedResponse;
 
 interface CityService {
 
-  List<CityResponse> findAll();
+  PagedResponse<CityResponse> findAll(int page, int size);
 
-  CityResponse findById(Long id);
+  CityResponse findById(Integer id);
 
+  @PreAuthorize("@permissions.canCreate(authentication)")
   CityResponse create(CreateCityRequest request);
 
-  CityResponse update(Long id, UpdateCityRequest request);
+  @PreAuthorize("@permissions.canUpdate(authentication)")
+  CityResponse update(Integer id, UpdateCityRequest request);
 
-  void delete(Long id);
+  @PreAuthorize("@permissions.canDelete(authentication)")
+  void delete(Integer id);
 }

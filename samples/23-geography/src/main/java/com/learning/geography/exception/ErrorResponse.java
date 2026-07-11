@@ -1,11 +1,12 @@
 package com.learning.geography.exception;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 record ErrorResponse(
-    LocalDateTime timestamp,
+    OffsetDateTime timestamp,
     int status,
     String error,
+    String errorCode,
     String message,
     String path,
     String trace) {

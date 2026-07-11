@@ -1,12 +1,11 @@
-package com.learning.geography.db;
+package com.learning.geography.exception;
 
 import org.springframework.http.HttpStatus;
-
-import com.learning.geography.exception.AppException;
 
 public class DatabaseException extends AppException {
 
   public DatabaseException(String messageKey, Throwable cause, Object... args) {
     super(messageKey, args, HttpStatus.INTERNAL_SERVER_ERROR, cause);
   }
+
 }

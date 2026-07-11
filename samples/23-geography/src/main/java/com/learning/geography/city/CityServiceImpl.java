@@ -2,66 +2,90 @@ package com.learning.geography.city;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
+import com.learning.geography.common.PagedResponse;
+import com.learning.geography.i18n.LogMessages;
 
 @Slf4j
 @Service
 class CityServiceImpl implements CityService {
 
+  private static final String LOG_CITY_INSERTING = "log.city.inserting";
+  private static final String LOG_CITY_UPDATING = "log.city.updating";
+  private static final String LOG_CITY_DELETING = "log.city.deleting";
+
   private final CityRepository cityRepository;
-  private final CityMapper cityMapper;
+  private final CityDtoMapper cityDtoMapper;
+  private final LogMessages logMessages;
 
-  CityServiceImpl(CityRepository cityRepository, CityMapper cityMapper) {
+  CityServiceImpl(CityRepository cityRepository, CityDtoMapper cityDtoMapper, LogMessages logMessages) {
     this.cityRepository = cityRepository;
-    this.cityMapper = cityMapper;
+    this.cityDtoMapper = cityDtoMapper;
+    this.logMessages = logMessages;
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<CityResponse> findAll() {
-    return cityRepository.findAll().stream().map(cityMapper::toResponse).toList();
+  public PagedResponse<CityResponse> findAll(int page, int size) {
+    int limit = size;
+    int offset = page * size;
+    List<CityResponse> items = cityRepository.findAll(limit, offset).stream()
+        .map(cityDtoMapper::toResponse)
+        .toList();
+    long totalElements = cityRepository.countAll();
+    int totalPages = calculateTotalPages(totalElements, size);
+    return new PagedResponse<>(items, page, size, totalElements, totalPages);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public CityResponse findById(Long id) {
-    var city = cityRepository.findById(id);
+  public CityResponse findById(Integer id) {
+    City city = cityRepository.findById(id);
     if (city == null) {
       throw new CityNotFoundException(id);
     }
-    return cityMapper.toResponse(city);
+    return cityDtoMapper.toResponse(city);
   }
 
   @Override
   @Transactional
   public CityResponse create(CreateCityRequest request) {
-    var city = cityMapper.toEntity(request);
-    var created = cityRepository.insert(city);
-    return cityMapper.toResponse(created);
+    log.info(logMessages.get(LOG_CITY_INSERTING));
+    City city = cityDtoMapper.toEntity(request);
+    City created = cityRepository.insert(city);
+    return cityDtoMapper.toResponse(created);
   }
 
   @Override
   @Transactional
-  public CityResponse update(Long id, UpdateCityRequest request) {
-    var city = cityRepository.findById(id);
+  public CityResponse update(Integer id, UpdateCityRequest request) {
+    log.info(logMessages.get(LOG_CITY_UPDATING, id));
+    City city = cityRepository.findById(id);
     if (city == null) {
       throw new CityNotFoundException(id);
     }
-    var updatedCity = cityMapper.updateEntity(request, city);
+    City updatedCity = cityDtoMapper.updateEntity(request, city);
     cityRepository.update(updatedCity);
-    return cityMapper.toResponse(updatedCity);
+    return cityDtoMapper.toResponse(updatedCity);
   }
 
   @Override
   @Transactional
-  public void delete(Long id) {
-    var city = cityRepository.findById(id);
-    if (city == null) {
+  public void delete(Integer id) {
+    log.info(logMessages.get(LOG_CITY_DELETING, id));
+    int rowsAffected = cityRepository.deleteById(id);
+    if (rowsAffected == 0) {
       throw new CityNotFoundException(id);
     }
-    cityRepository.deleteById(id);
+  }
+
+  private int calculateTotalPages(long totalElements, int size) {
+    if (totalElements == 0) {
+      return 0;
+    }
+    return (int) Math.ceil((double) totalElements / size);
   }
 }

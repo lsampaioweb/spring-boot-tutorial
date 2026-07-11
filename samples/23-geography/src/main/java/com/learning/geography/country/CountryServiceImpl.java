@@ -2,66 +2,97 @@ package com.learning.geography.country;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
+import com.learning.geography.common.PagedResponse;
+import com.learning.geography.i18n.LogMessages;
 
 @Slf4j
 @Service
 class CountryServiceImpl implements CountryService {
 
+  private static final String LOG_COUNTRY_INSERTING = "log.country.inserting";
+  private static final String LOG_COUNTRY_UPDATING = "log.country.updating";
+  private static final String LOG_COUNTRY_DELETING = "log.country.deleting";
+
   private final CountryRepository countryRepository;
-  private final CountryMapper countryMapper;
+  private final CountryDtoMapper countryDtoMapper;
+  private final LogMessages logMessages;
 
-  CountryServiceImpl(CountryRepository countryRepository, CountryMapper countryMapper) {
+  CountryServiceImpl(CountryRepository countryRepository, CountryDtoMapper countryDtoMapper, LogMessages logMessages) {
     this.countryRepository = countryRepository;
-    this.countryMapper = countryMapper;
+    this.countryDtoMapper = countryDtoMapper;
+    this.logMessages = logMessages;
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<CountryResponse> findAll() {
-    return countryRepository.findAll().stream().map(countryMapper::toResponse).toList();
+  public PagedResponse<CountryResponse> findAll(int page, int size) {
+    int limit = size;
+    int offset = page * size;
+    List<CountryResponse> items = countryRepository.findAll(limit, offset)
+        .stream()
+        .map(countryDtoMapper::toResponse)
+        .toList();
+    long totalElements = countryRepository.countAll();
+    int totalPages = calculateTotalPages(totalElements, size);
+
+    return new PagedResponse<>(items, page, size, totalElements, totalPages);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public CountryResponse findById(Long id) {
-    var country = countryRepository.findById(id);
+  public CountryResponse findById(Integer id) {
+    Country country = countryRepository.findById(id);
     if (country == null) {
       throw new CountryNotFoundException(id);
     }
-    return countryMapper.toResponse(country);
+
+    return countryDtoMapper.toResponse(country);
   }
 
   @Override
   @Transactional
   public CountryResponse create(CreateCountryRequest request) {
-    var country = countryMapper.toEntity(request);
-    var created = countryRepository.insert(country);
-    return countryMapper.toResponse(created);
+    log.info(logMessages.get(LOG_COUNTRY_INSERTING));
+    Country country = countryDtoMapper.toEntity(request);
+    Country created = countryRepository.insert(country);
+
+    return countryDtoMapper.toResponse(created);
   }
 
   @Override
   @Transactional
-  public CountryResponse update(Long id, UpdateCountryRequest request) {
-    var country = countryRepository.findById(id);
+  public CountryResponse update(Integer id, UpdateCountryRequest request) {
+    log.info(logMessages.get(LOG_COUNTRY_UPDATING, id));
+    Country country = countryRepository.findById(id);
     if (country == null) {
       throw new CountryNotFoundException(id);
     }
-    var updatedCountry = countryMapper.updateEntity(request, country);
+
+    Country updatedCountry = countryDtoMapper.updateEntity(request, country);
     countryRepository.update(updatedCountry);
-    return countryMapper.toResponse(updatedCountry);
+
+    return countryDtoMapper.toResponse(updatedCountry);
   }
 
   @Override
   @Transactional
-  public void delete(Long id) {
-    var country = countryRepository.findById(id);
-    if (country == null) {
+  public void delete(Integer id) {
+    log.info(logMessages.get(LOG_COUNTRY_DELETING, id));
+    int rowsAffected = countryRepository.deleteById(id);
+    if (rowsAffected == 0) {
       throw new CountryNotFoundException(id);
     }
-    countryRepository.deleteById(id);
+  }
+
+  private int calculateTotalPages(long totalElements, int size) {
+    if (totalElements == 0) {
+      return 0;
+    }
+
+    return (int) Math.ceil((double) totalElements / size);
   }
 }

@@ -1,16 +1,21 @@
 package com.learning.geography.country;
 
-import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import com.learning.geography.common.PagedResponse;
 
 interface CountryService {
 
-  List<CountryResponse> findAll();
+  PagedResponse<CountryResponse> findAll(int page, int size);
 
-  CountryResponse findById(Long id);
+  CountryResponse findById(Integer id);
 
+  @PreAuthorize("@permissions.canCreate(authentication)")
   CountryResponse create(CreateCountryRequest request);
 
-  CountryResponse update(Long id, UpdateCountryRequest request);
+  @PreAuthorize("@permissions.canUpdate(authentication)")
+  CountryResponse update(Integer id, UpdateCountryRequest request);
 
-  void delete(Long id);
+  @PreAuthorize("@permissions.canDelete(authentication)")
+  void delete(Integer id);
 }

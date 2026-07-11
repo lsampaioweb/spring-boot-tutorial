@@ -1,4 +1,4 @@
 package com.learning.geography.state;
 
-public record StateResponse(Long id, Long countryId, String name, String abbreviation) {
+public record StateResponse(Integer id, Integer countryId, String name, String abbreviation) {
 }

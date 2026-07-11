@@ -1,8 +1,30 @@
 server:
-  port: 8080
+  # Production TLS port; override via SERVER_PORT environment variable if needed.
+  port: "${SERVER_PORT:9443}"
+  ssl:
+    # --- PEM format (recommended) ---
+    # Provide paths to the certificate and private key files.
+    certificate: "${SSL_CERTIFICATE_PATH}"
+    certificate-private-key: "${SSL_PRIVATE_KEY_PATH}"
+    enabled-protocols: "TLSv1.3"
+    # --- PKCS12 / PFX format (alternative) ---
+    # Uncomment the three lines below and comment out the PEM lines above
+    # if your certificate is packaged as a .pfx or .p12 keystore file.
+    # key-store: "${SSL_KEYSTORE_PATH}"
+    # key-store-password: "${SSL_KEYSTORE_PASSWORD}"
+    # key-store-type: "PKCS12"
+  http2:
+    enabled: true
   error:
     include-stacktrace: "never"
 
 springdoc:
   swagger-ui:
     enabled: false
+  api-docs:
+    enabled: false
+
+management:
+  endpoint:
+    health:
+      show-details: "never"

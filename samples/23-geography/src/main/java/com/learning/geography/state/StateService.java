@@ -1,16 +1,21 @@
 package com.learning.geography.state;
 
-import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import com.learning.geography.common.PagedResponse;
 
 interface StateService {
 
-  List<StateResponse> findAll();
+  PagedResponse<StateResponse> findAll(int page, int size);
 
-  StateResponse findById(Long id);
+  StateResponse findById(Integer id);
 
+  @PreAuthorize("@permissions.canCreate(authentication)")
   StateResponse create(CreateStateRequest request);
 
-  StateResponse update(Long id, UpdateStateRequest request);
+  @PreAuthorize("@permissions.canUpdate(authentication)")
+  StateResponse update(Integer id, UpdateStateRequest request);
 
-  void delete(Long id);
+  @PreAuthorize("@permissions.canDelete(authentication)")
+  void delete(Integer id);
 }

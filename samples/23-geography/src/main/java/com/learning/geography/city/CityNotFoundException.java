@@ -6,7 +6,7 @@ import com.learning.geography.exception.AppException;
 
 class CityNotFoundException extends AppException {
 
-  CityNotFoundException(Long id) {
+  CityNotFoundException(Integer id) {
     super("error.city.not.found", new Object[] { id }, HttpStatus.NOT_FOUND);
   }
 }
