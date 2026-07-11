@@ -1,3 +1,4 @@
+<!-- filepath: README.md -->
 # Java Libraries and Spring Boot Projects
 
 Documentation and working samples for building Java libraries and Spring Boot projects following modern architecture and best practices.
@@ -104,7 +105,7 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
     - Messaging with RabbitMQ (direct, fanout, topic, headers exchanges).
 1. [Geography](samples/23-geography/README.md)
-    - PostgreSQL-backed REST sample for countries, states, and cities CRUD.
+    - PostgreSQL-backed REST sample for countries, states, and cities with pagination, HTTP Basic protection for write operations, and HTTPS-ready production profile.
 
 ## Infrastructure Services
 
