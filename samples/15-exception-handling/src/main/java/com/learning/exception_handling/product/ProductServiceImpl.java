@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 class ProductServiceImpl implements ProductService {
@@ -31,16 +32,19 @@ class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<ProductResponse> findAll() {
     return products.stream().map(mapper::toResponse).toList();
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ProductResponse findById(Long id) {
     return mapper.toResponse(findEntityById(id));
   }
 
   @Override
+  @Transactional
   public ProductResponse create(ProductRequest request) {
     Product entity = mapper.toEntity(request);
     boolean entityExists = products.stream().anyMatch(hasSameIdentity(entity));
@@ -56,6 +60,7 @@ class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  @Transactional
   public ProductResponse update(Long id, ProductRequest request) {
     Product entity = findEntityById(id);
 
@@ -65,6 +70,7 @@ class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  @Transactional
   public boolean delete(Long id) {
     Product entity = findEntityById(id);
 

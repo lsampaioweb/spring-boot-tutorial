@@ -44,6 +44,12 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
+    <!-- Spring transaction annotations support (e.g., @Transactional in service methods). -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+
     <!-- Springdoc UI starter to expose OpenAPI documentation in the browser. -->
     <dependency>
       <groupId>org.springdoc</groupId>
