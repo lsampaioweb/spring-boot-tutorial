@@ -2,7 +2,7 @@ package com.learning.redis.exception;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -20,11 +20,17 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import com.learning.redis.product.ProductNotFoundException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
   private static final String SERVER_ERROR_INCLUDE_STACKTRACE = "server.error.include-stacktrace";
   private static final String STACKTRACE_ALWAYS = "always";
+  private static final String ERROR_CODE_PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND";
+  private static final String ERROR_CODE_RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND";
+  private static final String ERROR_CODE_INTERNAL_ERROR = "INTERNAL_ERROR";
+  private static final String ERROR_CODE_DOMAIN_ERROR = "DOMAIN_ERROR";
 
   private final MessageSource messageSource;
   private final Environment environment;
@@ -37,7 +43,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(AppException.class)
   public ResponseEntity<ErrorResponse> handleAppException(AppException ex, HttpServletRequest request) {
     String message = messageSource.getMessage(ex.getMessageKey(), ex.getArgs(), LocaleContextHolder.getLocale());
-    ErrorResponse response = newErrorResponse(message, ex, request, ex.getStatus());
+    ErrorResponse response = newErrorResponse(resolveDomainErrorCode(ex), message, ex, request, ex.getStatus());
 
     return ResponseEntity.status(ex.getStatus()).body(response);
   }
@@ -46,7 +52,7 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public @ResponseBody ErrorResponse handleNoResourceFoundException(NoResourceFoundException ex,
       HttpServletRequest request) {
-    return newErrorResponse(ex.getMessage(), ex, request, HttpStatus.NOT_FOUND);
+    return newErrorResponse(ERROR_CODE_RESOURCE_NOT_FOUND, ex.getMessage(), ex, request, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -60,18 +66,27 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public @ResponseBody ErrorResponse handleGenericError(Exception ex, HttpServletRequest request) {
-    return newErrorResponse(ex.getMessage(), ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
+    return newErrorResponse(ERROR_CODE_INTERNAL_ERROR, ex.getMessage(), ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  private ErrorResponse newErrorResponse(String message, Exception ex, HttpServletRequest request,
+  private ErrorResponse newErrorResponse(String errorCode, String message, Exception ex, HttpServletRequest request,
       HttpStatus status) {
     return new ErrorResponse(
-        LocalDateTime.now(ZoneOffset.UTC),
+        OffsetDateTime.now(ZoneOffset.UTC),
         status.value(),
         status.getReasonPhrase(),
+        errorCode,
         message,
         request.getRequestURI(),
         shouldIncludeStackTrace() ? getStackTraceAsString(ex) : null);
+  }
+
+  private String resolveDomainErrorCode(AppException ex) {
+    if (ex instanceof ProductNotFoundException) {
+      return ERROR_CODE_PRODUCT_NOT_FOUND;
+    }
+
+    return ERROR_CODE_DOMAIN_ERROR;
   }
 
   private boolean shouldIncludeStackTrace() {

@@ -1,12 +1,13 @@
 package com.learning.redis.exception;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public record ErrorResponse(
-    LocalDateTime timestamp,
-    int status,
-    String error,
-    String message,
-    String path,
-    String trace) {
+        OffsetDateTime timestamp,
+        int status,
+        String error,
+        String errorCode,
+        String message,
+        String path,
+        String trace) {
 }
