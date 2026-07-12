@@ -6,15 +6,25 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.learning.redis.i18n.LogMessages;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 class ProductServiceImpl implements ProductService {
 
+  private static final String LOG_PRODUCT_SAVING = "log.product.saving";
+  private static final String LOG_PRODUCT_DELETING_ID = "log.product.deleting.id";
+
   private final ProductRepository productRepository;
   private final ProductMapper productMapper;
+  private final LogMessages logMessages;
 
-  ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
+  ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, LogMessages logMessages) {
     this.productRepository = productRepository;
     this.productMapper = productMapper;
+    this.logMessages = logMessages;
   }
 
   @Override
@@ -42,6 +52,8 @@ class ProductServiceImpl implements ProductService {
         request.description(),
         request.price());
 
+    log.info(logMessages.get(LOG_PRODUCT_SAVING, product.id()));
+
     return productMapper.toResponse(productRepository.save(product));
   }
 
@@ -52,6 +64,8 @@ class ProductServiceImpl implements ProductService {
 
     Product updated = new Product(id, request.name(), request.description(), request.price());
 
+    log.info(logMessages.get(LOG_PRODUCT_SAVING, id));
+
     return productMapper.toResponse(productRepository.save(updated));
   }
 
@@ -59,6 +73,8 @@ class ProductServiceImpl implements ProductService {
   @Transactional
   public void deleteById(String id) {
     findDomainById(id);
+
+    log.info(logMessages.get(LOG_PRODUCT_DELETING_ID, id));
 
     productRepository.deleteById(id);
   }

@@ -9,34 +9,26 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import lombok.extern.slf4j.Slf4j;
-
 import com.learning.postgres.db.DatabaseException;
-import com.learning.postgres.i18n.LogMessages;
 
 /**
  * User repository for batch database operations using Spring JDBC.
  */
-@Slf4j
 @Repository
 class UserRepository {
 
-  private static final String LOG_USER_BATCH_INSERTING = "log.user.batch.inserting";
   private static final String ERROR_USER_BATCH_INSERT = "error.user.batch.insert";
 
   private final JdbcClient jdbcClient;
   private final NamedParameterJdbcTemplate namedJdbcTemplate;
-  private final LogMessages logMessages;
   private final UserSqlConfigurationProperties sqlProperties;
 
   UserRepository(
       JdbcClient jdbcClient,
       NamedParameterJdbcTemplate namedJdbcTemplate,
-      LogMessages logMessages,
       UserSqlConfigurationProperties sqlProperties) {
     this.jdbcClient = jdbcClient;
     this.namedJdbcTemplate = namedJdbcTemplate;
-    this.logMessages = logMessages;
     this.sqlProperties = sqlProperties;
   }
 
@@ -54,7 +46,6 @@ class UserRepository {
    * Batch insert users; returns array of rows affected per user.
    */
   int[] batchInsert(List<User> users) {
-    log.info(logMessages.get(LOG_USER_BATCH_INSERTING, users.size()));
     try {
       List<Map<String, Object>> batchParams = users.stream()
           .map(user -> Map.<String, Object>of(
