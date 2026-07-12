@@ -1,6 +1,7 @@
 package com.learning.vault.secret;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.annotation.PostConstruct;
@@ -37,7 +38,7 @@ public class VaultSecretRegistry {
 
   @PostConstruct
   void loadSecrets() {
-    var secrets = properties.secrets();
+    List<VaultSecretEntry> secrets = properties.secrets();
 
     log.info(logMessages.get(LOG_REGISTRY_LOADING, secrets.size()));
 
