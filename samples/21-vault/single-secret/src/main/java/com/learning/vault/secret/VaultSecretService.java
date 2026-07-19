@@ -6,6 +6,7 @@ import com.learning.vault.config.VaultConfigurationProperties;
 import com.learning.vault.i18n.LogMessages;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -15,6 +16,9 @@ class VaultSecretService {
   private static final String RESPONSE_FIELD_DATA = "data";
 
   private static final String ERROR_VAULT_RESPONSE_EMPTY = "error.vault.response.empty";
+  private static final String ERROR_VAULT_RESPONSE_ACCESS_DENIED = "error.vault.response.access.denied";
+  private static final String ERROR_VAULT_RESPONSE_PATH_NOT_FOUND = "error.vault.response.path.not.found";
+  private static final String ERROR_VAULT_RESPONSE_SERVER_ERROR = "error.vault.response.server.error";
   private static final String ERROR_VAULT_RESPONSE_MISSING_DATA_PAYLOAD = "error.vault.response.missing.data.payload";
   private static final String ERROR_VAULT_RESPONSE_MISSING_SECRET_VALUES = "error.vault.response.missing.secret.values";
   private static final String ERROR_VAULT_SECRET_KEY_NOT_FOUND = "error.vault.secret.key.not.found";
@@ -31,12 +35,35 @@ class VaultSecretService {
   }
 
   String readSecret(String secretPath, String secretKey) {
+    Map<String, String> secretValues = readSecrets(secretPath);
+
+    Object value = secretValues.get(secretKey);
+    if (value == null) {
+      throw new IllegalStateException(logMessages.get(ERROR_VAULT_SECRET_KEY_NOT_FOUND, secretKey));
+    }
+
+    return String.valueOf(value);
+  }
+
+  Map<String, String> readSecrets(String secretPath) {
     String endpoint = properties.readPathTemplate().formatted(properties.mountPath(), secretPath);
 
     Map<String, Object> response = vaultRestClient
         .get()
         .uri(endpoint)
         .retrieve()
+        .onStatus(status -> status.value() == 403,
+            (request, responseSpec) -> {
+              throw new IllegalStateException(logMessages.get(ERROR_VAULT_RESPONSE_ACCESS_DENIED, secretPath));
+            })
+        .onStatus(status -> status.value() == 404,
+            (request, responseSpec) -> {
+              throw new IllegalStateException(logMessages.get(ERROR_VAULT_RESPONSE_PATH_NOT_FOUND, secretPath));
+            })
+        .onStatus(HttpStatusCode::is5xxServerError,
+            (request, responseSpec) -> {
+              throw new IllegalStateException(logMessages.get(ERROR_VAULT_RESPONSE_SERVER_ERROR, secretPath));
+            })
         .body(new ParameterizedTypeReference<>() {
         });
 
@@ -54,11 +81,13 @@ class VaultSecretService {
       throw new IllegalStateException(logMessages.get(ERROR_VAULT_RESPONSE_MISSING_SECRET_VALUES));
     }
 
-    Object value = secretValues.get(secretKey);
-    if (value == null) {
-      throw new IllegalStateException(logMessages.get(ERROR_VAULT_SECRET_KEY_NOT_FOUND, secretKey));
+    Map<String, String> mapped = new java.util.HashMap<>();
+    for (Map.Entry<?, ?> entry : secretValues.entrySet()) {
+      if (entry.getKey() != null && entry.getValue() != null) {
+        mapped.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+      }
     }
 
-    return String.valueOf(value);
+    return mapped;
   }
 }

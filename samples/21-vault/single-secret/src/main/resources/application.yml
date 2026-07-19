@@ -9,6 +9,9 @@ spring:
 
   messages:
     basename: "i18n/messages"
+    encoding: "UTF-8"
+    default-locale: "en"
+    fallback-to-system-locale: false
 
   threads:
     virtual:
@@ -40,6 +43,9 @@ app:
   vault:
     uri: "${VAULT_URI:http://localhost:8200}"
     token: "${VAULT_TOKEN}"
+    http:
+      connect-timeout-ms: "${VAULT_HTTP_CONNECT_TIMEOUT_MS:2000}"
+      read-timeout-ms: "${VAULT_HTTP_READ_TIMEOUT_MS:5000}"
     mount-path: "${VAULT_MOUNT_PATH:secret}"
     read-path-template: "${VAULT_READ_PATH_TEMPLATE:/v1/%s/data/%s}"
     secrets:

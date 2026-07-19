@@ -8,6 +8,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.learning.vault.config.VaultConfigurationProperties;
@@ -24,28 +25,42 @@ import org.springframework.web.client.RestClient;
 
 class VaultSecretRegistryTest {
 
+  private static final String BASEURL = "http://localhost:8200";
+  private static final String SECRETENDPOINT = BASEURL + "/v1/secret/data/spring-boot-tutorial";
+  private static final String TOKEN = "tutorial-root-token";
+  private static final String MOUNTPATH = "secret";
+  private static final String READPATHTEMPLATE = "/v1/%s/data/%s";
+  private static final String SECRETPATH = "spring-boot-tutorial";
+  private static final String DBPASSWORDKEY = "db-password";
+  private static final String APISECRETKEY = "api-secret";
+  private static final String ERROR_REGISTRY_SECRETS_NOT_CONFIGURED = "error.vault.registry.secrets.not.configured";
+  private static final String ERROR_REGISTRY_STARTUP_FAILED = "error.vault.registry.startup.failed";
+  private static final String ERROR_VAULT_SECRET_KEY_NOT_FOUND = "error.vault.secret.key.not.found";
+
   private MockRestServiceServer server;
   private VaultSecretRegistry vaultSecretRegistry;
+  private LogMessages logMessages;
 
   @BeforeEach
   void setUp() {
-    RestClient.Builder builder = RestClient.builder().baseUrl("http://localhost:8200");
+    RestClient.Builder builder = RestClient.builder().baseUrl(BASEURL);
     server = MockRestServiceServer.bindTo(builder).build();
 
     VaultConfigurationProperties properties = new VaultConfigurationProperties(
-        "http://localhost:8200",
-        "tutorial-root-token",
-        "secret",
-        "/v1/%s/data/%s",
+        BASEURL,
+        TOKEN,
+        MOUNTPATH,
+        READPATHTEMPLATE,
         List.of(
-            new VaultSecretEntry("spring-boot-tutorial", "db-password"),
-            new VaultSecretEntry("spring-boot-tutorial", "api-secret")));
+            new VaultSecretEntry(SECRETPATH, DBPASSWORDKEY),
+            new VaultSecretEntry(SECRETPATH, APISECRETKEY)));
 
     RestClient restClient = builder.build();
 
     MessageSource messageSource = new ResourceBundleMessageSource();
     ((ResourceBundleMessageSource) messageSource).setBasename("i18n/messages");
-    LogMessages logMessages = new LogMessages(messageSource);
+    ((ResourceBundleMessageSource) messageSource).setDefaultEncoding("UTF-8");
+    logMessages = new LogMessages(messageSource);
 
     VaultSecretService vaultSecretService = new VaultSecretService(restClient, properties, logMessages);
 
@@ -53,25 +68,50 @@ class VaultSecretRegistryTest {
   }
 
   @Test
-  void loadSecrets_whenAllSecretsExist_shouldPopulateCache() {
-    server.expect(requestTo("http://localhost:8200/v1/secret/data/spring-boot-tutorial"))
-        .andExpect(method(GET))
-        .andRespond(withSuccess("""
-            {
-              "data": {
-                "data": {
-                  "db-password": "my-db-password"
-                }
-              }
-            }
-            """, MediaType.APPLICATION_JSON));
+  void loadSecretsWhenSecretsConfigIsEmptyShouldFailFast() {
+    VaultConfigurationProperties properties = new VaultConfigurationProperties(
+        BASEURL,
+        TOKEN,
+        MOUNTPATH,
+        READPATHTEMPLATE,
+        Collections.emptyList());
 
-    server.expect(requestTo("http://localhost:8200/v1/secret/data/spring-boot-tutorial"))
+    RestClient restClient = RestClient.builder().baseUrl(BASEURL).build();
+    VaultSecretService vaultSecretService = new VaultSecretService(restClient, properties, logMessages);
+    VaultSecretRegistry registry = new VaultSecretRegistry(vaultSecretService, properties, logMessages);
+
+    assertThatThrownBy(registry::loadSecrets)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining(expectedMessage(ERROR_REGISTRY_SECRETS_NOT_CONFIGURED));
+  }
+
+  @Test
+  void loadSecretsWhenSecretsConfigIsNullShouldFailFast() {
+    VaultConfigurationProperties properties = new VaultConfigurationProperties(
+        BASEURL,
+        TOKEN,
+        MOUNTPATH,
+        READPATHTEMPLATE,
+        null);
+
+    RestClient restClient = RestClient.builder().baseUrl(BASEURL).build();
+    VaultSecretService vaultSecretService = new VaultSecretService(restClient, properties, logMessages);
+    VaultSecretRegistry registry = new VaultSecretRegistry(vaultSecretService, properties, logMessages);
+
+    assertThatThrownBy(registry::loadSecrets)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining(expectedMessage(ERROR_REGISTRY_SECRETS_NOT_CONFIGURED));
+  }
+
+  @Test
+  void loadSecretsWhenAllSecretsExistShouldPopulateCache() {
+    server.expect(requestTo(SECRETENDPOINT))
         .andExpect(method(GET))
         .andRespond(withSuccess("""
             {
               "data": {
                 "data": {
+                  "db-password": "my-db-password",
                   "api-secret": "my-api-secret"
                 }
               }
@@ -80,31 +120,20 @@ class VaultSecretRegistryTest {
 
     vaultSecretRegistry.loadSecrets();
 
-    assertThat(vaultSecretRegistry.get("db-password")).isEqualTo("my-db-password");
-    assertThat(vaultSecretRegistry.get("api-secret")).isEqualTo("my-api-secret");
+    assertThat(vaultSecretRegistry.get(DBPASSWORDKEY)).isEqualTo("my-db-password");
+    assertThat(vaultSecretRegistry.get(APISECRETKEY)).isEqualTo("my-api-secret");
     server.verify();
   }
 
   @Test
-  void get_whenKeyNotLoaded_shouldThrowException() {
-    server.expect(requestTo("http://localhost:8200/v1/secret/data/spring-boot-tutorial"))
+  void getWhenKeyNotLoadedShouldThrowException() {
+    server.expect(requestTo(SECRETENDPOINT))
         .andExpect(method(GET))
         .andRespond(withSuccess("""
             {
               "data": {
                 "data": {
-                  "db-password": "my-db-password"
-                }
-              }
-            }
-            """, MediaType.APPLICATION_JSON));
-
-    server.expect(requestTo("http://localhost:8200/v1/secret/data/spring-boot-tutorial"))
-        .andExpect(method(GET))
-        .andRespond(withSuccess("""
-            {
-              "data": {
-                "data": {
+                  "db-password": "my-db-password",
                   "api-secret": "my-api-secret"
                 }
               }
@@ -115,17 +144,35 @@ class VaultSecretRegistryTest {
 
     assertThatThrownBy(() -> vaultSecretRegistry.get("unknown-key"))
         .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Secret key not found: unknown-key");
+        .hasMessageContaining(expectedMessage(ERROR_VAULT_SECRET_KEY_NOT_FOUND, "unknown-key"));
   }
 
   @Test
-  void loadSecrets_whenVaultReturnsError_shouldThrowAndFailStartup() {
-    server.expect(requestTo("http://localhost:8200/v1/secret/data/spring-boot-tutorial"))
+  void getWhenLocaleIsPortugueseShouldResolveLocalizedMessage() {
+    java.util.Locale previousLocale = org.springframework.context.i18n.LocaleContextHolder.getLocale();
+    org.springframework.context.i18n.LocaleContextHolder.setLocale(java.util.Locale.forLanguageTag("pt-BR"));
+
+    try {
+      assertThatThrownBy(() -> vaultSecretRegistry.get("unknown-key"))
+          .isInstanceOf(IllegalStateException.class)
+          .hasMessageContaining(expectedMessage(ERROR_VAULT_SECRET_KEY_NOT_FOUND, "unknown-key"));
+    } finally {
+      org.springframework.context.i18n.LocaleContextHolder.setLocale(previousLocale);
+    }
+  }
+
+  @Test
+  void loadSecretsWhenVaultReturnsErrorShouldThrowAndFailStartup() {
+    server.expect(requestTo(SECRETENDPOINT))
         .andExpect(method(GET))
         .andRespond(withServerError());
 
     assertThatThrownBy(() -> vaultSecretRegistry.loadSecrets())
         .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Failed to load Vault secret at startup");
+        .hasMessageContaining(expectedMessage(ERROR_REGISTRY_STARTUP_FAILED, SECRETPATH, "*"));
+  }
+
+  private String expectedMessage(String key, Object... args) {
+    return logMessages.get(key, args);
   }
 }

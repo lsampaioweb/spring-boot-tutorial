@@ -26,6 +26,9 @@
   </appender>
 
   <appender name="File" class="ch.qos.logback.classic.AsyncAppender">
+    <queueSize>512</queueSize>
+    <discardingThreshold>0</discardingThreshold>
+    <neverBlock>false</neverBlock>
     <appender-ref ref="RollingFile" />
   </appender>
 
