@@ -11,7 +11,7 @@ This guide demonstrates how to handle exceptions in a Spring Boot application. T
         include-stacktrace: "never"
     ```
 
-    `application-dev.yml` file:
+    `application-development.yml` file:
     ```yml
     server:
       error:
