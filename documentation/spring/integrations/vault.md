@@ -94,6 +94,16 @@ Tests use `MockRestServiceServer` and do not require a running Vault instance:
 mvn test
 ```
 
+### i18n Quality Checks Included
+Each Vault sub-project now includes an `I18nConsistencyTest` that validates:
+
+1. Locale key parity between `messages.properties` and `messages_pt_BR.properties`.
+1. Placeholder arity parity for each shared key (for example `{0}`, `{1}`).
+1. Locale keys not used in code (fails when a key exists in bundles but is unused).
+1. Missing locale keys used by code constants (fails when code references `log.*` or `error.*` keys that are not present in bundles).
+
+These checks fail fast in CI and keep locale files synchronized with actual key usage in `VaultSecretRegistry` and `VaultSecretService`.
+
 ## 7. Stop Vault Infrastructure
 
 ```bash
