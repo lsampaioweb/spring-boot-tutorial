@@ -94,35 +94,62 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
     - Performance testing with K6.
 
 ### Spring Boot Integrations:
+1. [PostgreSQL](documentation/spring/integrations/postgresql.md)
+    - Three sub-projects: `crud` (single-record CRUD), `batch` (bulk inserts via `NamedParameterJdbcTemplate`), `transactions` (atomic transfers with `@Transactional`).
+1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
+    - Messaging with RabbitMQ (direct, fanout, topic, headers exchanges).
+1. [Redis](documentation/spring/integrations/redis.md)
+    - Three sub-projects: `datastore` (Redis as primary store), `cache-layer` (Redis in front of a database), `pubsub-events` (Redis pub/sub messaging).
 1. [Traefik](documentation/spring/integrations/traefik.md)
     - Integrating Traefik as a reverse proxy for container routing.
 1. [Vault](documentation/spring/integrations/vault.md)
     - Three sub-projects: `single-secret`, `multiple-secrets`, `secret-rotation` — startup-cached secret loading from HashiCorp Vault.
-1. [PostgreSQL](documentation/spring/integrations/postgresql.md)
-    - Three sub-projects: `crud` (single-record CRUD), `batch` (bulk inserts via `NamedParameterJdbcTemplate`), `transactions` (atomic transfers with `@Transactional`).
-1. [Redis](documentation/spring/integrations/redis.md)
-    - Three sub-projects: `datastore` (Redis as primary store), `cache-layer` (Redis in front of a database), `pubsub-events` (Redis pub/sub messaging).
-1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
-    - Messaging with RabbitMQ (direct, fanout, topic, headers exchanges).
-1. [Geography](samples/23-geography/README.md)
-    - PostgreSQL-backed REST sample for countries, states, and cities with pagination, HTTP Basic protection for write operations, and HTTPS-ready production profile.
 
 ## Infrastructure Services
 
 All integration samples use containerized infrastructure defined in `samples/infrastructure/`:
+- **PostgreSQL** — Relational database
+- **RabbitMQ** — Message broker
+- **Redis** — In-memory data store
 - **Traefik** — Reverse proxy for HTTP routing and load balancing
 - **Vault** — HashiCorp Vault for secrets management
-- **PostgreSQL** — Relational database
-- **Redis** — In-memory data store
-- **RabbitMQ** — Message broker
 
-Each service runs in Podman Compose with security hardening (read-only filesystems, dropped capabilities, no-new-privileges).
+Each service runs in Compose with security hardening (dropped capabilities and no-new-privileges).
 
 To use any integration:
-1. Start infrastructure: `cd samples/infrastructure/{service} && podman compose up -d`
-2. Configure environment variables only when required by the sample (for example via `.env` or shell exports)
-3. Run the sample: `mvn spring-boot:run`
-4. Stop infrastructure: `podman compose down`
+1. Create shared network once (Docker): `docker network create tutorial-network`.
+2. Open the service folder: `cd samples/infrastructure/{service}`.
+3. If available, copy secret defaults: `cp .env.example .env`.
+4. Start infrastructure: `docker compose up -d`.
+5. Stop infrastructure: `docker compose down`.
+
+If you use Podman, replace step 1 with `podman network exists tutorial-network || podman network create tutorial-network`, then replace `docker compose` with `podman compose`.
+
+If `docker compose up` fails with `docker-credential-secretservice` missing, install Docker credential helpers or remove the `credsStore` setting from `~/.docker/config.json`.
+
+If `podman compose up` fails with errors like `potentially insufficient UIDs or GIDs available in user namespace`, your user is missing rootless mappings in `/etc/subuid` and `/etc/subgid`. Ask an administrator to provision subuid/subgid ranges for your user, then run `podman system migrate` and retry.
+
+Podman rootless preflight check:
+
+```bash
+whoami
+grep "^$(whoami):" /etc/subuid
+grep "^$(whoami):" /etc/subgid
+```
+
+If either grep returns no line, Podman rootless mappings are not configured for your user.
+
+Administrator remediation example (run as root, with unique ranges):
+
+```bash
+usermod --add-subuids 100000-165535 --add-subgids 100000-165535 <username>
+```
+
+Then the developer should run:
+
+```bash
+podman system migrate
+```
 
 See individual integration documentation for detailed setup steps.
 
@@ -153,17 +180,6 @@ Run each sample from its own folder:
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
-
-## Tutorial TODO Projects:
-
-### Placeholder documentation pages:
-1. [documentation/spring/advanced/security.md](documentation/spring/advanced/security.md)
-    - Status: PLACEHOLDER
-    - Next action: Replace XXX content with a complete security tutorial.
-
-### Maintenance:
-1. Update this section whenever a missing sample is created, placeholder documentation is completed, or sample numbering/topic mapping changes.
-1. Keep status values standardized: MISSING, PLACEHOLDER, NON-APP (EXPECTED), DONE.
 
 ## Links:
 

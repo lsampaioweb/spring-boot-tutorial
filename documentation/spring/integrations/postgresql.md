@@ -25,7 +25,9 @@ podman system migrate
 ## 1. Start PostgreSQL Infrastructure
 
 ```bash
+podman network exists tutorial-network || podman network create tutorial-network
 cd samples/infrastructure/postgres
+cp .env.example .env
 podman compose up -d
 ```
 
@@ -46,6 +48,8 @@ export DB_NAME=tutorial
 export DB_USER=tutorial
 export DB_PASSWORD=tutorial
 ```
+
+PostgreSQL infrastructure credentials are read from `samples/infrastructure/postgres/.env`.
 
 Then start the chosen sub-project:
 
@@ -114,6 +118,29 @@ curl -X POST -H "Content-Type: application/json" \
 ```bash
 cd samples/infrastructure/postgres
 podman compose down
+```
+
+## Troubleshooting
+
+If container startup fails with `docker-credential-secretservice` missing while using Docker Compose, install Docker credential helpers or remove `credsStore` from `~/.docker/config.json`.
+
+If `podman compose up` fails with `potentially insufficient UIDs or GIDs available in user namespace`, your rootless Podman user is missing subuid/subgid mappings. Ask an administrator to add ranges for your user in `/etc/subuid` and `/etc/subgid`, then run:
+
+```bash
+podman system migrate
+```
+
+Preflight check:
+
+```bash
+grep "^$(whoami):" /etc/subuid
+grep "^$(whoami):" /etc/subgid
+```
+
+If either command returns no line, ask an administrator to add unique ranges, for example:
+
+```bash
+usermod --add-subuids 100000-165535 --add-subgids 100000-165535 <username>
 ```
 
 [Go Back](../../../README.md)

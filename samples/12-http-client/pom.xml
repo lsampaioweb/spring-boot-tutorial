@@ -44,12 +44,6 @@
       <version>${springdoc.version}</version>
     </dependency>
 
-    <!-- Spring Data Commons for shared pagination and domain support types. -->
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-commons</artifactId>
-    </dependency>
-
     <!-- HATEOAS starter for hypermedia-driven REST response models. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

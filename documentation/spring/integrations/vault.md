@@ -20,7 +20,9 @@ The Vault sample is split into three focused sub-projects:
 ## 1. Start Vault Infrastructure
 
 ```bash
+podman network exists tutorial-network || podman network create tutorial-network
 cd samples/infrastructure/vault
+cp .env.example .env
 ```
 
 ```bash
@@ -39,6 +41,8 @@ Set the required secrets in the KV v2 mount (`secret`) under the path `spring-bo
 ```bash
 podman exec tutorial-vault vault kv put secret/spring-boot-tutorial api-secret=my-api-secret db-password=my-db-password
 ```
+
+Vault dev token and address come from `samples/infrastructure/vault/.env`.
 
 ## 3. Configure Environment
 
@@ -112,6 +116,29 @@ cd samples/infrastructure/vault
 
 ```bash
 podman compose down
+```
+
+## Troubleshooting
+
+If startup fails with `docker-credential-secretservice` missing while using Docker Compose, install Docker credential helpers or remove `credsStore` from `~/.docker/config.json`.
+
+If `podman compose up` fails with `potentially insufficient UIDs or GIDs available in user namespace`, your rootless Podman user is missing subuid/subgid mappings. Ask an administrator to add ranges for your user in `/etc/subuid` and `/etc/subgid`, then run:
+
+```bash
+podman system migrate
+```
+
+Preflight check:
+
+```bash
+grep "^$(whoami):" /etc/subuid
+grep "^$(whoami):" /etc/subgid
+```
+
+If either command returns no line, ask an administrator to add unique ranges, for example:
+
+```bash
+usermod --add-subuids 100000-165535 --add-subgids 100000-165535 <username>
 ```
 
 [Go Back](../../../README.md)

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +34,7 @@ class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
+  public ResponseEntity<UserResponse> findById(@PathVariable @Positive Long id) {
     return ResponseEntity.ok(service.findById(id));
   }
 
@@ -47,14 +48,14 @@ class UserController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponse> update(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+  public ResponseEntity<UserResponse> update(@PathVariable @Positive Long id, @Valid @RequestBody UserRequest request) {
     UserResponse updatedEntity = service.update(id, request);
 
     return ResponseEntity.ok(updatedEntity);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable @Positive Long id) {
     service.delete(id);
 
     return ResponseEntity.noContent().build();

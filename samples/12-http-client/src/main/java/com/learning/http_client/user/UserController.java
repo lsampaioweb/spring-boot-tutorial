@@ -5,8 +5,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,14 +32,17 @@ class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<PagedModel<EntityModel<UserResponse>>> findAll(Pageable pageable) {
-    PagedModel<EntityModel<UserResponse>> users = userService.findAll(pageable);
+  public ResponseEntity<PagedModel<EntityModel<UserResponse>>> findAll(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(defaultValue = "id,asc") String sort) {
+    PagedModel<EntityModel<UserResponse>> users = userService.findAll(page, size, sort);
 
     return ResponseEntity.ok(users);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> findById(@PathVariable Integer id) {
+  public ResponseEntity<UserResponse> findById(@PathVariable @Positive Integer id) {
     Optional<UserResponse> user = userService.findById(id);
 
     return user.map(ResponseEntity::ok)
@@ -55,7 +59,8 @@ class UserController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<UserResponse> update(@PathVariable Integer id, @Valid @RequestBody UserRequest request) {
+  public ResponseEntity<UserResponse> update(@PathVariable @Positive Integer id,
+      @Valid @RequestBody UserRequest request) {
     Optional<UserResponse> updatedUser = userService.update(id, request);
 
     return updatedUser.map(ResponseEntity::ok)
@@ -63,7 +68,7 @@ class UserController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Integer id) {
+  public ResponseEntity<Void> delete(@PathVariable @Positive Integer id) {
     boolean userRemoved = userService.delete(id);
 
     if (userRemoved) {

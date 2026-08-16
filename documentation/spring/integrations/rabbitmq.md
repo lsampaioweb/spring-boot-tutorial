@@ -50,7 +50,9 @@ Each project contains the same core pieces:
 ### Start RabbitMQ Infrastructure
 
 ```bash
+podman network exists tutorial-network || podman network create tutorial-network
 cd samples/infrastructure/rabbitmq
+cp .env.example .env
 podman compose up -d
 ```
 
@@ -121,7 +123,7 @@ curl -X POST "http://localhost:8084/api/v1/messages/headers?customerName=Dave&pr
 ### Notes
 
 1. Development profile is active by default in each subproject.
-1. Infrastructure credentials are `admin/admin` from `samples/infrastructure/rabbitmq/docker-compose.yml`.
+1. Infrastructure credentials come from `samples/infrastructure/rabbitmq/.env`.
 1. Management endpoints expose `health` and `metrics` in development.
 
 ### Stop RabbitMQ Infrastructure
@@ -129,6 +131,29 @@ curl -X POST "http://localhost:8084/api/v1/messages/headers?customerName=Dave&pr
 ```bash
 cd samples/infrastructure/rabbitmq
 podman compose down
+```
+
+### Troubleshooting
+
+If startup fails with `docker-credential-secretservice` missing while using Docker Compose, install Docker credential helpers or remove `credsStore` from `~/.docker/config.json`.
+
+If `podman compose up` fails with `potentially insufficient UIDs or GIDs available in user namespace`, your rootless Podman user is missing subuid/subgid mappings. Ask an administrator to add ranges for your user in `/etc/subuid` and `/etc/subgid`, then run:
+
+```bash
+podman system migrate
+```
+
+Preflight check:
+
+```bash
+grep "^$(whoami):" /etc/subuid
+grep "^$(whoami):" /etc/subgid
+```
+
+If either command returns no line, ask an administrator to add unique ranges, for example:
+
+```bash
+usermod --add-subuids 100000-165535 --add-subgids 100000-165535 <username>
 ```
 
 [Go Back](../../../README.md)

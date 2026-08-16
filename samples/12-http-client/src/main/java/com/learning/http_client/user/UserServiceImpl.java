@@ -2,11 +2,8 @@ package com.learning.http_client.user;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Links;
 import org.springframework.hateoas.PagedModel;
@@ -44,10 +41,10 @@ class UserServiceImpl implements UserService {
   }
 
   @Override
-  public PagedModel<EntityModel<UserResponse>> findAll(Pageable pageable) {
+  public PagedModel<EntityModel<UserResponse>> findAll(int page, int size, String sort) {
     PagedModel<EntityModel<User>> users = restClient
         .get()
-        .uri(Objects.requireNonNull(getPagingAndSortingUrl(pageable)))
+        .uri(Objects.requireNonNull(getPagingAndSortingUrl(page, size, sort)))
         .retrieve()
         .body(new ParameterizedTypeReference<PagedModel<EntityModel<User>>>() {
         });
@@ -116,17 +113,15 @@ class UserServiceImpl implements UserService {
     return ((status == HttpStatus.OK) || (status == HttpStatus.NO_CONTENT));
   }
 
-  private String getPagingAndSortingUrl(Pageable pageable) {
-    return UriComponentsBuilder.fromUriString(apiProperties.users())
-        .queryParam("page", pageable.getPageNumber())
-        .queryParam("size", pageable.getPageSize())
-        .queryParam("sort", formatSort(pageable.getSort()))
-        .toUriString();
-  }
+  private String getPagingAndSortingUrl(int page, int size, String sort) {
+    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(apiProperties.users())
+        .queryParam("page", Math.max(page, 0))
+        .queryParam("size", Math.max(size, 1));
 
-  private String formatSort(Sort sort) {
-    return sort.stream()
-        .map(order -> order.getProperty() + "," + order.getDirection())
-        .collect(Collectors.joining(","));
+    if ((sort != null) && !sort.isBlank()) {
+      builder.queryParam("sort", sort);
+    }
+
+    return builder.toUriString();
   }
 }

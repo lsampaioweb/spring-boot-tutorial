@@ -5,8 +5,7 @@ networks:
 
 services:
   redis:
-    image: "redis:latest"
-    # Pinned example: image: "redis:8.2-alpine"
+    image: "redis:8.2-alpine"
     # Docs: https://hub.docker.com/_/redis
     container_name: "tutorial-redis"
     restart: "unless-stopped"

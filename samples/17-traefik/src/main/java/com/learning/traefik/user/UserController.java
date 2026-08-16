@@ -18,7 +18,7 @@ public class UserController {
   private final HostInfoService hostInfoService;
 
   @GetMapping(HELLO_PATH)
-  public ResponseEntity<HelloResponse> sayHello() throws java.net.UnknownHostException {
-    return ResponseEntity.ok(hostInfoService.getHostInfo());
+  public ResponseEntity<HelloResponse> sayHello() {
+    return ResponseEntity.ok(hostInfoService.sayHello());
   }
 }

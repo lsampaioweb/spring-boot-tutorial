@@ -1,13 +1,12 @@
 package com.learning.http_client.user;
 
 import java.util.Optional;
-import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 
 interface UserService {
 
-  PagedModel<EntityModel<UserResponse>> findAll(Pageable pageable);
+  PagedModel<EntityModel<UserResponse>> findAll(int page, int size, String sort);
 
   Optional<UserResponse> findById(Integer id);
 

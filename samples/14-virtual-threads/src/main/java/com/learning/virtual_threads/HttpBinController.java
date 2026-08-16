@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.learning.virtual_threads.i18n.LogMessages;
 
+import jakarta.validation.constraints.Positive;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -26,7 +27,7 @@ public class HttpBinController {
   }
 
   @GetMapping("/block/{seconds}")
-  public ResponseEntity<DelayResponse> delay(@PathVariable int seconds) {
+  public ResponseEntity<DelayResponse> delay(@PathVariable @Positive int seconds) {
     DelayResponse response = httpBinService.delay(seconds);
     log.info(logMessages.get(LOG_HTTPBIN_DELAY_COMPLETED, response.statusCode(), response.thread()));
 

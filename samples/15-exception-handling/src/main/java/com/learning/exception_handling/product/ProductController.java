@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +34,7 @@ class ProductController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
+  public ResponseEntity<ProductResponse> findById(@PathVariable @Positive Long id) {
     return ResponseEntity.ok(service.findById(id));
   }
 
@@ -48,14 +49,15 @@ class ProductController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
+  public ResponseEntity<ProductResponse> update(@PathVariable @Positive Long id,
+      @Valid @RequestBody ProductRequest request) {
     ProductResponse updatedEntity = service.update(id, request);
 
     return ResponseEntity.ok(updatedEntity);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable @Positive Long id) {
     service.delete(id);
 
     return ResponseEntity.noContent().build();

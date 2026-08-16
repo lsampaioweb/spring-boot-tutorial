@@ -1,4 +1,5 @@
 .vscode/*
+.github
 .DS_Store
 
 # Maven/Java build output.

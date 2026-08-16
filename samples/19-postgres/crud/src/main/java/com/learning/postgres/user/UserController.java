@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 
 /**
  * REST controller for user management endpoints.
@@ -42,7 +43,7 @@ class UserController {
    * Retrieve a user by ID.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+  public ResponseEntity<UserResponse> getUserById(@PathVariable @Positive Long id) {
     return ResponseEntity.ok(userService.findById(id));
   }
 
@@ -59,7 +60,7 @@ class UserController {
    */
   @PutMapping("/{id}")
   public ResponseEntity<UserResponse> updateUser(
-      @PathVariable Long id,
+      @PathVariable @Positive Long id,
       @Valid @RequestBody UpdateUserRequest request) {
     return ResponseEntity.ok(userService.update(id, request));
   }
@@ -68,7 +69,7 @@ class UserController {
    * Delete a user by ID.
    */
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteUser(@PathVariable @Positive Long id) {
     userService.delete(id);
     return ResponseEntity.noContent().build();
   }

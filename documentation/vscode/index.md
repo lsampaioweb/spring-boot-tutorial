@@ -45,6 +45,22 @@ This guide explains how to install essential `VS Code` extensions for `Java` and
     code --list-extensions
     ```
 
+1. Clear the Java language server workspace cache.
+
+    **Purpose:** Clears the VS Code Java language server's stale workspace cache (type index, resolved classes, etc.) for this project. Run this when VS Code reports errors on classes that no longer exist, even after `mvn clean`.
+
+    The hash-named folder under `workspaceStorage` is unique per workspace path and machine. Locate it dynamically using the project folder name:
+
+    ```bash
+    # Find the cache folder for this project.
+    grep -rl "spring-boot-tutorial" ~/.config/Code/User/workspaceStorage/*/workspace.json
+
+    # Delete the Java language server cache inside the matching folder.
+    rm -rf $(grep -rl "spring-boot-tutorial" ~/.config/Code/User/workspaceStorage/*/workspace.json | xargs dirname)/redhat.java
+    ```
+
+    After running it, reload VS Code (`Developer: Reload Window`) to trigger a full reindex.
+
 [Go Back](../../README.md)
 
 #
