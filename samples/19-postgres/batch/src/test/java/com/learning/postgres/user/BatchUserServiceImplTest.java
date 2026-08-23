@@ -12,17 +12,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.learning.postgres.i18n.LogMessages;
+
 @ExtendWith(MockitoExtension.class)
 class BatchUserServiceImplTest {
 
   @Mock
   private UserRepository userRepository;
 
+  @Mock
+  private LogMessages logMessages;
+
   private BatchUserServiceImpl batchUserService;
 
   @BeforeEach
   void setUp() {
-    batchUserService = new BatchUserServiceImpl(userRepository, new UserMapper());
+    batchUserService = new BatchUserServiceImpl(userRepository, new UserMapper(), logMessages);
   }
 
   @Test
