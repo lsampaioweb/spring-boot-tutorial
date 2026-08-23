@@ -3,3 +3,6 @@
 
 # Maven/Java build output.
 **/target/
+
+# The AI custom files should be ignored.
+.github/
