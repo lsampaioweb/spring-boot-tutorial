@@ -1,11 +1,11 @@
 spring:
   application:
     name: "i18n"
-  threads:
-    virtual:
-      enabled: true
   messages:
     basename: "i18n/messages"
+    encoding: "UTF-8"
+    default-locale: "en"
+    fallback-to-system-locale: false
   profiles:
     active:
       # - "development"
@@ -13,12 +13,8 @@ spring:
 
 logging:
   config: "classpath:log/logback-spring.xml"
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "health,info,metrics"
-  endpoint:
-    health:
-      show-details: "when-authorized"
+  logback:
+    rollingpolicy:
+      max-file-size: "10MB"
+      max-history: "7"
+      total-size-cap: "1GB"
