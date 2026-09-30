@@ -20,6 +20,7 @@ In `pom.xml`, add `mapstruct` and the annotation processor:
 ```xml
 <properties>
   <mapstruct.version>1.6.3</mapstruct.version>
+  <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 </properties>
 
 <dependencies>
@@ -38,6 +39,15 @@ In `pom.xml`, add `mapstruct` and the annotation processor:
       <configuration>
         <annotationProcessorPaths>
           <path>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+          </path>
+          <path>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok-mapstruct-binding</artifactId>
+            <version>${lombok-mapstruct-binding.version}</version>
+          </path>
+          <path>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <version>${mapstruct.version}</version>
@@ -49,17 +59,26 @@ In `pom.xml`, add `mapstruct` and the annotation processor:
 </build>
 ```
 
+Always include `lombok-mapstruct-binding` when the module also uses Lombok, even if
+DTOs are records today. That keeps MapStruct working if you later add Lombok
+accessors on mapped types.
 ### Basic mapper
 
 ```java
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 interface UserMapper {
 
   UserResponse toResponse(User user);
 
-  User toEntity(UserRequest request);
+  @Mapping(target = "id", constant = "0L")
+  User toNewEntity(UserRequest request);
+
+  @Mapping(target = "id", source = "id")
+  User toEntity(Long id, UserRequest request);
 }
 ```
 
@@ -67,23 +86,26 @@ What this means:
 
 - `@Mapper`: marks this interface for MapStruct code generation.
 - `componentModel = "spring"`: generated implementation becomes a Spring bean, so you can inject it.
-- `toResponse` and `toEntity`: MapStruct generates these methods by matching fields with the same names.
+- `unmappedTargetPolicy = ERROR`: fail the build if a destination field is forgotten.
+- `toResponse`: same field names are mapped automatically.
+- `toNewEntity`: `constant = "0L"` fills a `Long` id (use `"0"` only for `int`/`Integer`).
+- `toEntity(Long id, UserRequest request)`: two sources; `id` comes from the method argument, `name` and `email` come from the request.
 
 ### Understanding @Mapping
 
 Example:
 
 ```java
-@Mapping(target = "id", constant = "0")
-User toEntity(UserRequest request);
+@Mapping(target = "id", constant = "0L")
+User toNewEntity(UserRequest request);
 ```
 
 Meaning:
 
 - `target = "id"`: map to the `id` field in the destination object.
-- `constant = "0"`: always assign `0` to destination `id`, ignoring source input.
+- `constant = "0L"`: always assign `0L` to a `Long` destination `id`, ignoring source input.
 
-In this tutorial sample, it preserves the previous behavior where new users are created with `id = 0` before persistence logic assigns a final id.
+The MapStruct sample then replaces that placeholder id in the service before storing the user. The HTTP Client sample sends `0L` to the remote create API.
 
 ### Other common @Mapping options
 
@@ -141,5 +163,5 @@ Fix:
 
 ### Samples using MapStruct in this project
 
+- `samples/11-mapstruct`
 - `samples/12-http-client`
-- `samples/15-exception-handling`
