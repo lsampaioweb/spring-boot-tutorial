@@ -1,25 +1,27 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
+import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 
-const BASE_URL = 'http://jump-server-01.lan.homelab:8080';
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
 
 export const options = {
   stages: [
     { duration: '5s', target: 10 },
     { duration: '5s', target: 20 },
     { duration: '5s', target: 30 },
-
     { duration: '5s', target: 40 },
-
     { duration: '5s', target: 30 },
     { duration: '5s', target: 20 },
     { duration: '5s', target: 10 },
-  ]
+  ],
+  thresholds: {
+    http_req_failed: ['rate < 0.01'],
+    http_req_duration: ['p(95) < 4000'],
+  },
 };
 
 export default function () {
-  const response = http.get(`${BASE_URL}/httpbin/block/3`);
+  const response = http.get(`${BASE_URL}/api/v1/httpbins/block/3`);
 
   check(response, {
     'Status:200': (r) => r.status === 200,
@@ -30,6 +32,6 @@ export default function () {
 
 export function handleSummary(data) {
   return {
-    "output/virtual-threads.html": htmlReport(data),
+    'output/virtual-threads.html': htmlReport(data),
   };
 }

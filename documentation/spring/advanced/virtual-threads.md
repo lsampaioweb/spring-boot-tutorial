@@ -1,70 +1,52 @@
 ## Virtual Threads
 
-Virtual Threads are a lightweight concurrency mechanism introduced in Java as part of Project Loom. They enable a more scalable and efficient way to handle large numbers of concurrent tasks without the overhead associated with traditional threads. This guide demonstrates how to use Virtual Threads in a Spring Boot application.
+Working sample: `samples/16-virtual-threads`.
 
-### Prerequisites
+Virtual threads (Project Loom) let a servlet/MVC app keep blocking I/O — JDBC
+and `RestClient` — without one platform thread per request. Spring Boot
+turns them on with a YAML flag. No extra dependency is required; this tutorial
+already uses Java 25.
 
-1. Java 25:
+### Enable virtual threads
 
-  Ensure your project is using `JDK 25` or later. Virtual Threads are fully supported on modern JDKs, and this tutorial baseline uses Java 25.
+Put the flag in shared `application.yml`, not only in one profile:
 
-### Steps to Implement Virtual Threads in Spring Boot
+```yml
+spring:
+  threads:
+    virtual:
+      enabled: true
+```
 
-1. Configure Virtual Threads in `application.yml`.
+Do not add a custom `TaskExecutor` or `Executors.newVirtualThreadPerTaskExecutor()`
+bean. Boot already uses virtual threads for request handling when this flag is
+on.
 
-    Enable Virtual Threads in your Spring Boot application by adding the following configuration to your `application.yml` file:
+Do not lower `server.tomcat.threads.max` as a virtual-thread trick. The sample
+keeps that knob commented only so you can experiment.
 
-    ```yaml
-    spring:
-      threads:
-        virtual:
-          # To enable it.
-          enabled: true
-          # To disable it.
-          enabled: false
-    ```
+### What the sample demonstrates
 
-1. Create the Controller.
+1. `HttpBinRestController` is a thin REST controller at `/api/v1/httpbins`.
+1. `GET /api/v1/httpbins/block/{seconds}` delegates to `HttpBinService`.
+1. The service makes a **blocking** `RestClient` call to a delay endpoint, then
+   returns a `DelayResponse` with the HTTP status and `Thread.currentThread()`.
+1. The controller logs that result through an i18n log key.
 
-    Implement a controller to demonstrate the use of Virtual Threads. Create a file named `HttpBinController.java`.
+With virtual threads enabled, the logged thread looks like a virtual thread
+(for example `VirtualThread[#…]`). With the flag set to `false`, it is a
+platform Tomcat worker.
 
-    ```java
-    ...
-    @RestController
-    @RequestMapping("/httpbin")
-    @Slf4j
-    public class HttpBinController {
+### Try it
 
-      private static final String HTTPBIN_BASE_URL = "https://httpbin.org/";
+1. Run the sample with the `development` profile (port `8080`).
+1. Call `http://localhost:8080/api/v1/httpbins/block/3`.
+1. Check the response `thread` field and the application log.
+1. Set `spring.threads.virtual.enabled` to `false`, restart, and call the same
+   URL again to compare.
 
-      private final RestClient restClient;
-
-      public HttpBinController(RestClient.Builder restClientBuilder) {
-        restClient = restClientBuilder.baseUrl(HTTPBIN_BASE_URL).build();
-      }
-
-      @GetMapping("/block/{seconds}")
-      public ResponseEntity<DelayResponse> delay(@PathVariable int seconds) {
-        ResponseEntity<Void> result = restClient
-            .get()
-            .uri("/delay/" + seconds)
-            .retrieve()
-            .toBodilessEntity();
-
-        String message = String.format("%d on %s", result.getStatusCode().value(), Thread.currentThread());
-
-        log.info(message);
-
-        return ResponseEntity.ok(new DelayResponse(result.getStatusCode().value(), Thread.currentThread().toString()));
-      }
-    }
-    ```
-
-1. Testing Virtual Threads.
-
-    1. Start your Spring Boot application.
-    1. Navigate to http://localhost:8080/httpbin/block/3.
-    1. Change the value of `spring:threads:virtual:enabled:` from `true` to `false` and test it again.
+Load scripts for this endpoint live under `src/test/k6/` in the sample. The k6
+topic covers how to run them.
 
 [Go Back](../../../README.md)
 

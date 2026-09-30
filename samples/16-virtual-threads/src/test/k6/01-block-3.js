@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-const BASE_URL = 'http://jump-server-01.lan.homelab:8080';
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
 
 export const options = {
   vus: 100,
@@ -9,7 +9,7 @@ export const options = {
 };
 
 export default function () {
-  const response = http.get(`${BASE_URL}/httpbin/block/3`);
+  const response = http.get(`${BASE_URL}/api/v1/httpbins/block/3`);
 
   check(response, {
     'Status:200': (r) => r.status === 200,

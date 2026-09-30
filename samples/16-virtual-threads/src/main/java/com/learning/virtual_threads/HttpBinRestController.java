@@ -14,14 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/httpbins")
 @Slf4j
-public class HttpBinController {
+public class HttpBinRestController {
 
   private static final String LOG_HTTPBIN_DELAY_COMPLETED = "log.httpbin.delay.completed";
 
   private final HttpBinService httpBinService;
   private final LogMessages logMessages;
 
-  public HttpBinController(HttpBinService httpBinService, LogMessages logMessages) {
+  public HttpBinRestController(HttpBinService httpBinService, LogMessages logMessages) {
     this.httpBinService = httpBinService;
     this.logMessages = logMessages;
   }

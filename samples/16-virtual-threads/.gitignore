@@ -1,4 +1,5 @@
 target/
+bin/
 !**/src/main/**/target/
 !**/src/test/**/target/
 release.properties
@@ -18,3 +19,6 @@ pom.xml.releaseBackup
 *.gz
 *.p12
 *.crt
+
+### k6 ###
+src/test/k6/output/
