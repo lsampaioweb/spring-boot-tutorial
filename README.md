@@ -4,7 +4,7 @@
 Documentation and working samples for building Java libraries and Spring Boot projects following modern architecture and best practices.
 
 **Project Specifications:**
-- **Spring Boot:** 4.1.0
+- **Spring Boot:** 4.1.1
 - **Java:** 25
 - **Maven:** 3.9+
 
@@ -39,71 +39,69 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 
 ### Spring Boot Basics:
 1. [Maven Commands](documentation/maven/pom.md):
-    - Common Maven commands and usage.
+    - Common Maven commands and usage. Sample: `samples/01-pom`.
 1. [Upgrade Process](documentation/maven/upgrade.md):
     - Practical workflow to keep all sample POMs updated.
 1. [DevTools](documentation/spring/basic/devtools.md):
-    - Enabling and using Spring Boot DevTools.
-1. [Logs](documentation/spring/basic/logs.md):
-    - Configuring and managing logs in Spring Boot.
-1. [Lombok](documentation/spring/basic/lombok.md)
-    - Integrating Lombok into your Spring Boot project.
+    - Enabling and using Spring Boot DevTools. Sample: `samples/02-devtools`.
 1. [Profile](documentation/spring/basic/profile.md)
-    - Using Spring Boot profiles.
+    - Using Spring Boot profiles. Sample: `samples/03-profiles`.
+1. [Logs](documentation/spring/basic/logs.md):
+    - Configuring and managing logs in Spring Boot. Sample: `samples/04-logs`.
+1. [Lombok](documentation/spring/basic/lombok.md)
+    - Integrating Lombok into your Spring Boot project. Sample: `samples/05-lombok`.
+1. [i18n](documentation/spring/intermediate/i18n.md)
+    - MessageSource bundles first, then HTTP locale on REST. Samples: `samples/06-i18n`, `samples/08-restapi`.
 1. [Actuator](documentation/spring/basic/actuator.md)
-    - Monitoring and managing your Spring Boot application.
+    - Monitoring and managing your Spring Boot application. Sample: `samples/07-actuator`.
 
 ### Spring Boot Intermediate:
-1. [i18n](documentation/spring/intermediate/i18n.md)
-    - Implementing internationalization (i18n) in Spring Boot.
 1. [REST](documentation/spring/basic/rest.md)
-    - Creating RESTful web services.
-    - Handle pagination.
-    - Handle sorting.
-1. [Thymeleaf](documentation/spring/basic/thymeleaf.md)
-    - Using Thymeleaf as the templating engine.
-    - Server-side HTML rendering with form binding and i18n support.
+    - Creating RESTful web services, pagination, sorting, and OpenAPI. Sample: `samples/08-restapi`.
 1. [Validation](documentation/spring/intermediate/validation.md)
-    - Input validation for REST APIs and web forms.
+    - Input validation for REST APIs and web forms. Sample: `samples/09-validation`.
 1. [Exception Handling](documentation/spring/intermediate/exception-handling.md)
-    - Handling exceptions in Spring Boot applications.
-1. [Events](documentation/spring/intermediate/events.md)
-    - Decoupling cross-package communication with Spring Application Events and async listeners.
-1. [HTTPS](documentation/spring/intermediate/https.md)
-    - Securing your application with HTTPS.
-1. [HTTP Client](documentation/spring/intermediate/http-client.md)
-    - Making HTTP requests using the new HTTP Client in Spring Boot.
-    - Handle pagination.
-    - Handle sorting.
+    - Handling exceptions in Spring Boot applications. Sample: `samples/10-exception-handling`.
 1. [MapStruct](documentation/spring/intermediate/mapstruct.md)
-    - Compile-time DTO mapping generation.
-    - Explanation of @Mapper and @Mapping options.
+    - Compile-time DTO mapping generation. Sample: `samples/11-mapstruct`.
+1. [HTTP Client](documentation/spring/intermediate/http-client.md)
+    - Making HTTP requests with RestClient. Sample: `samples/12-http-client`.
+1. [Thymeleaf](documentation/spring/basic/thymeleaf.md)
+    - Server-side HTML rendering with form binding and i18n support. Sample: `samples/13-thymeleaf`.
+1. [HTTPS](documentation/spring/intermediate/https.md)
+    - Securing your application with HTTPS. Sample: `samples/14-https`.
+1. [Events](documentation/spring/intermediate/events.md)
+    - Spring Application Events and async listeners. Sample: `samples/15-events`.
+1. [Async](documentation/spring/intermediate/async.md)
+    - `@EnableAsync`, `@Async` workers, and accept-and-poll job APIs. Sample: `samples/27-async/basics`.
 
 ### Spring Boot Advanced:
-1. [Cloud Config](documentation/spring/advanced/cloud-config.md)
-    - Externalized configuration using Spring Cloud Config.
 1. [Virtual Threads](documentation/spring/advanced/virtual-threads.md)
-    - Using virtual threads in Spring Boot.
-1. [WebSocket](documentation/spring/advanced/websocket.md)
-    - Implementing WebSocket communication.
-1. [Security](documentation/spring/advanced/security.md)
-    - Securing your Spring Boot application.
+    - Using virtual threads in Spring Boot. Sample: `samples/16-virtual-threads`.
 1. [Container](documentation/spring/extra/container.md)
-    - Containerizing your Spring Boot application with Docker.
+    - Containerizing your Spring Boot application with Docker. Sample: `samples/17-container`.
+1. [Security](documentation/spring/advanced/security.md)
+    - Securing your Spring Boot application. Sample: `samples/18-security`.
+1. [Cloud Config](documentation/spring/advanced/cloud-config.md)
+    - Externalized configuration using Spring Cloud Config. Sample: `samples/19-cloud-config`.
 1. [K6](documentation/spring/tests/k6.md)
-    - Performance testing with K6.
+    - Performance testing with K6. Catalog: `samples/20-k6`. App-shaped scripts: `samples/16-virtual-threads/src/test/k6`.
 
 ### Spring Boot Integrations:
 1. [PostgreSQL](documentation/spring/integrations/postgresql.md)
-    - Three sub-projects: `crud` (single-record CRUD), `batch` (bulk inserts via `NamedParameterJdbcTemplate`), `transactions` (atomic transfers with `@Transactional`).
+    - Three sub-projects: `crud`, `batch`, `transactions`. Infrastructure runbook: `samples/infrastructure/postgres/README.md`. Sample: `samples/21-postgres`.
 1. [RabbitMQ](documentation/spring/integrations/rabbitmq.md)
-    - Messaging with RabbitMQ (direct, fanout, topic, headers exchanges).
+    - Messaging with RabbitMQ (direct, fanout, topic, headers exchanges). Infrastructure runbook: `samples/infrastructure/rabbitmq/README.md`. Sample: `samples/22-rabbitmq`.
 1. [Redis](documentation/spring/integrations/redis.md)
-    - Three sub-projects: `datastore` (Redis as primary store), `cache-layer` (Redis in front of a database), `pubsub-events` (Redis pub/sub messaging).
-1. [Traefik](documentation/spring/integrations/traefik.md)
-    - Integrating Traefik as a reverse proxy for container routing.
+    - Three sub-projects: `datastore`, `cache-layer`, `pubsub-events`. Infrastructure runbook: `samples/infrastructure/redis/README.md`. Sample: `samples/23-redis`.
 1. [Vault](documentation/spring/integrations/vault.md)
-    - Three sub-projects: `single-secret`, `multiple-secrets`, `secret-rotation` — startup-cached secret loading from HashiCorp Vault.
+    - Three sub-projects: `single-secret`, `multiple-secrets`, `secret-rotation`. Infrastructure runbook: `samples/infrastructure/vault/README.md`. Sample: `samples/24-vault`.
+1. [WebSocket](documentation/spring/advanced/websocket.md)
+    - Implementing WebSocket communication. Sample: `samples/25-websocket`.
+1. [Traefik](documentation/spring/integrations/traefik.md)
+    - Reverse proxy for container routing. Infrastructure runbook: `samples/infrastructure/traefik/README.md`. Sample: `samples/26-traefik`.
+1. [Tracing](documentation/spring/integrations/tracing.md)
+    - Cross-JVM W3C propagation with OTLP export to the Collector. Infrastructure runbook: `samples/infrastructure/opentelemetry/README.md`. Sample: `samples/28-tracing`.
 
 ## Infrastructure Services
 
@@ -113,11 +111,12 @@ All integration samples use containerized infrastructure defined in `samples/inf
 - **Redis** — In-memory data store
 - **Traefik** — Reverse proxy for HTTP routing and load balancing
 - **Vault** — HashiCorp Vault for secrets management
+- **OpenTelemetry Collector** — OTLP receiver that prints spans to stdout for the tracing sample
 
 Each service runs in Compose with security hardening (dropped capabilities and no-new-privileges).
 
 To use any integration:
-1. Create shared network once (Docker): `docker network create tutorial-network`.
+1. Create shared network once if it does not exist (Docker): `docker network create tutorial-network`. Starting Traefik, Vault, Redis, PostgreSQL, RabbitMQ, or the OpenTelemetry Collector also creates it.
 2. Open the service folder: `cd samples/infrastructure/{service}`.
 3. If available, copy secret defaults: `cp .env.example .env`.
 4. Start infrastructure: `docker compose up -d`.
@@ -156,24 +155,29 @@ See individual integration documentation for detailed setup steps.
 ### Swagger UI (Development Profile)
 The following samples expose Swagger UI when running with the `development` profile:
 
-- `samples/08-cloud-config/client` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/10-i18n` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/11-restapi` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/08-restapi` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/09-validation` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/10-exception-handling` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/11-mapstruct` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/12-http-client` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/14-virtual-threads` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/15-exception-handling` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/16-container` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/17-traefik` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/18-rabbitmq/direct` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/18-rabbitmq/fanout` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/18-rabbitmq/headers` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/18-rabbitmq/topic` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/19-postgres/crud` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/19-postgres/batch` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/19-postgres/transactions` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/20-websocket/server` → `http://localhost:8090/swagger-ui/index.html`
-- `samples/22-redis/datastore` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/23-geography` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/15-events` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/16-virtual-threads` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/17-container` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/18-security` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/19-cloud-config/client` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/21-postgres/crud` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/21-postgres/batch` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/21-postgres/transactions` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/22-rabbitmq/direct` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/22-rabbitmq/fanout` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/22-rabbitmq/headers` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/22-rabbitmq/topic` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/23-redis/datastore` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/23-redis/cache-layer` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/23-redis/pubsub-events` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/25-websocket/server` → `http://localhost:8090/swagger-ui/index.html`
+- `samples/26-traefik` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/27-async/basics` → `http://localhost:8080/swagger-ui/index.html`
 
 Run each sample from its own folder:
 
@@ -190,6 +194,6 @@ mvn spring-boot:run -Dspring-boot.run.profiles=development
 [MIT License](LICENSE):
   - This project is licensed under the MIT License.
 
-#
-### Created by:
-1. Luciano Sampaio.
+## Created by
+
+Luciano Sampaio

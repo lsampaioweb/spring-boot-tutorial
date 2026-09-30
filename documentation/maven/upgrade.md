@@ -24,7 +24,7 @@ Run in all projects:
 
 ### 2) Upgrade Spring Boot parent (exact version)
 
-    find samples -name pom.xml -not -path '*/target/*' -exec mvn -q -f {} versions:update-parent -DparentVersion=4.1.0 -DskipResolution=true -DgenerateBackupPoms=false \;
+    find samples -name pom.xml -not -path '*/target/*' -exec mvn -q -f {} versions:update-parent -DparentVersion=4.1.1 -DskipResolution=true -DgenerateBackupPoms=false \;
 
 ### 3) Upgrade properties that control versions
 
