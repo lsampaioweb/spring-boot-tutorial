@@ -1,5 +1,34 @@
 Maven commands.
 
+## pom.xml conventions
+
+1. `groupId` is always `br.com.lsampaioweb`.
+1. `version` keeps the `-SNAPSHOT` suffix during development (standard Maven convention).
+   Only drop it when an actual release is cut via `mvn release:prepare` (see below).
+1. Add the `<scm>` block from the start, in every module, since every sample belongs to
+   this git repository - do not wait until release time to add it.
+    ```xml
+    <scm>
+      <developerConnection>scm:git:https://github.com/lsampaioweb/spring-boot-tutorial.git</developerConnection>
+      <tag>HEAD</tag>
+    </scm>
+    ```
+1. Every dependency has a one-line `<!-- purpose -->` comment placed directly above the
+   `<dependency>` tag explaining why it's there.
+1. Dependencies are grouped and ordered as:
+    1. Spring Boot / Spring Cloud / Spring Security starters (framework-provided). Within
+       this group, `spring-boot-devtools` goes last since it is a dev-only convenience,
+       not a feature starter.
+    1. Third-party libraries (non-Spring groupIds), ordered alphabetically by artifactId.
+    1. Internal/project-owned dependencies (multi-module projects).
+    1. Test-scoped dependencies, always last, regardless of groupId.
+1. Do not leave empty `<url />` / `<licenses><license /></licenses>` stubs. If there is
+   no real project URL or license decided yet, omit the tags entirely rather than leaving
+   them empty.
+1. Cumulative topics: once a cross-cutting dependency (Lombok, devtools, etc.) is
+   introduced in an earlier sample, later samples reuse it only if that sample's own code
+   actually needs it - never add a dependency "just because" a previous sample had it.
+
 1. Compile the application to make sure everything is working.
 
     ```bash
@@ -30,17 +59,8 @@ Maven commands.
 
 1. Prepare the next release.
 
-    Add the `scm` tag with the repository url in the pom.xml.
-    ```xml
-    <project>
-      ...
-      <scm>
-        <developerConnection>scm:git:https://github.com/lsampaioweb/spring-boot-tutorial.git</developerConnection>
-        <tag>HEAD</tag>
-      </scm>
-      ...
-    </project>
-    ```
+    The `scm` tag should already be present in the pom.xml from creation (see conventions
+    above), so no need to add it here.
 
     Add the `maven-surefire-plugin` plugin.
     ```xml
