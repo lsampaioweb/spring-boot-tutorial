@@ -123,9 +123,9 @@ public class LombokApplication {
       System.out.println("\nDemo Builder");
 
       UserBuilder user = UserBuilder.builder()
-        .name("Luciano")
-        .age(41)
-        .build();
+          .name("Luciano")
+          .age(41)
+          .build();
 
       System.out.println(user);
     };
