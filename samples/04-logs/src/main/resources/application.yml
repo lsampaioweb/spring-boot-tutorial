@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: "logs"
+  profiles:
+    active:
+      # - "development"
+      - "production"
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+  logback:
+    rollingpolicy:
+      max-file-size: "10MB"
+      max-history: "7"
+      total-size-cap: "1GB"

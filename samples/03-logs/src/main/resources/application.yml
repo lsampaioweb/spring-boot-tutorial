@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: "logs"
-  messages:
-    basename: "i18n/messages"
-
-logging:
-  config: "classpath:log/logback-spring.xml"

@@ -9,9 +9,14 @@ Prepare the application to log debug, information, warning and error messages.
     ```yml
     logging:
       config: "classpath:log/logback-spring.xml"
+      logback:
+        rollingpolicy:
+          max-file-size: "10MB"
+          max-history: "7"
+          total-size-cap: "1GB"
     ```
 
-    The main sections of the configuration file include:
+    Prefer `logging.logback.rollingpolicy.*` in YAML (Boot’s current keys). Do not use the deprecated `logging.file.max-*` properties.
 
     2.1. Setting the maximum file size, the maximum size of all files together, and the number of days to retain the files.
 
