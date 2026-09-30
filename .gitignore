@@ -1,8 +1,42 @@
-.vscode/
+# OS junk
 .DS_Store
+Thumbs.db
 
-# Maven/Java build output.
+# Build output (Maven and Eclipse default output folder)
 **/target/
+**/bin/
 
-# The AI custom files should be ignored.
+# IDE / editor metadata
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.sts4-cache
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+*.gz
+logs/
+
+# Local secrets
+.env
+.env.*
+
+# TLS / key material
+*.p12
+*.pfx
+*.jks
+*.key
+*.crt
+*.pem
+
+# Maven release leftovers
+release.properties
+pom.xml.releaseBackup
+
+# Tutorial-local AI customization symlink target (not part of published samples)
 .github/
