@@ -1,73 +1,64 @@
-Spring Boot Actuator provides production-ready features to help you monitor and manage your Spring Boot application. This guide will walk you through setting up a Spring Boot application with Actuator and exploring its main features.
+Spring Boot Actuator provides production-ready endpoints to monitor and manage an application.
 
-1. Add Dependencies.
+Working sample: `samples/07-actuator`
 
-    Add the following dependencies to your `pom.xml` file:
+This lesson adds Actuator over HTTP. `spring-boot-starter-web` is included only so `/actuator/*` is reachable in a browser or with curl. REST controllers are the next lesson. Do not add Spring Security here; that is `samples/18-security`.
+
+1. Add dependencies.
+
     ```xml
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
     ```
 
-    If you want to have a username and password for the Actuator endpoints, add the following dependency:
-    ```xml
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
+1. Expose a small set of endpoints.
+
+    `application.yml` in the sample:
+
+    ```yml
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: "health,info,metrics"
+      endpoint:
+        health:
+          probes:
+            enabled: true
+          show-details: "when-authorized"
     ```
 
-1. Configure `application.yml`.
+    Common endpoints:
 
-    Spring Boot Actuator provides several built-in endpoints that allow you to monitor and manage your application. By default, these endpoints are available under the `/actuator` path.
+    - `/actuator/health` — application health (and liveness/readiness when probes are enabled)
+    - `/actuator/info` — application information
+    - `/actuator/metrics` — metrics
 
-    1. Some commonly used endpoints include:
+    `management.endpoint.health.show-details`:
 
-        - `/actuator/health` - Shows application health information.
-        - `/actuator/info` - Displays arbitrary application information.
-        - `/actuator/metrics` - Shows metrics information.
-        - `/actuator/env` - Displays environment properties.
-        - `/actuator/loggers` - Shows and configures loggers in the application.
+    - `never` — never include component details
+    - `when-authorized` — details only for an authorized caller
+    - `always` — always include details (fine for local debugging, noisy or sensitive in production)
 
-    1. Explanation of `show-details` Property:
+    The development profile in this sample can set `show-details: "always"`. Production keeps details hidden.
 
-        The `management.endpoint.health.show-details` property in the `application.yml` file configures the level of detail shown in the `/actuator/health` endpoint. This property can take the following values:
+    Do not expose `include: "*"`. Leave sensitive endpoints (`env`, `beans`, `heapdump`, and similar) off unless you need them and protect them. Spring Security for Actuator comes later (`samples/18-security`, `samples/26-traefik`).
 
-        `never`: The details are never shown, even if the request is authenticated.
+1. Test the endpoints.
 
-        `when-authorized`: The details are shown only when the request is authenticated and the user has the appropriate roles.
+    ```bash
+    cd samples/07-actuator
+    mvn spring-boot:run -Dspring-boot.run.profiles=development
+    ```
 
-        `always`: The details are always shown, regardless of authentication.
-
-        In this example, setting show-details: "always" means that the health details will always be shown in the response from the `/actuator/health` endpoint. This can be useful during development and testing to get detailed information about the health of various components in your application. However, be cautious about using this setting in a production environment, as it might expose sensitive information.
-
-        ```yml
-        management:
-          endpoints:
-            web:
-              exposure:
-                # include: "*"
-                include: "health,metrics"
-
-          endpoint:
-            health:
-              show-details: "always"
-
-        # Add if you want to have a username and password for the actuator endpoint.
-        spring:
-          security:
-            user:
-              name: "${USERNAME}"
-              password: "${PASSWORD}"
-        ```
-
-1. Test the Configuration.
-
-    After configuring your application, you can test the Actuator endpoints:
-
-    Local machine:
-      - http://localhost:8080/actuator
+    Then open `http://localhost:8080/actuator` and `http://localhost:8080/actuator/health`.
 
 [Go Back](../../../README.md)
 

@@ -11,7 +11,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>io.github.lsampaioweb</groupId>
+  <groupId>br.com.lsampaioweb</groupId>
   <artifactId>actuator</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>actuator</name>
@@ -27,17 +27,19 @@
   </scm>
 
   <dependencies>
+    <!-- Web starter for REST endpoints and embedded servlet container. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
+    <!-- Actuator starter for operational endpoints and health checks. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
+      <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
+    <!-- Devtools for local development hot reload support only. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -45,11 +47,12 @@
       <optional>true</optional>
     </dependency>
 
+    <!-- Spring Boot test starter for unit and integration testing support. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
