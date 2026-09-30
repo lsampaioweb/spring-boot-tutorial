@@ -1,11 +1,12 @@
 ---
+# How to start, verify, enable HTTPS, and troubleshoot: README.md in this folder.
 networks:
   tutorial-network:
-    external: true
+    name: "tutorial-network"
 
 services:
   traefik:
-    image: "traefik:v3.1"
+    image: "traefik:v3.7"
     # Docs: https://hub.docker.com/_/traefik
     container_name: "tutorial-traefik"
     restart: "unless-stopped"
@@ -15,7 +16,9 @@ services:
       - "no-new-privileges:true"
     ports:
       - "80:80"
-      - "8080:8080"
+      - "8081:8080"
+      # HTTPS: uncomment together with the websecure flags and mounts below.
+      # - "443:443"
     environment:
       - "TZ=UTC"
     networks:
@@ -28,8 +31,18 @@ services:
       - "--providers.docker.network=tutorial-network"
       - "--entrypoints.web.address=:80"
       - "--ping=true"
+      # HTTPS: uncomment these together with the 443 port and the cert mounts below.
+      # Drop cert.pem and key.pem into ./certs first.
+      # - "--entrypoints.websecure.address=:443"
+      # - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      # - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # - "--providers.file.directory=/etc/traefik/dynamic"
+      # - "--providers.file.watch=true"
     volumes:
       - "${CONTAINER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro"
+      # HTTPS: uncomment together with the websecure flags above.
+      # - "./certs:/certs:ro"
+      # - "./dynamic:/etc/traefik/dynamic:ro"
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       start_period: "10s"

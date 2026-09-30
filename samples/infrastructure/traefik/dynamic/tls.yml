@@ -1,0 +1,11 @@
+# Mounted only when the HTTPS volume and file-provider flags are uncommented
+# in docker-compose.yml.
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /certs/cert.pem
+        keyFile: /certs/key.pem
+  certificates:
+    - certFile: /certs/cert.pem
+      keyFile: /certs/key.pem

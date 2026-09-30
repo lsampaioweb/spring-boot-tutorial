@@ -1,0 +1,4 @@
+bin/
+# Keep this directory. Ignore the files you drop in.
+*
+!.gitignore

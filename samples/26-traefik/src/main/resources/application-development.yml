@@ -1,0 +1,19 @@
+server:
+  port: 8080
+  error:
+    include-stacktrace: "always"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+  endpoint:
+    health:
+      show-details: "when-authorized"
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
