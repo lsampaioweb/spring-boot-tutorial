@@ -88,7 +88,7 @@ Spring Boot profiles provide a way to segregate parts of your application config
           "name": "Profiles - Development",
           "request": "launch",
           "mainClass": "com.example.YourSpringBootApplication",
-          "args": "--spring.profiles.active=dev",
+          "args": "--spring.profiles.active=development",
           "projectName": "your-project-name"
         },
         {
@@ -96,7 +96,7 @@ Spring Boot profiles provide a way to segregate parts of your application config
           "name": "Profiles - Production",
           "request": "launch",
           "mainClass": "com.example.YourSpringBootApplication",
-          "args": "--spring.profiles.active=prod",
+          "args": "--spring.profiles.active=production",
           "projectName": "your-project-name"
         }
       ]

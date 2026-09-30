@@ -1,6 +1,0 @@
-spring:
-  application:
-    name: "profiles"
-
-logging:
-  config: "classpath:log/logback-spring.xml"

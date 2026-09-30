@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: "profiles"
+  profiles:
+    active:
+      # - "development"
+      - "production"
+
+app:
+  environment: "default"
