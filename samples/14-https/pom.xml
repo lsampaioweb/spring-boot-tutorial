@@ -11,7 +11,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>io.github.lsampaioweb</groupId>
+  <groupId>br.com.lsampaioweb</groupId>
   <artifactId>https</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>https</name>
@@ -21,18 +21,19 @@
     <java.version>25</java.version>
   </properties>
 
+  <scm>
+    <developerConnection>scm:git:https://github.com/lsampaioweb/spring-boot-tutorial.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
   <dependencies>
+    <!-- Web starter for REST endpoints and embedded servlet container. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
+    <!-- Devtools for local development hot reload support only. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -40,10 +41,18 @@
       <optional>true</optional>
     </dependency>
 
+    <!-- Lombok for reducing boilerplate code at compile time. -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- Spring Boot test starter for unit and integration testing support. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

@@ -47,6 +47,13 @@ Enabling HTTPS in a Spring Boot application ensures that the data transmitted be
         enabled: true
     ```
 
+    After the server starts, check the localized status endpoint:
+
+    ```bash
+    curl -k https://localhost:9443/api/v1/https/status
+    curl -k -H "Accept-Language: pt-BR" https://localhost:9443/api/v1/https/status
+    ```
+
 [Go Back](../../../README.md)
 
 #
