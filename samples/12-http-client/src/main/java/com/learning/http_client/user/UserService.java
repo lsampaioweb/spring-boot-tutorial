@@ -1,19 +1,19 @@
 package com.learning.http_client.user;
 
 import java.util.Optional;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.PagedModel;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 interface UserService {
 
-  PagedModel<EntityModel<UserResponse>> findAll(int page, int size, String sort);
+  Page<UserResponse> findAll(Pageable pageable);
 
-  Optional<UserResponse> findById(Integer id);
+  Optional<UserResponse> findById(Long id);
 
   UserResponse create(UserRequest request);
 
-  Optional<UserResponse> update(Integer id, UserRequest request);
+  Optional<UserResponse> update(Long id, UserRequest request);
 
-  boolean delete(Integer id);
-
+  boolean delete(Long id);
 }

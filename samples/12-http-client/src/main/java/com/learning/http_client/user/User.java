@@ -1,4 +1,4 @@
 package com.learning.http_client.user;
 
-public record User(int id, String name, String email) {
+public record User(Long id, String name, String email) {
 }

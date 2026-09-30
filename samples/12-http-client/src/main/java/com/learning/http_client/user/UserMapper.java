@@ -5,10 +5,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
-interface UserDtoMapper {
+interface UserMapper {
 
   UserResponse toResponse(User user);
 
-  @Mapping(target = "id", constant = "0")
+  @Mapping(target = "id", constant = "0L")
   User toEntity(UserRequest request);
 }
