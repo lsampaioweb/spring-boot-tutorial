@@ -11,7 +11,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>io.github.lsampaioweb</groupId>
+  <groupId>br.com.lsampaioweb</groupId>
   <artifactId>devtools</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>devtools</name>
@@ -27,19 +27,21 @@
   </scm>
 
   <dependencies>
+    <!-- Core Spring Boot starter for auto-configuration and logging support. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
 
+    <!-- For auto reload. -->
     <dependency>
-      <!-- For auto reload. -->
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
 
+    <!-- Spring Boot test starter for unit and integration testing support. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

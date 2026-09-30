@@ -4,6 +4,3 @@ spring:
   devtools:
     restart:
       enabled: true
-
-logging:
-  config: "classpath:log/logback-spring.xml"
