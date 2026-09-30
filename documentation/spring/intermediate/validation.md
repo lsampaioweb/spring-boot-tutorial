@@ -4,6 +4,10 @@
 
 This guide shows how to validate REST payloads using `spring-boot-starter-validation` and `@Valid`.
 
+Working sample: `samples/09-validation`
+
+Validation messages live in `i18n/messages.properties`, using the `{error.validation.*}` keys taught in i18n.
+
 1. Add dependency.
 
     Add the validation starter to your `pom.xml`:
@@ -20,14 +24,14 @@ This guide shows how to validate REST payloads using `spring-boot-starter-valida
     Add Jakarta Bean Validation annotations to the request DTO.
 
     ```java
-    package com.learning.restapi.user;
+    package com.learning.validation.user;
 
     import jakarta.validation.constraints.Email;
     import jakarta.validation.constraints.NotBlank;
 
     public record UserRequest(
-        @NotBlank String name,
-        @Email @NotBlank String email) {
+        @NotBlank(message = "{error.validation.name.required}") String name,
+        @NotBlank(message = "{error.validation.email.required}") @Email(message = "{error.validation.email.invalid}") String email) {
     }
     ```
 
