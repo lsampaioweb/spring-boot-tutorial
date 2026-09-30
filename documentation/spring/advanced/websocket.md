@@ -40,7 +40,7 @@ Use REST when:
 
 ### Server project
 
-Path: `samples/20-websocket/server`
+Path: `samples/25-websocket/server`
 
 Main decisions:
 
@@ -57,21 +57,24 @@ Core flow:
 
 Internal event flow:
 
-1. `ChatSocketEndpoint` publishes `ChatMessagePublishedEvent` through `ChatMessageEventPublisher`.
-1. `ChatMessageAuditListener` consumes the event with `@Async` for non-blocking audit processing.
+1. `ChatService` publishes `ChatMessagePublishedEvent` through `ChatMessageEventPublisher`.
+1. `ChatMessageAuditListener` consumes the event for audit logging.
 1. Locale is extracted before publish and carried inside the immutable event payload.
 
 This demonstrates cross-package decoupling with Spring Application Events.
 
 The sample also tracks active session count and exposes:
 
-- `GET /api/v1/websocket/connections`
+- `GET /api/v1/chat/connections`
 
 This helps visualize open connection behavior.
 
+Allowed origins are never `*`. Development lists `http://localhost:8091` explicitly.
+Production loads `WEBSOCKET_ALLOWED_ORIGIN`. An empty or wildcard origin list fails startup.
+
 ### Client project
 
-Path: `samples/20-websocket/client`
+Path: `samples/25-websocket/client`
 
 The client project serves one UI page that:
 
@@ -89,14 +92,14 @@ Default server URL in UI:
 1. Start the server:
 
 	```bash
-	cd samples/20-websocket/server
+	cd samples/25-websocket/server
 	mvn spring-boot:run
 	```
 
 1. Start the client:
 
 	```bash
-	cd samples/20-websocket/client
+	cd samples/25-websocket/client
 	mvn spring-boot:run
 	```
 
@@ -108,7 +111,7 @@ Default server URL in UI:
 
 1. Check open sessions on server:
 
-	- `http://localhost:8090/api/v1/websocket/connections`
+	- `http://localhost:8090/api/v1/chat/connections`
 
 ### Why STOMP and SockJS in this tutorial?
 

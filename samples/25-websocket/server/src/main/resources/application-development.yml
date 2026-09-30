@@ -1,0 +1,18 @@
+server:
+  port: 8090
+  error:
+    include-stacktrace: "always"
+
+management:
+  endpoint:
+    health:
+      show-details: "always"
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+app:
+  websocket:
+    allowed-origins:
+      - "http://localhost:8091"
