@@ -1,0 +1,8 @@
+server:
+  error:
+    include-stacktrace: "always"
+
+management:
+  endpoint:
+    health:
+      show-details: "always"

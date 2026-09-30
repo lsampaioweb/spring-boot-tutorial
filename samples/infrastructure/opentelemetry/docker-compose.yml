@@ -1,0 +1,27 @@
+---
+# How to start, verify, and troubleshoot: README.md in this folder.
+networks:
+  tutorial-network:
+    name: "tutorial-network"
+
+services:
+  otel-collector:
+    image: "otel/opentelemetry-collector:0.131.1"
+    # Docs: https://hub.docker.com/r/otel/opentelemetry-collector
+    container_name: "tutorial-otel-collector"
+    restart: "unless-stopped"
+    cap_drop:
+      - "ALL"
+    security_opt:
+      - "no-new-privileges:true"
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - "TZ=UTC"
+    networks:
+      - "tutorial-network"
+    volumes:
+      - "./otel-collector-config.yaml:/etc/otelcol/config.yaml:ro"
+    command:
+      - "--config=/etc/otelcol/config.yaml"

@@ -1,0 +1,10 @@
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          enabled: false
+
+app:
+  callee:
+    base-url: "http://localhost:8081"

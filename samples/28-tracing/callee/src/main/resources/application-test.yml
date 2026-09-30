@@ -1,0 +1,6 @@
+management:
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          enabled: false
