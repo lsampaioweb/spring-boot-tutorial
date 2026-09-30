@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS products (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  description VARCHAR(500) NOT NULL,
+  price NUMERIC(12, 2) NOT NULL CHECK (price > 0)
+);

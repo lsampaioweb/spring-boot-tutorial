@@ -1,7 +1,8 @@
 ---
+# How to start, verify, and troubleshoot: README.md in this folder.
 networks:
   tutorial-network:
-    external: true
+    name: "tutorial-network"
 
 services:
   redis:
@@ -15,9 +16,21 @@ services:
       - "no-new-privileges:true"
     ports:
       - "6379:6379"
+    environment:
+      - "TZ=UTC"
     networks:
       - "tutorial-network"
-    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1"]
+    # No password: samples use localhost with REDIS_HOST/REDIS_PORT only.
+    # --protected-mode no is tutorial-only (bind 0.0.0.0 without AUTH).
+    command:
+      - "redis-server"
+      - "--appendonly"
+      - "yes"
+      - "--save"
+      - "60"
+      - "1"
+      - "--protected-mode"
+      - "no"
     volumes:
       - "./volumes:/data"
     healthcheck:

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <entry key="sql.products.find-all">SELECT id, name, description, price FROM products ORDER BY id</entry>
+  <entry key="sql.products.find-by-id">SELECT id, name, description, price FROM products WHERE id = :id</entry>
+  <entry key="sql.products.insert">INSERT INTO products (name, description, price) VALUES (:name, :description, :price) RETURNING id, name, description, price</entry>
+  <entry key="sql.products.update">UPDATE products SET name = :name, description = :description, price = :price WHERE id = :id RETURNING id, name, description, price</entry>
+  <entry key="sql.products.delete-by-id">DELETE FROM products WHERE id = :id</entry>
+</properties>

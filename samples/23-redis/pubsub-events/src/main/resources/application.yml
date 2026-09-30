@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: "redis-pubsub-events"
+  messages:
+    basename: "i18n/messages"
+    encoding: "UTF-8"
+    default-locale: "en"
+    fallback-to-system-locale: false
+  threads:
+    virtual:
+      enabled: true
+  profiles:
+    active:
+      # - "development"
+      - "production"
+  data:
+    redis:
+      host: "${REDIS_HOST:localhost}"
+      port: "${REDIS_PORT:6379}"
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+  logback:
+    rollingpolicy:
+      max-file-size: "10MB"
+      max-history: "7"
+      total-size-cap: "1GB"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: "when-authorized"
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: "never"
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

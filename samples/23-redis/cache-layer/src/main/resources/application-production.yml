@@ -1,0 +1,6 @@
+server:
+  port: 9443
+
+springdoc:
+  swagger-ui:
+    enabled: false
