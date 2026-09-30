@@ -1,0 +1,43 @@
+target/
+bin/
+!**/src/main/**/target/
+!**/src/test/**/target/
+release.properties
+pom.xml.releaseBackup
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.sts4-cache
+
+### IntelliJ ###
+.idea/
+*.iml
+
+### VS Code / Cursor ###
+.vscode/
+
+### Logs ###
+*.log
+*.gz
+logs/
+
+### Environment / secrets ###
+.env
+.env.*
+!.env.example
+
+### TLS / key material ###
+*.p12
+*.pfx
+*.jks
+*.key
+*.crt
+*.pem
+
+### OS ###
+.DS_Store
+Thumbs.db
