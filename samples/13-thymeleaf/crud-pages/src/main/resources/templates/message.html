@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="en_US">
+
+<head>
+  <title th:text="#{page.message.title}">Learning Thymeleaf</title>
+</head>
+
+<body>
+  <h1 th:text="#{page.message.heading}">Welcome to Thymeleaf</h1>
+  <h1 th:text="${message}">
+    <span>Message will print here.</span>
+  </h1>
+</body>
+
+</html>

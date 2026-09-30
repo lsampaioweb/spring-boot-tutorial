@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en_US">
+
+<head>
+  <title th:text="#{page.index.title}">CRUD Pages Example</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script th:src="@{/js/script.js}"></script>
+</head>
+
+<body>
+  <h1 th:text="#{page.index.heading}">Hello, Thymeleaf!</h1>
+  <button type="button"
+    th:text="#{page.index.button}"
+    th:attr="data-alert-message=#{page.index.alert}"
+    onclick="showAlert(this)">Click Me</button>
+</body>
+
+</html>

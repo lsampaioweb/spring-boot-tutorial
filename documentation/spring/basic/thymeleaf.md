@@ -4,11 +4,11 @@ This guide will walk you through setting up a Spring Boot application with `Thym
 
 Three sample projects demonstrate different Thymeleaf patterns and features:
 
-- **crud-pages** (`samples/07-thymeleaf/crud-pages/`) — Page navigation, message rendering via MessageSource, form binding with Thymeleaf's `th:object` and `th:field` directives, and i18n support (English + Portuguese).
-- **form-validation** (`samples/07-thymeleaf/form-validation/`) — Server-side form validation with Bean Validation constraints (`@NotBlank`, `@Size`, etc.), inline field error display via `th:errors`, and field-level error styling.
-- **ajax-interactions** (`samples/07-thymeleaf/ajax-interactions/`) — AJAX-driven fragment updates using Thymeleaf fragments (`th:fragment`), client-side JavaScript to submit and replace DOM sections without full page reloads, and real-time list synchronization.
+- **crud-pages** (`samples/13-thymeleaf/crud-pages/`) — Page navigation, message rendering via MessageSource, form binding with Thymeleaf's `th:object` and `th:field` directives, and i18n support (English + Portuguese).
+- **form-validation** (`samples/13-thymeleaf/form-validation/`) — Server-side form validation with Bean Validation constraints (`@NotBlank`, `@Size`, etc.), inline field error display via `th:errors`, and field-level error styling.
+- **ajax-interactions** (`samples/13-thymeleaf/ajax-interactions/`) — AJAX-driven fragment updates using Thymeleaf fragments (`th:fragment`), client-side JavaScript to submit and replace DOM sections without full page reloads, and real-time list synchronization.
 
-Each sample is fully configured with Spring Boot 4.1.0, Java 25, profile-based settings (development port 8080, production port 9443), actuator endpoints, and i18n support.
+Each sample is fully configured with Spring Boot 4.1.1, Java 25, profile-based settings (development port 8080, production port 9443), actuator endpoints, and i18n support.
 
 ## Setup Guide
 
@@ -88,7 +88,7 @@ Each sample is fully configured with Spring Boot 4.1.0, Java 25, profile-based s
     import org.springframework.web.bind.annotation.GetMapping;
 
     @Controller
-    public class HomeController {
+    public class HomePageController {
       @GetMapping("/")
       public String index() {
         return "index";

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="en_US">
+
+<head>
+  <title th:text="#{page.ops.title}">Thymeleaf Form</title>
+</head>
+
+<body>
+  <h1 th:text="#{page.ops.heading}">Thymeleaf Form</h1>
+
+  <form method="POST" th:action="@{/ops}" th:object="${ops}">
+    <div>
+      <label for="first" th:text="#{page.ops.label.first}">First OS</label><br/>
+      <input id="first" type="text" th:field="*{os1}" />
+    </div>
+
+    <div>
+      <label for="second" th:text="#{page.ops.label.second}">Second OS</label><br/>
+      <input id="second" type="text" th:field="*{os2}" />
+    </div>
+
+    <div>
+      <label for="third" th:text="#{page.ops.label.third}">Third OS</label><br/>
+      <input id="third" type="text" th:field="*{os3}" />
+    </div>
+
+    <input type="submit" th:value="#{page.ops.submit}" value="Send" />
+  </form>
+
+</body>
+
+</html>
