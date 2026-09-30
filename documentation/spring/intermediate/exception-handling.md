@@ -1,385 +1,229 @@
-This guide demonstrates how to handle exceptions in a Spring Boot application. The goal is to provide meaningful error messages to clients and maintain a clean and maintainable codebase.
+This guide demonstrates centralized exception handling for a Spring Boot REST API. Working sample: `samples/10-exception-handling`.
 
-1. Enable or disable trace in the exception message:
+The real-app contract is: one `@RestControllerAdvice`, domain errors as `AppException` (message key + `errorCode` + status), one JSON envelope (including validation), and i18n for user-facing messages.
 
-    `application.yml` file:
+1. Enable or disable the stack trace in error responses.
+
+    `application.yml`:
 
     ```yml
-    # This is the default, so it is not necessary.
     server:
       error:
         include-stacktrace: "never"
     ```
 
-    `application-development.yml` file:
+    `application-development.yml`:
+
     ```yml
     server:
       error:
         include-stacktrace: "always"
     ```
 
-1. Define Message Properties.
+1. Define message properties.
 
-    Create message properties files for each locale (`messages.properties`, `messages_pt_BR.properties`, etc.) within `resources/i18n`.
+    Put bundles under `resources/i18n` (`messages.properties`, `messages_pt_BR.properties`).
 
-    messages.properties:
     ```properties
-    method.called=The method "{0}" was called.
     user.notfound=User with id "{0}" was not found.
     user.exists=User with name "{0}" and email "{1}" already exists.
+    error.internal.server=Internal server error.
+    error.resource.not.found=The requested resource was not found.
+    error.validation.failed=Validation failed.
     ```
 
-    messages_pt_BR.properties:
-    ```properties
-    method.called=O método "{0}" foi chamado.
-    user.notfound=Usuário com id "{0}" não foi encontrado.
-    user.exists=Usuário com nome "{0}" e email "{1}" já existe.
+1. Create `AppException` and feature exceptions.
+
+    Domain misses and conflicts throw subclasses of `AppException`. The handler resolves the message key through `MessageSource`.
+
+    ```java
+    public abstract class AppException extends RuntimeException {
+
+      private final String messageKey;
+      private final String errorCode;
+      private final transient Object[] args;
+      private final HttpStatus status;
+
+      protected AppException(String messageKey, String errorCode, Object[] args, HttpStatus status) {
+        super(messageKey);
+        this.messageKey = messageKey;
+        this.errorCode = errorCode;
+        this.args = args;
+        this.status = status;
+      }
+
+      public String getMessageKey() {
+        return messageKey;
+      }
+
+      public String getErrorCode() {
+        return errorCode;
+      }
+
+      public Object[] getArgs() {
+        return args;
+      }
+
+      public HttpStatus getStatus() {
+        return status;
+      }
+    }
+
+    public class EntityNotFoundException extends AppException {
+
+      public EntityNotFoundException(String prefix, Object[] objects) {
+        super(prefix + ".notfound", prefix.toUpperCase(Locale.ROOT) + "_NOT_FOUND", objects, HttpStatus.NOT_FOUND);
+      }
+    }
+
+    public class UserNotFoundException extends EntityNotFoundException {
+
+      public UserNotFoundException(Long id) {
+        super("user", new Object[] { id });
+      }
+    }
     ```
 
-1. Creating Custom Exceptions.
+1. Create the error envelope.
 
-    - When the user does not exists.
-      ```java
-      public class NoSuchUserExistsException extends RuntimeException {
-        public NoSuchUserExistsException(String message) {
-          super(message);
-        }
+    Use a record. Validation failures share the same shape and fill `fields`.
+
+    ```java
+    public record ErrorResponse(
+        OffsetDateTime timestamp,
+        int status,
+        String error,
+        String errorCode,
+        String message,
+        String path,
+        String trace,
+        List<ValidationError> fields) {
+    }
+
+    public record ValidationError(String field, String message) {
+    }
+    ```
+
+1. Create one `@RestControllerAdvice`.
+
+    ```java
+    @Slf4j
+    @RestControllerAdvice
+    public class GlobalExceptionHandler {
+
+      private static final String SERVER_ERROR_INCLUDE_STACKTRACE = "server.error.include-stacktrace";
+      private static final String STACKTRACE_ALWAYS = "always";
+      private static final String ERR_INTERNAL = "error.internal.server";
+      private static final String ERR_RESOURCE_NOT_FOUND = "error.resource.not.found";
+      private static final String ERR_VALIDATION_FAILED = "error.validation.failed";
+      private static final String LOG_UNHANDLED = "log.exception.unhandled";
+      private static final String CODE_INTERNAL = "INTERNAL_ERROR";
+      private static final String CODE_RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND";
+      private static final String CODE_VALIDATION = "VALIDATION_ERROR";
+
+      private final Environment environment;
+      private final MessageSource messageSource;
+
+      public GlobalExceptionHandler(Environment environment, MessageSource messageSource) {
+        this.environment = environment;
+        this.messageSource = messageSource;
       }
-      ```
 
-    - When the user already exists.
-      ```java
-      public class UserAlreadyExistsException extends RuntimeException {
-        public UserAlreadyExistsException(String message) {
-          super(message);
-        }
+      @ExceptionHandler(NoResourceFoundException.class)
+      @ResponseStatus(HttpStatus.NOT_FOUND)
+      public @ResponseBody ErrorResponse handleNoResourceFoundException(NoResourceFoundException ex,
+          HttpServletRequest request) {
+        String message = messageSource.getMessage(ERR_RESOURCE_NOT_FOUND, null, LocaleContextHolder.getLocale());
+
+        return newErrorResponse(CODE_RESOURCE_NOT_FOUND, message, ex, request, HttpStatus.NOT_FOUND, null);
       }
-      ```
 
-1. Creating the ErrorResponse class.
+      @ExceptionHandler(AppException.class)
+      public ResponseEntity<ErrorResponse> handleAppException(AppException ex, HttpServletRequest request) {
+        String message = messageSource.getMessage(ex.getMessageKey(), ex.getArgs(), LocaleContextHolder.getLocale());
+        ErrorResponse body = newErrorResponse(ex.getErrorCode(), message, ex, request, ex.getStatus(), null);
 
-      ```java
-      @Data
-      @AllArgsConstructor
-      @NoArgsConstructor
-      public class ErrorResponse {
-
-        private LocalDateTime timestamp;
-        private int status;
-        private String error;
-        private String message;
-        private String path;
-        private String trace;
+        return ResponseEntity.status(ex.getStatus()).body(body);
       }
-      ```
 
-1. Exception Handling.
+      @ExceptionHandler(MethodArgumentNotValidException.class)
+      @ResponseStatus(HttpStatus.BAD_REQUEST)
+      public @ResponseBody ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
+          HttpServletRequest request) {
+        List<ValidationError> fields = ex.getBindingResult().getFieldErrors().stream()
+            .map(error -> new ValidationError(error.getField(), error.getDefaultMessage()))
+            .toList();
+        String message = messageSource.getMessage(ERR_VALIDATION_FAILED, null, LocaleContextHolder.getLocale());
 
-    - Create a centralized exception handling class using `@RestControllerAdvice`.
-      ```java
-      @RestControllerAdvice
-      public class ExceptionHandling {
-
-        private static final String SERVER_ERROR_INCLUDE_STACKTRACE = "server.error.include-stacktrace";
-        private static final String SERVER_ERROR_INCLUDE_STACKTRACE_NEVER = "never";
-        private static final String SERVER_ERROR_INCLUDE_STACKTRACE_ALWAYS = "always";
-        private static final String SERVER_ERROR_INCLUDE_STACKTRACE_ON_TRACE_PARAM = "on_trace_param";
-
-        private final Environment environment;
-
-        public ExceptionHandling(Environment environment) {
-          this.environment = environment;
-        }
-
-        @ExceptionHandler(NoResourceFoundException.class)
-        @ResponseStatus(HttpStatus.NOT_FOUND)
-        public @ResponseBody ErrorResponse handleNoResourceFoundException(NoResourceFoundException ex,
-            HttpServletRequest request) {
-          return newErrorResponse(ex, request, HttpStatus.NOT_FOUND);
-        }
-
-        @ExceptionHandler(NoSuchUserExistsException.class)
-        @ResponseStatus(HttpStatus.NOT_FOUND)
-        public @ResponseBody ErrorResponse handleNoSuchUserExistsException(NoSuchUserExistsException ex,
-            HttpServletRequest request) {
-          return newErrorResponse(ex, request, HttpStatus.NOT_FOUND);
-        }
-
-        @ExceptionHandler(UserAlreadyExistsException.class)
-        @ResponseStatus(HttpStatus.CONFLICT)
-        public @ResponseBody ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException ex,
-            HttpServletRequest request) {
-          return newErrorResponse(ex, request, HttpStatus.CONFLICT);
-        }
-
-        @ExceptionHandler(Exception.class)
-        @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-        public @ResponseBody ErrorResponse handleGenericException(Exception ex, HttpServletRequest request) {
-          return newErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        private ErrorResponse newErrorResponse(Exception ex, HttpServletRequest request,
-            HttpStatus httpStatus) {
-          boolean shouldIncludeStackTrace = shouldIncludeStackTrace();
-
-          return new ErrorResponse(
-              LocalDateTime.now(),
-              httpStatus.value(),
-              httpStatus.getReasonPhrase(),
-              ex.getMessage(),
-              request.getRequestURI(),
-              shouldIncludeStackTrace ? getStackTraceAsString(ex) : null);
-        }
-
-        private boolean shouldIncludeStackTrace() {
-          String includeStackTrace = environment.getProperty(SERVER_ERROR_INCLUDE_STACKTRACE,
-              SERVER_ERROR_INCLUDE_STACKTRACE_NEVER);
-
-          return (SERVER_ERROR_INCLUDE_STACKTRACE_ALWAYS.equalsIgnoreCase(includeStackTrace))
-              || (SERVER_ERROR_INCLUDE_STACKTRACE_ON_TRACE_PARAM.equalsIgnoreCase(includeStackTrace));
-        }
-
-        private String getStackTraceAsString(Exception ex) {
-          StringWriter sw = new StringWriter();
-          ex.printStackTrace(new PrintWriter(sw));
-
-          return sw.toString();
-        }
-
-        @ExceptionHandler(MethodArgumentNotValidException.class)
-        public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-          List<FieldError> errors = ex.getFieldErrors();
-
-          return ResponseEntity
-              .badRequest()
-              .body(errors.stream().map(FieldsWithError::new).toList());
-        }
-
-        private record FieldsWithError(String field, String message) {
-          public FieldsWithError(FieldError error) {
-            this(error.getField(), error.getDefaultMessage());
-          }
-        }
+        return newErrorResponse(CODE_VALIDATION, message, ex, request, HttpStatus.BAD_REQUEST, fields);
       }
-      ```
 
-1. Creating the User Service.
+      @ExceptionHandler(Exception.class)
+      @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+      public @ResponseBody ErrorResponse handleGenericException(Exception ex, HttpServletRequest request) {
+        log.error(messageSource.getMessage(LOG_UNHANDLED, null, Locale.ENGLISH), ex);
+        String message = messageSource.getMessage(ERR_INTERNAL, null, LocaleContextHolder.getLocale());
 
-      ```java
-      @Service
-      class UserService {
-
-        private final MessageSource messageSource;
-
-        private List<User> users = new ArrayList<>();
-        private AtomicLong idCounter = new AtomicLong();
-
-        public UserService(MessageSource messageSource) {
-          this.messageSource = messageSource;
-
-          users.add(new User(idCounter.incrementAndGet(), "user-01", "user-01@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-02", "user-02@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-03", "user-03@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-04", "user-04@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-05", "user-05@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-06", "user-06@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-07", "user-07@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-08", "user-08@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-09", "user-09@example.com"));
-          users.add(new User(idCounter.incrementAndGet(), "user-10", "user-10@example.com"));
-        }
-
-        List<User> findAll() {
-          return users;
-        }
-
-        User findById(Long id) {
-          Optional<User> user = users.stream().filter(getById(id)).findFirst();
-
-          if (user.isPresent()) {
-            return user.get();
-          } else {
-            throw new NoSuchUserExistsException(getUserNotFoundMessage(id));
-          }
-        }
-
-        User create(User user) {
-          boolean userExists = users.stream().anyMatch(equals(user));
-
-          if (userExists) {
-            throw new UserAlreadyExistsException(getUserAlreadyExistsMessage(user));
-          } else {
-            user.setId(idCounter.incrementAndGet());
-
-            users.add(user);
-
-            return user;
-          }
-        }
-
-        User update(Long id, User userDetails) {
-          User user = findById(id);
-
-          user.setName(userDetails.getName());
-          user.setEmail(userDetails.getEmail());
-
-          return user;
-        }
-
-        boolean delete(Long id) {
-          User user = findById(id);
-
-          return users.remove(user);
-        }
-
-        private Predicate<? super User> getById(Long id) {
-          return u -> u.getId().equals(id);
-        }
-
-        private Predicate<? super User> equals(User user) {
-          return u -> u.getName().equals(user.getName()) &&
-              u.getEmail().equals(user.getEmail());
-        }
-
-        private Locale getLocale() {
-          return LocaleContextHolder.getLocale();
-        }
-
-        private String getUserNotFoundMessage(Long id) {
-          return messageSource.getMessage("user.notfound", new Object[] { id }, getLocale());
-        }
-
-        private String getUserAlreadyExistsMessage(User user) {
-          return messageSource.getMessage("user.exists", new Object[] { user.getName(), user.getEmail() }, getLocale());
-        }
+        return newErrorResponse(CODE_INTERNAL, message, ex, request, HttpStatus.INTERNAL_SERVER_ERROR, null);
       }
-      ```
 
-1. Creating the User Controller.
-
-      ```java
-      @RestController
-      @RequestMapping("/api/v1/users")
-      @Slf4j
-      public class UserController {
-
-        private final MessageSource messageSource;
-        private final UserService userService;
-
-        public UserController(UserService userService, MessageSource messageSource) {
-          this.messageSource = messageSource;
-          this.userService = userService;
-        }
-
-        @GetMapping
-        public ResponseEntity<List<User>> findAll() {
-          log.info(getMethodCalledMessage("findAll"));
-
-          return ResponseEntity.ok(userService.findAll());
-        }
-
-        @GetMapping("/{id}")
-        public ResponseEntity<User> findById(@PathVariable Long id) {
-          log.info(getMethodCalledMessage("findById"));
-
-          return ResponseEntity.ok(userService.findById(id));
-        }
-
-        @PostMapping
-        public ResponseEntity<User> create(@RequestBody User user, UriComponentsBuilder uriBuilder) {
-          log.info(getMethodCalledMessage("create"));
-
-          User createdUser = userService.create(user);
-
-          URI location = getLocation(uriBuilder, "/{id}", createdUser.getId());
-
-          return ResponseEntity.created(location).body(createdUser);
-        }
-
-        @PutMapping("/{id}")
-        public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
-          log.info(getMethodCalledMessage("update"));
-
-          User updatedUser = userService.update(id, user);
-
-          return ResponseEntity.ok(updatedUser);
-        }
-
-        @DeleteMapping("/{id}")
-        public ResponseEntity<Void> delete(@PathVariable Long id) {
-          log.info(getMethodCalledMessage("delete"));
-
-          userService.delete(id);
-
-          return ResponseEntity.ok().build();
-        }
-
-        private URI getLocation(UriComponentsBuilder uriBuilder, String path, Object... uriVariableValues) {
-          return uriBuilder.path(path).buildAndExpand(uriVariableValues).toUri();
-        }
-
-        private String getMethodCalledMessage(String methodName) {
-          return messageSource.getMessage("method.called", new Object[] { methodName }, getLocale());
-        }
-
-        private Locale getLocale() {
-          return LocaleContextHolder.getLocale();
-        }
+      private ErrorResponse newErrorResponse(String errorCode, String message, Exception ex, HttpServletRequest request,
+          HttpStatus httpStatus, List<ValidationError> fields) {
+        return new ErrorResponse(
+            OffsetDateTime.now(ZoneOffset.UTC),
+            httpStatus.value(),
+            httpStatus.getReasonPhrase(),
+            errorCode,
+            message,
+            request.getRequestURI(),
+            shouldIncludeStackTrace() ? getStackTraceAsString(ex) : null,
+            fields);
       }
-      ```
 
-1. Test the Endpoints.
+      private boolean shouldIncludeStackTrace() {
+        String includeStackTrace = environment.getProperty(SERVER_ERROR_INCLUDE_STACKTRACE, "never").toLowerCase();
 
-    You can use tools like `Postman` or `curl` to test the endpoints:
+        return STACKTRACE_ALWAYS.equals(includeStackTrace);
+      }
 
-    1. Start your Spring Boot application.
+      private String getStackTraceAsString(Exception ex) {
+        StringWriter sw = new StringWriter();
+        ex.printStackTrace(new PrintWriter(sw));
 
-    - Get all users and products:
-      ```bash
-      curl -X GET http://localhost:8080/api/v1/users
-      curl -X GET http://localhost:8080/api/v1/products
-      ```
+        return sw.toString();
+      }
+    }
+    ```
 
-    - Try fetching a user or product by ID that does not exist:
+1. Throw from the service, not the controller.
+
+    Controllers return `ResponseEntity` and call the service. Domain misses throw `UserNotFoundException` / `UserAlreadyExistsException`. Collection GETs use Spring `Pageable` / `Page`. Domain and DTOs are records.
+
+1. Test the endpoints.
+
+    1. Start `samples/10-exception-handling`.
+
+    - Missing resource:
       ```bash
       curl -X GET http://localhost:8080/api/v1/users/1111
-      curl -X GET http://localhost:8080/api/v1/products/1111
-      ```
-
-    - Try accessing an endpoint that does not exist:
-      ```bash
       curl -X GET http://localhost:8080/api/v1/wrongpage
       ```
 
-    - Try creating a user or product (twice):
-      - This endpoint creates a new user and product with the provided JSON payload.
-      - If you try it for a second time, it should return a `409 Conflict` error indicating that the user or product already exists.
-        ```bash
-        curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
-        curl -X POST http://localhost:8080/api/v1/products -H "Content-Type: application/json" -d '{"name":"Iphone"}'
-        ```
-
-    - Update a user or product:
+    - Conflict on duplicate create:
       ```bash
-      curl -X PUT http://localhost:8080/api/v1/users/11 -H "Content-Type: application/json" -d '{"name":"Other name","email":"other.name@example.com"}'
-      curl -X PUT http://localhost:8080/api/v1/products/11 -H "Content-Type: application/json" -d '{"name":"Android"}'
+      curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
+      curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
       ```
 
-    - Delete a user or product:
-      - If you try it for a second time, it should return a `404 Not Found` error indicating that the user or product does not exists.
+    - Validation failure:
       ```bash
-      curl -X DELETE http://localhost:8080/api/v1/users/11
-      curl -X DELETE http://localhost:8080/api/v1/products/11
+      curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"","email":"bad"}'
       ```
 
-    - Test the I18n messages:
-      `Accept-Language` Header: Set Accept-Language header in your HTTP requests to test language preferences.
-
-      URL Parameter (lang): Append `?lang=pt-BR` or similar to your URL to override language preferences.
-
-      - curl -X GET http://localhost:8080/api/v1/users
-      - curl -X GET http://localhost:8080/api/v1/users?lang=en
-      - curl -X GET http://localhost:8080/api/v1/users?lang=pt-BR
+    - Locale:
+      ```bash
+      curl -X GET http://localhost:8080/api/v1/users/1111 -H "Accept-Language: pt-BR"
+      ```
 
 [Go Back](../../../README.md)
 
