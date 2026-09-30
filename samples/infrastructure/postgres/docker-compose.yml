@@ -1,22 +1,28 @@
 ---
+# How to start, apply SQL, verify, and troubleshoot: README.md in this folder.
 networks:
   tutorial-network:
-    external: true
+    name: "tutorial-network"
 
 services:
   postgres:
     image: "postgres:18-alpine"
     # Docs: https://hub.docker.com/_/postgres
+    # PG 18+ data dir is /var/lib/postgresql (not .../data).
     container_name: "tutorial-postgres"
     restart: "unless-stopped"
+    cap_drop:
+      - "ALL"
     security_opt:
       - "no-new-privileges:true"
+    shm_size: "128mb"
     ports:
       - "5432:5432"
     environment:
-      - "POSTGRES_DB=${POSTGRES_DB:-tutorial}"
-      - "POSTGRES_USER=${POSTGRES_USER:-tutorial}"
-      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-tutorial}"
+      - "TZ=UTC"
+      - "POSTGRES_DB=${POSTGRES_DB:?set POSTGRES_DB in .env}"
+      - "POSTGRES_USER=${POSTGRES_USER:?set POSTGRES_USER in .env}"
+      - "POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}"
     networks:
       - "tutorial-network"
     volumes:

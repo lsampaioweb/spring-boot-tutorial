@@ -1,95 +1,90 @@
 # Spring Boot + PostgreSQL
 
-This page explains how to run PostgreSQL infrastructure and connect it to the sample applications in `samples/19-postgres`.
+Working samples: `samples/21-postgres`. Infrastructure: `samples/infrastructure/postgres`. Redis `cache-layer` also uses this database.
 
-The PostgreSQL sample is split into three focused sub-projects:
+The compose runbook (start, apply SQL, verify, stop) lives next to the files: [`samples/infrastructure/postgres/README.md`](../../../samples/infrastructure/postgres/README.md). This page is the Spring Boot side.
+
+The application is expected to use **DML only**. DDL lives under each sample's `sql/db/` folder. Samples do **not** use `spring.sql.init`, Flyway, or Liquibase.
 
 | Sub-project | Path | Demonstrates |
-|-------------|------|---------------|
-| `crud` | `samples/19-postgres/crud` | Single-record CRUD operations with `JdbcClient` |
-| `batch` | `samples/19-postgres/batch` | Bulk inserts using `NamedParameterJdbcTemplate.batchUpdate()` |
-| `transactions` | `samples/19-postgres/transactions` | Atomic money transfers with `@Transactional` |
+|-------------|------|--------------|
+| `crud` | `samples/21-postgres/crud` | Single-record CRUD with `JdbcClient` |
+| `batch` | `samples/21-postgres/batch` | Bulk inserts with `NamedParameterJdbcTemplate.batchUpdate()` |
+| `transactions` | `samples/21-postgres/transactions` | Atomic transfers with `@Transactional` |
+
+Commands below start from the **tutorial repo root**. Replace `docker` with `podman` if that is what you use.
 
 ## Prerequisites
+1. Docker Compose, or Podman with Podman Compose
 1. Java 25
 1. Maven 3.9+
-1. Podman with Podman Compose
 
-Before first use with rootless Podman:
+## 1. Start PostgreSQL
 
-```bash
-systemctl --user enable --now podman.socket
-podman system migrate
-```
-
-## 1. Start PostgreSQL Infrastructure
+Follow [`samples/infrastructure/postgres/README.md`](../../../samples/infrastructure/postgres/README.md). Short version:
 
 ```bash
-podman network exists tutorial-network || podman network create tutorial-network
 cd samples/infrastructure/postgres
 cp .env.example .env
-podman compose up -d
+set -a && source .env && set +a
+docker compose up -d
+docker exec tutorial-postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h 127.0.0.1
 ```
 
-Check container health:
+Apply SQL once (crud and batch share `users`). `.env` must still be loaded in this shell:
 
 ```bash
-podman compose ps
+docker exec -i tutorial-postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < samples/21-postgres/crud/src/main/resources/sql/db/schema.sql
+
+docker exec -i tutorial-postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < samples/21-postgres/transactions/src/main/resources/sql/db/schema.sql
+docker exec -i tutorial-postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < samples/21-postgres/transactions/src/main/resources/sql/db/insert.sql
 ```
 
-## 2. Run a Spring Boot Sample
+## 2. Configure the sample
 
-Choose the sub-project you want to run and set the required database environment variables:
+Credentials are not in YAML. After `source` on the infrastructure `.env`:
 
 ```bash
 export DB_HOST=localhost
 export DB_PORT=5432
-export DB_NAME=tutorial
-export DB_USER=tutorial
-export DB_PASSWORD=tutorial
+export DB_NAME="$POSTGRES_DB"
+export DB_USER="$POSTGRES_USER"
+export DB_PASSWORD="$POSTGRES_PASSWORD"
 ```
 
-PostgreSQL infrastructure credentials are read from `samples/infrastructure/postgres/.env`.
+```yaml
+spring:
+  datasource:
+    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME}"
+    username: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+```
 
-Then start the chosen sub-project:
+## 3. Run a sample
 
 ```bash
-# CRUD
-cd samples/19-postgres/crud
-mvn spring-boot:run -Dspring-boot.run.profiles=development
-
-# Batch
-cd samples/19-postgres/batch
-mvn spring-boot:run -Dspring-boot.run.profiles=development
-
-# Transactions
-cd samples/19-postgres/transactions
+cd samples/21-postgres/crud
 mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 
-Each sub-project exposes Swagger UI at `http://localhost:8080/swagger-ui.html` when running with the development profile.
+Same command from `batch` or `transactions`. Swagger UI (development): `http://localhost:8080/swagger-ui/index.html`
 
-## 3. Test Endpoints
+## 4. Test endpoints
 
 ### CRUD
-
-Create a user:
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"name":"Alice","email":"alice@example.com"}' \
   http://localhost:8080/api/v1/users
-```
 
-List users:
-
-```bash
 curl http://localhost:8080/api/v1/users
 ```
 
 ### Batch
-
-Batch create users:
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
@@ -99,30 +94,28 @@ curl -X POST -H "Content-Type: application/json" \
 
 ### Transactions
 
-Fetch an account:
-
 ```bash
 curl http://localhost:8080/api/v1/accounts/1
-```
 
-Transfer funds between accounts:
-
-```bash
 curl -X POST -H "Content-Type: application/json" \
   -d '{"fromAccountId":1,"toAccountId":2,"amount":100.00}' \
   http://localhost:8080/api/v1/accounts/transfer
 ```
 
-## 4. Stop Infrastructure
+## 5. Stop PostgreSQL
 
 ```bash
 cd samples/infrastructure/postgres
-podman compose down
+docker compose down
 ```
 
-## Troubleshooting
+Data remains in `samples/infrastructure/postgres/volumes`. After a wipe, re-apply the SQL files.
 
-If container startup fails with `docker-credential-secretservice` missing while using Docker Compose, install Docker credential helpers or remove `credsStore` from `~/.docker/config.json`.
+### Troubleshooting
+
+Infrastructure failures (password vs existing volume, port 5432, PG 18 data path, bind-mount permissions) are in [`samples/infrastructure/postgres/README.md`](../../../samples/infrastructure/postgres/README.md).
+
+If startup fails with `docker-credential-secretservice` missing while using Docker Compose, install Docker credential helpers or remove `credsStore` from `~/.docker/config.json`.
 
 If `podman compose up` fails with `potentially insufficient UIDs or GIDs available in user namespace`, your rootless Podman user is missing subuid/subgid mappings. Ask an administrator to add ranges for your user in `/etc/subuid` and `/etc/subgid`, then run:
 
