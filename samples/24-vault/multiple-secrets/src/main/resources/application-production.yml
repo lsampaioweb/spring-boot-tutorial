@@ -1,0 +1,10 @@
+spring:
+  config:
+    import: "vault:///spring-boot-tutorial?prefix=app.vault.secrets."
+  cloud:
+    vault:
+      uri: "${VAULT_URI}"
+
+server:
+  error:
+    include-stacktrace: "never"

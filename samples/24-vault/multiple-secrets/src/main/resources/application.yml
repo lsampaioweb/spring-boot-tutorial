@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: "vault-multiple-secrets"
+
+  profiles:
+    active:
+      # - "development"
+      - "production"
+
+  messages:
+    basename: "i18n/messages"
+    encoding: "UTF-8"
+    default-locale: "en"
+    fallback-to-system-locale: false
+
+  threads:
+    virtual:
+      enabled: true
+
+  cloud:
+    vault:
+      uri: "${VAULT_URI:https://localhost:8200}"
+      authentication: "TOKEN"
+      token: "${VAULT_TOKEN}"
+      fail-fast: true
+      kv:
+        enabled: true
+        backend: "${VAULT_KV_BACKEND:secret}"
+        backend-version: 2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+  endpoint:
+    health:
+      show-details: "when-authorized"
+      probes:
+        enabled: true
+
+server:
+  port: 8092
+  error:
+    include-stacktrace: "never"
+
+logging:
+  config: "classpath:log/logback-spring.xml"
+  logback:
+    rollingpolicy:
+      max-file-size: "10MB"
+      max-history: "7"
+      total-size-cap: "1GB"
+
+app:
+  logging:
+    path: "logs"
+
+  vault:
+    required-secrets:
+      - "api-secret"
+      - "db-password"
