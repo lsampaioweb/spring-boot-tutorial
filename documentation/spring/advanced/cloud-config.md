@@ -10,7 +10,7 @@ Centralizing application configuration using Spring Boot Config Server simplifie
 
         ```xml
         <properties>
-          <spring-cloud.version>2025.0.1</spring-cloud.version>
+          <spring-cloud.version>2025.1.3</spring-cloud.version>
         </properties>
 
         <dependencyManagement>
@@ -47,10 +47,10 @@ Centralizing application configuration using Spring Boot Config Server simplifie
 
     1. Configure `application.yml`.
 
-      For portability, set `CONFIG_REPO_PATH` in your environment:
+      For portability, run the server from `samples/19-cloud-config/server` or set `CONFIG_REPO_PATH` to the `git-config` folder:
 
       ```bash
-      export CONFIG_REPO_PATH="$PWD/samples/08-cloud-config/git-config"
+      export CONFIG_REPO_PATH="$PWD/samples/19-cloud-config/git-config"
       ```
 
         ```yml
@@ -61,8 +61,8 @@ Centralizing application configuration using Spring Boot Config Server simplifie
             config:
               server:
                 git:
-                  # Local repository.
-                  uri: "file://${CONFIG_REPO_PATH:${user.home}/path/to/spring-boot-tutorial/samples/08-cloud-config/git-config}"
+                  # Local repository. Default works when Maven runs from samples/19-cloud-config/server.
+                  uri: "file://${CONFIG_REPO_PATH:${user.dir}/../git-config}"
                   cloneOnStart: true
                   # The name of the application and active profile.
                   search-paths: "{application}/{profile}"
@@ -162,8 +162,8 @@ Centralizing application configuration using Spring Boot Config Server simplifie
 
           # Import configuration from the Config Server.
           config:
-            # import: "configserver:http://localhost:8080"
-            import: "configserver:https://jump-server-01.lan.homelab:9443"
+            # import: "optional:configserver:https://config-server.example:9443"
+            import: "optional:configserver:https://localhost:9443"
         ```
 
     1. Test the Configuration.
@@ -176,11 +176,11 @@ Centralizing application configuration using Spring Boot Config Server simplifie
         @RestController
         @RequestMapping("api/v1")
         @Slf4j
-        public class helloController {
+        public class HelloRestController {
 
           private final HelloConfigurationProperties properties;
 
-          public helloController(HelloConfigurationProperties properties) {
+          public HelloRestController(HelloConfigurationProperties properties) {
             this.properties = properties;
           }
 
