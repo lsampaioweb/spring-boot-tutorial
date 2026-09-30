@@ -8,21 +8,21 @@ Use events when one feature must react to another feature without direct service
 
 Example:
 
-1. Chat endpoint receives a message.
-1. Endpoint publishes `ChatMessagePublishedEvent` through `ApplicationEventPublisher`.
+1. Message endpoint receives a payload.
+1. Service publishes `MessagePublishedEvent` through `ApplicationEventPublisher`.
 1. Async listener handles audit logging independently.
 
 This keeps endpoint logic focused and removes direct coupling to audit infrastructure.
 
 ### Where to see a working sample
 
-Path: `samples/20-websocket/server`
+Path: `samples/15-events`
 
 Relevant classes:
 
-1. `chat/ChatMessageEventPublisher.java`
-1. `chat/ChatMessagePublishedEvent.java`
-1. `chat/ChatMessageAuditListener.java`
+1. `message/MessageEventPublisher.java`
+1. `message/MessagePublishedEvent.java`
+1. `message/MessageAuditListener.java`
 
 ### Event payload rules
 
@@ -32,7 +32,7 @@ Relevant classes:
 
 ### @Async listener rules
 
-1. Add `@EnableAsync` in application configuration when async listeners exist.
+1. Add `@EnableAsync` when async listeners exist (see also [async.md](async.md) and `samples/27-async/basics`).
 1. Use `@Async` only for blocking I/O listeners where latency is significant.
 1. Keep simple in-memory listeners synchronous for ordering and immediate visibility.
 
