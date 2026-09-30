@@ -1,0 +1,10 @@
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  security:
+    username: "async-test-user"
+    password: "async-test-password"
