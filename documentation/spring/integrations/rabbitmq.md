@@ -1,139 +1,119 @@
-## RabbitMQ
+# Spring Boot + RabbitMQ
 
-This tutorial compares four RabbitMQ exchange types using four isolated Spring Boot sample applications.
+Working samples: `samples/22-rabbitmq`. Infrastructure: `samples/infrastructure/rabbitmq`.
 
-Objectives:
+The compose runbook (start, verify, stop) lives next to the files: [`samples/infrastructure/rabbitmq/README.md`](../../../samples/infrastructure/rabbitmq/README.md). This page is the Spring Boot side.
 
-1. Understand routing behavior for Direct, Fanout, Topic, and Headers exchanges.
-1. Keep each example simple and runnable on its own.
-1. Compare patterns side-by-side without mixing concerns in one project.
-
-### Why RabbitMQ instead of direct REST calls?
-
-REST is synchronous. The caller waits for a response and is coupled to receiver availability.
-
-RabbitMQ is asynchronous. The producer publishes and continues while consumers process when ready.
-
-Use RabbitMQ when you need:
-
-1. Decoupled producer and consumer lifecycles.
-1. Reliable delivery and broker-backed buffering.
-1. Flexible routing to one or many consumers.
-
-### Project structure
-
-Path: `samples/18-rabbitmq`
-
-Each subproject is an independent runnable app:
-
-1. `direct` - Direct exchange example.
-1. `fanout` - Fanout exchange example.
-1. `topic` - Topic exchange example.
-1. `headers` - Headers exchange example.
-
-Each project contains the same core pieces:
-
-1. `RabbitMQConfiguration` - queue/exchange/binding declarations.
-1. `MessageProducer` - publishes `OrderMessage`.
-1. `MessageConsumer` - consumes routed messages.
-1. `OrderApi` - HTTP entry point to publish test messages.
-
-### Exchange comparison
+This tutorial compares four RabbitMQ exchange types using four isolated Spring Boot apps.
 
 | Type | Subproject | Port | Endpoint | Routing strategy |
-|---|---|---:|---|---|
+|------|------------|------|----------|------------------|
 | Direct  | `direct`  | `8080` | `/api/v1/messages/direct`  | Exact routing key match |
 | Fanout  | `fanout`  | `8082` | `/api/v1/messages/fanout`  | Broadcast to all bound queues |
 | Topic   | `topic`   | `8083` | `/api/v1/messages/topic`   | Pattern routing with wildcards |
 | Headers | `headers` | `8084` | `/api/v1/messages/headers` | Match by message header values |
 
-### Start RabbitMQ Infrastructure
+Each project contains `RabbitMQConfiguration`, `MessageProducer`, `MessageConsumer`, and `OrderRestController`.
+
+Commands below start from the **tutorial repo root**. Replace `docker` with `podman` if that is what you use.
+
+## Prerequisites
+1. Docker Compose, or Podman with Podman Compose
+1. Java 25
+1. Maven 3.9+
+
+## 1. Start RabbitMQ
+
+Follow [`samples/infrastructure/rabbitmq/README.md`](../../../samples/infrastructure/rabbitmq/README.md). Short version:
 
 ```bash
-podman network exists tutorial-network || podman network create tutorial-network
 cd samples/infrastructure/rabbitmq
 cp .env.example .env
-podman compose up -d
+# edit .env — do not commit it
+set -a && source .env && set +a
+docker compose up -d
+docker exec tutorial-rabbitmq rabbitmq-diagnostics -q ping
 ```
 
-RabbitMQ management UI:
-1. URL: `http://localhost:15672`
-1. User: `admin`
-1. Password: `admin`
+Management UI: `http://localhost:15672` — use `RABBITMQ_DEFAULT_USER` and `RABBITMQ_DEFAULT_PASS` from `.env`. There is no password in YAML or compose.
 
-### Run each sample
+Optional Traefik hostname `rabbitmq.lan.home`: uncomment the `labels:` block. AMQP stays on host port `5672`.
 
-Open one terminal per subproject:
+## 2. Run a sample
 
-```bash
-cd samples/18-rabbitmq/direct
-mvn spring-boot:run
-```
+Keep the infrastructure `.env` loaded in the shell (`RABBITMQ_DEFAULT_USER` and `RABBITMQ_DEFAULT_PASS`). Host and port default to `localhost:5672`.
 
-```bash
-cd samples/18-rabbitmq/fanout
-mvn spring-boot:run
-```
-
-```bash
-cd samples/18-rabbitmq/topic
-mvn spring-boot:run
+```yaml
+spring:
+  rabbitmq:
+    host: "${RABBITMQ_HOST:localhost}"
+    port: "${RABBITMQ_PORT:5672}"
+    username: "${RABBITMQ_DEFAULT_USER}"
+    password: "${RABBITMQ_DEFAULT_PASS}"
 ```
 
 ```bash
-cd samples/18-rabbitmq/headers
-mvn spring-boot:run
+cd samples/22-rabbitmq/direct
+mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 
-### Test each exchange
+Same command from `fanout`, `topic`, or `headers` (each uses its own development port).
 
-Common payload fields are sent as query parameters (`customerName`, `product`, `quantity`, `price`).
+## 3. Test each exchange
+
+Common payload fields: `customerName`, `product`, `quantity`, `price`.
 
 Direct:
 
 ```bash
-curl -X POST "http://localhost:8080/api/v1/messages/direct?customerName=Alice&product=Laptop&quantity=1&price=999.99"
+curl -X POST http://localhost:8080/api/v1/messages/direct \
+  -H "Content-Type: application/json" \
+  -d '{"customerName":"Alice","product":"Laptop","quantity":1,"price":999.99}'
 ```
 
 Fanout:
 
 ```bash
-curl -X POST "http://localhost:8082/api/v1/messages/fanout?customerName=Bob&product=Mouse&quantity=2&price=49.90"
+curl -X POST http://localhost:8082/api/v1/messages/fanout \
+  -H "Content-Type: application/json" \
+  -d '{"customerName":"Bob","product":"Mouse","quantity":2,"price":49.90}'
 ```
 
-Topic (optional `routingKey`; defaults to configured key):
+Topic (optional `routingKey`; defaults to the configured key):
 
 ```bash
-curl -X POST "http://localhost:8083/api/v1/messages/topic?customerName=Carol&product=Desk&quantity=1&price=299.00&routingKey=dev.order.created"
+curl -X POST http://localhost:8083/api/v1/messages/topic \
+  -H "Content-Type: application/json" \
+  -d '{"customerName":"Carol","product":"Desk","quantity":1,"price":299.00,"routingKey":"dev.order.created"}'
 ```
 
-Headers (optional `headerValue`; defaults to configured value):
+Headers (optional `headerValue`; defaults to the configured value):
 
 ```bash
-curl -X POST "http://localhost:8084/api/v1/messages/headers?customerName=Dave&product=Keyboard&quantity=1&price=129.00&headerValue=order.audit"
+curl -X POST http://localhost:8084/api/v1/messages/headers \
+  -H "Content-Type: application/json" \
+  -d '{"customerName":"Dave","product":"Keyboard","quantity":1,"price":129.00,"headerValue":"order.audit"}'
 ```
 
-### What to observe in logs
+What to look for in logs:
 
-1. Direct: message reaches the queue bound with the same routing key.
-1. Fanout: one publish reaches all queues bound to the exchange.
-1. Topic: message delivery depends on wildcard pattern matches.
+1. Direct: the queue bound with the same routing key receives the message.
+1. Fanout: one publish reaches every bound queue.
+1. Topic: delivery depends on wildcard pattern matches.
 1. Headers: delivery depends on message header values.
 
-### Notes
-
-1. Development profile is active by default in each subproject.
-1. Infrastructure credentials come from `samples/infrastructure/rabbitmq/.env`.
-1. Management endpoints expose `health` and `metrics` in development.
-
-### Stop RabbitMQ Infrastructure
+## 4. Stop RabbitMQ
 
 ```bash
 cd samples/infrastructure/rabbitmq
-podman compose down
+docker compose down
 ```
 
+Data remains in `samples/infrastructure/rabbitmq/volumes`. Default user/password are created only on first boot; after a wipe, `compose up` reads `.env` again.
+
 ### Troubleshooting
+
+Infrastructure failures (`.env` missing, login vs existing volume, ports 5672/15672, bind-mount permissions) are in [`samples/infrastructure/rabbitmq/README.md`](../../../samples/infrastructure/rabbitmq/README.md).
 
 If startup fails with `docker-credential-secretservice` missing while using Docker Compose, install Docker credential helpers or remove `credsStore` from `~/.docker/config.json`.
 
@@ -158,3 +138,7 @@ usermod --add-subuids 100000-165535 --add-subgids 100000-165535 <username>
 
 [Go Back](../../../README.md)
 
+#
+### Created by:
+
+1. Luciano Sampaio.

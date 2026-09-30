@@ -1,30 +1,45 @@
 ---
+# How to start, verify, and troubleshoot: README.md in this folder.
 networks:
   tutorial-network:
-    external: true
+    name: "tutorial-network"
 
 services:
   rabbitmq:
     image: "rabbitmq:4.3-management-alpine"
-    # Pinned example: image: "rabbitmq:4.3-management-alpine"
     # Docs: https://hub.docker.com/_/rabbitmq
     container_name: "tutorial-rabbitmq"
+    hostname: "tutorial-rabbitmq"
     restart: "unless-stopped"
+    cap_drop:
+      - "ALL"
     security_opt:
       - "no-new-privileges:true"
     ports:
       - "5672:5672"
       - "15672:15672"
     environment:
-      - "RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-admin}"
-      - "RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-admin}"
+      - "TZ=UTC"
+      - "RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:?set RABBITMQ_DEFAULT_USER in .env}"
+      - "RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:?set RABBITMQ_DEFAULT_PASS in .env}"
     networks:
       - "tutorial-network"
     volumes:
       - "./volumes:/var/lib/rabbitmq"
+    # Traefik: uncomment this block if Traefik is running on tutorial-network.
+    # AMQP stays on host port 5672; this only publishes the management UI.
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.rabbitmq.rule=Host(`rabbitmq.lan.home`)"
+    #   - "traefik.http.services.rabbitmq.loadbalancer.server.port=15672"
+    #   # HTTP (default). Comment this line when Traefik HTTPS is enabled.
+    #   - "traefik.http.routers.rabbitmq.entrypoints=web"
+    #   # HTTPS: uncomment these two and comment the web entrypoint above.
+    #   - "traefik.http.routers.rabbitmq.entrypoints=websecure"
+    #   - "traefik.http.routers.rabbitmq.tls=true"
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
-      start_period: "15s"
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      start_period: "20s"
       interval: "10s"
       timeout: "5s"
       retries: 10
