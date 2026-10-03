@@ -97,7 +97,7 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 1. [Vault](documentation/spring/integrations/vault.md)
     - Three sub-projects: `single-secret`, `multiple-secrets`, `secret-rotation`. Infrastructure runbook: `samples/infrastructure/vault/README.md`. Sample: `samples/24-vault`.
 1. [WebSocket](documentation/spring/advanced/websocket.md)
-    - Implementing WebSocket communication. Sample: `samples/25-websocket`.
+    - STOMP chat basics plus session lifecycle (presence, kick, abuse disconnect). Samples: `samples/25-websocket/basics`, `samples/25-websocket/session-lifecycle`.
 1. [Traefik](documentation/spring/integrations/traefik.md)
     - Reverse proxy for container routing. Infrastructure runbook: `samples/infrastructure/traefik/README.md`. Sample: `samples/26-traefik`.
 1. [Tracing](documentation/spring/integrations/tracing.md)
@@ -175,7 +175,8 @@ The following samples expose Swagger UI when running with the `development` prof
 - `samples/23-redis/datastore` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/23-redis/cache-layer` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/23-redis/pubsub-events` → `http://localhost:8080/swagger-ui/index.html`
-- `samples/25-websocket/server` → `http://localhost:8090/swagger-ui/index.html`
+- `samples/25-websocket/basics/server` → `http://localhost:8090/swagger-ui/index.html`
+- `samples/25-websocket/session-lifecycle/server` → `http://localhost:8092/swagger-ui/index.html`
 - `samples/26-traefik` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/27-async/basics` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/28-tracing/caller` → `http://localhost:8080/swagger-ui/index.html`
