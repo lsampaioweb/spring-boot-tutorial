@@ -14,13 +14,14 @@ The hands-on runbook (start Collector, run caller/callee, verify `traceId`, read
 
 - Boot path: Micrometer Observation → OpenTelemetry → OTLP
 - W3C `traceparent` propagation across two JVMs
+- HTTP Basic on private APIs; caller sends the same credentials on outbound calls
 - Log correlation with MDC `traceId` / `spanId` (this sample only)
 - Demo sampling: `management.tracing.sampling.probability=1.0`
 - Metrics export to the Collector is disabled when the Collector is traces-only (`management.otlp.metrics.export.enabled=false`)
 
 ## Out of scope
 
-Jaeger/Tempo UI, Brave/Zipkin, JDBC/messaging instrumentation, Security, JSON log formats.
+Jaeger/Tempo UI, Brave/Zipkin, JDBC/messaging instrumentation, JSON log formats.
 
 [Go Back](../../../README.md)
 

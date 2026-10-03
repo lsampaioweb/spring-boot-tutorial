@@ -20,23 +20,39 @@ cd samples/infrastructure/opentelemetry
 docker compose up -d
 ```
 
+## Configuration
+
+| Variable | Purpose |
+| --- | --- |
+| `TRACING_USER_PASSWORD` | Shared HTTP Basic password for caller API, callee API, and caller→callee calls |
+| `TRACING_USER_USERNAME` | Optional username override (default `tracing-user`) |
+
 ## Run
 
 Terminal 1 — callee:
 
 ```bash
 cd samples/28-tracing/callee
-mvn spring-boot:run
+export TRACING_USER_PASSWORD=change-me
+mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 
 Terminal 2 — caller:
 
 ```bash
 cd samples/28-tracing/caller
-mvn spring-boot:run
+export TRACING_USER_PASSWORD=change-me
+mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 
 Or use the VS Code / Cursor launch configs `28-tracing-callee` and `28-tracing-caller`.
+
+## Access
+
+- Caller demo: `http://localhost:8080/api/v1/traces/demo` (HTTP Basic)
+- Callee ping: `http://localhost:8081/api/v1/pings` (HTTP Basic)
+- Health: `http://localhost:8080/actuator/health`, `http://localhost:8081/actuator/health`
+- Swagger UI (development): `http://localhost:8080/swagger-ui/index.html`, `http://localhost:8081/swagger-ui/index.html`
 
 ## Verify
 
@@ -50,7 +66,7 @@ curl -s http://localhost:8080/actuator/health
 2. Demo request:
 
 ```bash
-curl -s http://localhost:8080/api/v1/traces/demo
+curl -s -u tracing-user:change-me http://localhost:8080/api/v1/traces/demo
 ```
 
 Example body:
@@ -68,13 +84,21 @@ cd samples/infrastructure/opentelemetry
 docker compose logs -f otel-collector
 ```
 
+## Tests
+
+```bash
+cd samples/28-tracing/callee && mvn test
+cd samples/28-tracing/caller && mvn test
+```
+
 ## What this sample teaches
 
 - Boot’s supported path: Micrometer Observation → OpenTelemetry → OTLP
 - W3C `traceparent` propagation across two JVMs via `RestClient`
+- HTTP Basic on private APIs while still propagating trace context
 - Log correlation with MDC `traceId` / `spanId`
 - Always-on sampling for demos (`management.tracing.sampling.probability=1.0`)
 
 ## Out of scope
 
-Jaeger/Tempo UI, Brave, JDBC/messaging instrumentation, Security, structured JSON log formats.
+Jaeger/Tempo UI, Brave, JDBC/messaging instrumentation, structured JSON log formats.

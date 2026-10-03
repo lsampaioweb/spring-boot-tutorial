@@ -15,7 +15,7 @@ public class HttpClientConfiguration {
    * Builds a RestClient aimed at the callee service using Boot's observed builder.
    *
    * @param builder auto-configured RestClient builder (propagates trace context)
-   * @param properties callee base URL settings
+   * @param properties callee base URL and credentials
    * @return configured RestClient
    */
   @Bean
@@ -23,6 +23,7 @@ public class HttpClientConfiguration {
     return builder
         .baseUrl(properties.baseUrl())
         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeaders(headers -> headers.setBasicAuth(properties.username(), properties.password()))
         .build();
   }
 }

@@ -4,3 +4,14 @@ management:
       export:
         otlp:
           enabled: false
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  security:
+    username: "tracing-test-user"
+    password: "tracing-test-password"

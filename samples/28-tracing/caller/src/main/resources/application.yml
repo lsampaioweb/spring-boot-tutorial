@@ -6,9 +6,13 @@ spring:
     encoding: "UTF-8"
     default-locale: "en"
     fallback-to-system-locale: false
+  threads:
+    virtual:
+      enabled: true
   profiles:
     active:
-      - "development"
+      # - "development"
+      - "production"
 
 server:
   port: 8080
@@ -16,6 +20,11 @@ server:
 app:
   callee:
     base-url: "http://localhost:8081"
+    username: "${TRACING_USER_USERNAME:tracing-user}"
+    password: "${TRACING_USER_PASSWORD}"
+  security:
+    username: "${TRACING_USER_USERNAME:tracing-user}"
+    password: "${TRACING_USER_PASSWORD}"
 
 logging:
   config: "classpath:log/logback-spring.xml"
@@ -29,7 +38,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,info"
+        include: "health,info,metrics"
   endpoint:
     health:
       probes:

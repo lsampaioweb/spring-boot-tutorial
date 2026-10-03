@@ -5,6 +5,17 @@ management:
         otlp:
           enabled: false
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 app:
   callee:
     base-url: "http://localhost:8081"
+    username: "tracing-test-user"
+    password: "tracing-test-password"
+  security:
+    username: "tracing-test-user"
+    password: "tracing-test-password"

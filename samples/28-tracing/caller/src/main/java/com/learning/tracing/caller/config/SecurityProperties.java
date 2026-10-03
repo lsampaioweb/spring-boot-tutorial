@@ -5,13 +5,7 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotBlank;
 
-/**
- * Outbound callee connection settings for the tracing demo.
- */
-@ConfigurationProperties(prefix = "app.callee")
+@ConfigurationProperties(prefix = "app.security")
 @Validated
-public record CalleeProperties(
-    @NotBlank String baseUrl,
-    @NotBlank String username,
-    @NotBlank String password) {
+record SecurityProperties(@NotBlank String username, @NotBlank String password) {
 }
