@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en_US">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="#{lifecycle.page.title}">WebSocket Session Lifecycle</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+  <main class="container" th:attr="
+    data-default-server-url=${serverWsUrl},
+    data-sessions-api-url=${sessionsApiUrl},
+    data-status-connected=#{lifecycle.status.connected},
+    data-status-disconnected=#{lifecycle.status.disconnected},
+    data-runtime-socket-opened=#{lifecycle.runtime.socketOpened},
+    data-runtime-socket-closed=#{lifecycle.runtime.socketClosed},
+    data-runtime-connection-failed=#{lifecycle.runtime.connectionFailed},
+    data-runtime-kicked=#{lifecycle.runtime.kicked}">
+    <h1 th:text="#{lifecycle.page.title}">WebSocket Session Lifecycle</h1>
+    <p th:text="#{lifecycle.page.subtitle}">Connect, watch presence, force disconnect</p>
+
+    <section class="panel">
+      <label for="serverUrl" th:text="#{lifecycle.form.serverUrl}">WebSocket server URL</label>
+      <input id="serverUrl" type="text" />
+
+      <label for="displayName" th:text="#{lifecycle.form.displayName}">Display name</label>
+      <input id="displayName" type="text" value="student" />
+
+      <div class="actions">
+        <button id="connectButton" th:text="#{lifecycle.form.connect}">Connect</button>
+        <button id="disconnectButton" th:text="#{lifecycle.form.disconnect}" disabled>Disconnect</button>
+        <button id="pingButton" th:text="#{lifecycle.form.ping}" disabled>Send ping</button>
+        <button id="burstButton" th:text="#{lifecycle.form.burst}" disabled>Send burst</button>
+      </div>
+      <p id="status" th:text="#{lifecycle.status.disconnected}">Disconnected</p>
+    </section>
+
+    <section class="panel">
+      <h2 th:text="#{lifecycle.sessions.title}">Active sessions</h2>
+      <label for="adminUser" th:text="#{lifecycle.form.adminUser}">Admin username</label>
+      <input id="adminUser" type="text" value="session-admin" />
+      <label for="adminPassword" th:text="#{lifecycle.form.adminPassword}">Admin password</label>
+      <input id="adminPassword" type="password" value="change-me" />
+      <div class="actions">
+        <button id="refreshSessionsButton" th:text="#{lifecycle.form.refreshSessions}">Refresh sessions</button>
+      </div>
+      <ul id="sessionsList"></ul>
+    </section>
+
+    <section class="panel">
+      <h2 th:text="#{lifecycle.events.title}">Presence events</h2>
+      <ul id="eventsList"></ul>
+    </section>
+  </main>
+
+  <script th:src="@{/js/vendor/sockjs.min.js}"></script>
+  <script th:src="@{/js/vendor/stomp.min.js}"></script>
+  <script th:src="@{/js/lifecycle-client.js}"></script>
+</body>
+
+</html>
