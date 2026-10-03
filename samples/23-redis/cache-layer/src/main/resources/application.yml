@@ -6,6 +6,9 @@ spring:
     encoding: "UTF-8"
     default-locale: "en"
     fallback-to-system-locale: false
+  threads:
+    virtual:
+      enabled: true
   profiles:
     active:
       # - "development"
