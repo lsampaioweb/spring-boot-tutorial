@@ -1,6 +1,9 @@
 spring:
   application:
     name: "cloud-config-server"
+  threads:
+    virtual:
+      enabled: true
   profiles:
     active:
       # - "development"
@@ -9,53 +12,16 @@ spring:
     config:
       server:
         git:
-          # One repository for all clients apps.
-          # Local:
+          # Local repository. Default works when Maven runs from samples/19-cloud-config/server.
           uri: "file://${CONFIG_REPO_PATH:${user.dir}/../git-config}"
           cloneOnStart: true
           search-paths: "{application}/{profile}"
 
-          # Remote:
-          # uri: "https://github.com/{application}"
-
-          # One repository per client app.
-          # repos:
-          #   client-01:
-          #     pattern: "cloud-config-client"
-          #     search-paths: "{application}/{profile}"
-          #     uri: "..."
-          #   client-02:
-          #     pattern: "client-02"
-          #     search-paths: "{application}/{profile}"
-          #     uri: "..."
-  # If you want a user name and password.
-  security:
-    user:
-      name: "${USERNAME}"
-      password: "${PASSWORD}"
-
-# Part 1 - Http
-# server:
-#   port: 8080
-
-# Part 2 - Https
-# My custom environment variables.
-KEY_STORE_PASSWORD: "${KEY_STORE_PASSWORD_MY_HTTPS_APP}"
-
-server:
-  port: 9443
-  ssl:
-    enabled: true
-    protocol: "TLS"
-    enabled-protocols: "TLSv1.3"
-    key-store-type: "PKCS12"
-    key-store: "classpath:ssl/my-cert.p12"
-    key-store-password: ${KEY_STORE_PASSWORD}
-  http2:
-    enabled: true
-
 app:
   security:
+    server:
+      username: "${CONFIG_SERVER_USERNAME:config-server}"
+      password: "${CONFIG_SERVER_PASSWORD}"
     cloud-config-client:
       username: "${CLOUD_CONFIG_CLIENT_USERNAME:cloud-config-client}"
       password: "${CLOUD_CONFIG_CLIENT_PASSWORD}"
@@ -67,3 +33,14 @@ logging:
       max-file-size: "10MB"
       max-history: "7"
       total-size-cap: "1GB"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: "when-authorized"

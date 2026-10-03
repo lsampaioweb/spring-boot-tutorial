@@ -1,3 +1,21 @@
+# Keystore password for embedded HTTPS. Never commit the real value.
+KEY_STORE_PASSWORD: "${KEY_STORE_PASSWORD_CLOUD_CONFIG_SERVER}"
+
 server:
+  port: 9443
   error:
     include-stacktrace: "never"
+  ssl:
+    enabled: true
+    protocol: "TLS"
+    enabled-protocols: "TLSv1.3"
+    key-store-type: "PKCS12"
+    key-store: "classpath:ssl/my-cert.p12"
+    key-store-password: ${KEY_STORE_PASSWORD}
+  http2:
+    enabled: true
+
+management:
+  endpoint:
+    health:
+      show-details: "never"

@@ -1,5 +1,9 @@
+spring:
+  config:
+    import: "optional:configserver:https://localhost:9443"
+
 server:
-  port: 9443
+  port: 8080
   error:
     include-stacktrace: "never"
 

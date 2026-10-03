@@ -1,197 +1,124 @@
-Centralizing application configuration using Spring Boot Config Server simplifies the management of configuration properties across multiple environments and services. This guide will walk you through setting up a Config Server and configuring a Spring Boot application to retrieve its configuration from the server.
+# Spring Cloud Config
 
-1. Server Setup.
+Working sample: `samples/19-cloud-config`. Hands-on runbook:
+[`samples/19-cloud-config/README.md`](../../../samples/19-cloud-config/README.md).
 
-    1. Add dependencies.
+This guide shows a Config Server backed by a local Git repository and a client that
+imports remote properties through Spring Cloud Config Data.
 
-        Manage Spring Cloud dependencies with BOM and add the Config Server starter.
+## Layout
 
-        In your `pom.xml`, declare the Spring Cloud BOM in `dependencyManagement`:
+| Path | Role |
+| --- | --- |
+| `server/` | `@EnableConfigServer` on HTTP `8888` (development) or HTTPS `9443` (production) |
+| `client/` | Config client that binds `user.role` into `app.hello` |
+| `git-config/` | Local Git backend (`cloud-config-client/{profile}/application.yml`) |
 
-        ```xml
-        <properties>
-          <spring-cloud.version>2025.1.3</spring-cloud.version>
-        </properties>
+## 1. Initialize the Git backend
 
-        <dependencyManagement>
-          <dependencies>
-            <dependency>
-              <groupId>org.springframework.cloud</groupId>
-              <artifactId>spring-cloud-dependencies</artifactId>
-              <version>${spring-cloud.version}</version>
-              <type>pom</type>
-              <scope>import</scope>
-            </dependency>
-          </dependencies>
-        </dependencyManagement>
-        ```
+```bash
+cd samples/19-cloud-config/git-config
+./init-repo.sh
+```
 
-        Then add the following dependencies:
+Example remote property file
+(`git-config/cloud-config-client/development/application.yml`):
 
-        ```xml
-        <dependency>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-config-server</artifactId>
-        </dependency>
+```yml
+user:
+  role: "development"
+```
 
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+## 2. Config Server
 
-        <dependency>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-config</artifactId>
-        </dependency>
-        ```
+Manage Spring Cloud with the BOM, then add the Config Server starter:
 
-    1. Configure `application.yml`.
+```xml
+<properties>
+  <spring-cloud.version>2025.1.3</spring-cloud.version>
+</properties>
 
-      For portability, run the server from `samples/19-cloud-config/server` or set `CONFIG_REPO_PATH` to the `git-config` folder:
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-dependencies</artifactId>
+      <version>${spring-cloud.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
 
-      ```bash
-      export CONFIG_REPO_PATH="$PWD/samples/19-cloud-config/git-config"
-      ```
+<dependency>
+  <groupId>org.springframework.cloud</groupId>
+  <artifactId>spring-cloud-config-server</artifactId>
+</dependency>
+```
 
-        ```yml
-        spring:
-          application:
-            name: "cloud-config-server"
-          cloud:
-            config:
-              server:
-                git:
-                  # Local repository. Default works when Maven runs from samples/19-cloud-config/server.
-                  uri: "file://${CONFIG_REPO_PATH:${user.dir}/../git-config}"
-                  cloneOnStart: true
-                  # The name of the application and active profile.
-                  search-paths: "{application}/{profile}"
+Point the server at the Git folder and protect client paths with HTTP Basic:
 
-                  # Remote repository example.
-                  # uri: "https://github.com/{application}"
+```yml
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: "file://${CONFIG_REPO_PATH:${user.dir}/../git-config}"
+          cloneOnStart: true
+          search-paths: "{application}/{profile}"
+```
 
-                  # Example for multiple repositories.
-                  # repos:
-                  #   client-01:
-                  #     pattern: "cloud-config-client"
-                  #     search-paths: "{application}/{profile}"
-                  #     uri: "..."
-                  #   client-02:
-                  #     pattern: "client-02"
-                  #     search-paths: "{application}/{profile}"
-                  #     uri: "..."
+Enable the server:
 
-          # Optional: Security configuration.
-          security:
-            user:
-              name: "${USERNAME}"
-              password: "${PASSWORD}"
-        ```
+```java
+@SpringBootApplication
+@EnableConfigServer
+public class ServerApplication {
+  public static void main(String[] args) {
+    SpringApplication.run(ServerApplication.class, args);
+  }
+}
+```
 
-    1. Enable Config Server.
+Development uses plain HTTP on port `8888`. Production enables embedded HTTPS on
+`9443` with a PKCS12 keystore (see [HTTPS](../intermediate/https.md)).
 
-        Add the `@EnableConfigServer` annotation to the main class:
-        ```java
-        ...
-        import org.springframework.cloud.config.server.EnableConfigServer;
+## 3. Config Client
 
-        @SpringBootApplication
-        @EnableConfigServer
-        public class ServerApplication {
-          public static void main(String[] args) {
-            SpringApplication.run(ServerApplication.class, args);
-          }
-        }
-        ```
+```xml
+<dependency>
+  <groupId>org.springframework.cloud</groupId>
+  <artifactId>spring-cloud-starter-config</artifactId>
+</dependency>
+```
 
-1. Create a Configuration Repository.
+```yml
+spring:
+  application:
+    name: "cloud-config-client"
+  cloud:
+    config:
+      username: "${CLOUD_CONFIG_CLIENT_USERNAME:cloud-config-client}"
+      password: "${CLOUD_CONFIG_CLIENT_PASSWORD}"
+  config:
+    import: "optional:configserver:http://localhost:8888"
 
-    Create a Git repository to store your configuration files. Create a folder for each project or Spring Boot application, and within each folder, create subfolders for each profile (e.g., `default`, `development`, `production`). Inside each subfolder, create an `application.yml` file with the application settings.
+app:
+  hello:
+    role: "${user.role:local}"
+    server-port: "${server.port}"
+```
 
-    cloud-config-client/default/application.yml
-    ```yml
-    user:
-      role: "Default"
+Bind remote values with `@ConfigurationProperties` in the feature package and expose
+them through a service + REST controller (`HelloService` / `HelloRestController`).
 
-    server:
-      port: 8080
-    ```
+## 4. Run
 
-    cloud-config-client/development/application.yml
-    ```yml
-    user:
-      role: "development"
+See [`samples/19-cloud-config/README.md`](../../../samples/19-cloud-config/README.md)
+for environment variables and start commands.
 
-    server:
-      port: 8181
-    ```
-
-    Push these files to your Git repository, whether local or remote.
-
-1. Client Setup.
-
-    1. Add dependencies.
-
-        Add the following dependency to your `pom.xml` file (version comes from the Spring Cloud BOM):
-
-        ```xml
-          <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-          </dependency>
-        ```
-
-    1. Configure `application.yml`.
-
-        ```yml
-        spring:
-          application:
-            # The name of the application is the name of the folder from the Git repository.
-            name: "cloud-config-client"
-          profiles:
-            # active: "default"
-            active: "development"
-            # active: "production"
-
-          # Optional: Security configuration.
-          # It must match the values from the server.
-          cloud:
-            config:
-              username: "${USERNAME}"
-              password: "${PASSWORD}"
-
-          # Import configuration from the Config Server.
-          config:
-            # import: "optional:configserver:https://config-server.example:9443"
-            import: "optional:configserver:https://localhost:9443"
-        ```
-
-    1. Test the Configuration.
-
-        Create a simple REST controller to read and print the configuration properties:
-
-        ```java
-        ...
-
-        @RestController
-        @RequestMapping("api/v1")
-        @Slf4j
-        public class HelloRestController {
-
-          private final HelloConfigurationProperties properties;
-
-          public HelloRestController(HelloConfigurationProperties properties) {
-            this.properties = properties;
-          }
-
-          @GetMapping("/hello")
-          public ResponseEntity<HelloResponse> sayHello() {
-            String message = String.format("Message: %s - %d", properties.role(), properties.serverPort());
-
-            return ResponseEntity.ok(new HelloResponse(message));
-          }
-        }
-        ```
+Swagger UI (development): `http://localhost:8080/swagger-ui/index.html`
 
 [Go Back](../../../README.md)
 

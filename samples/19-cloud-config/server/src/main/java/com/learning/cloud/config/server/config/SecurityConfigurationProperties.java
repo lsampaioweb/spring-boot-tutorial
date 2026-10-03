@@ -1,7 +1,17 @@
 package com.learning.cloud.config.server.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
-@ConfigurationProperties(prefix = "app.security.cloud-config-client")
-public record SecurityConfigurationProperties(String username, String password) {
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+
+@ConfigurationProperties(prefix = "app.security")
+@Validated
+record SecurityConfigurationProperties(
+    @Valid Principal server,
+    @Valid Principal cloudConfigClient) {
+
+  record Principal(@NotBlank String username, @NotBlank String password) {
+  }
 }

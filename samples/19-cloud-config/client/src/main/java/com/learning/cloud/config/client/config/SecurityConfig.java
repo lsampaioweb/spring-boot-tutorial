@@ -1,5 +1,6 @@
-package com.learning.cloud.config.server.config;
+package com.learning.cloud.config.client.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,20 +15,27 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableConfigurationProperties(SecurityConfigurationProperties.class)
+@EnableConfigurationProperties(SecurityProperties.class)
 class SecurityConfig {
 
   @Bean
-  SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  SecurityFilterChain securityFilterChain(
+      HttpSecurity http,
+      SecurityProperties securityProperties,
+      @Value("${springdoc.swagger-ui.enabled:false}") boolean swaggerUiEnabled) throws Exception {
     http
         .csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .httpBasic(Customizer.withDefaults())
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
-            .requestMatchers("/actuator/**").hasRole("CONFIG_ADMIN")
-            .requestMatchers("/cloud-config-client/**").hasRole("CLOUD_CONFIG_CLIENT")
-            .anyRequest().denyAll());
+        .authorizeHttpRequests(authorize -> {
+          authorize.requestMatchers("/actuator/health", "/actuator/health/**").permitAll();
+          authorize.requestMatchers("/actuator/**").authenticated();
+          if (swaggerUiEnabled) {
+            authorize.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
+          }
+          authorize.requestMatchers("/api/v1/hellos/**").hasRole("CLOUD_CONFIG_API");
+          authorize.anyRequest().denyAll();
+        });
 
     return http.build();
   }
@@ -38,17 +46,11 @@ class SecurityConfig {
   }
 
   @Bean
-  UserDetailsService userDetailsService(
-      SecurityConfigurationProperties securityProperties,
-      PasswordEncoder passwordEncoder) {
+  UserDetailsService userDetailsService(SecurityProperties securityProperties, PasswordEncoder passwordEncoder) {
     return new InMemoryUserDetailsManager(
-        User.withUsername(securityProperties.server().username())
-            .password(passwordEncoder.encode(securityProperties.server().password()))
-            .roles("CONFIG_ADMIN")
-            .build(),
-        User.withUsername(securityProperties.cloudConfigClient().username())
-            .password(passwordEncoder.encode(securityProperties.cloudConfigClient().password()))
-            .roles("CLOUD_CONFIG_CLIENT")
+        User.withUsername(securityProperties.username())
+            .password(passwordEncoder.encode(securityProperties.password()))
+            .roles("CLOUD_CONFIG_API")
             .build());
   }
 }

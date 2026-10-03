@@ -65,6 +65,18 @@
       <artifactId>spring-cloud-config-server</artifactId>
     </dependency>
 
+    <!-- Actuator health and operational endpoints. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <!-- Bean Validation for security configuration properties. -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
     <!-- Devtools for local development hot reload support only. -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

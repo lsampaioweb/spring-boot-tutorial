@@ -1,0 +1,22 @@
+spring:
+  cloud:
+    config:
+      fail-fast: false
+      username: "cloud-config-client"
+      password: "unused-in-tests"
+  config:
+    import: "optional:configserver:"
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  hello:
+    role: "test"
+    server-port: 8080
+  security:
+    username: "cloud-config-api-test"
+    password: "cloud-config-api-test-password"

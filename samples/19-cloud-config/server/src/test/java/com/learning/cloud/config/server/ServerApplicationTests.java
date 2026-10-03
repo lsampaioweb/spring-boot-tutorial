@@ -2,18 +2,16 @@ package com.learning.cloud.config.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(properties = {
-  "USERNAME=test-user",
-  "PASSWORD=test-password",
-  "CLOUD_CONFIG_CLIENT_PASSWORD=test-client-password",
-  "KEY_STORE_PASSWORD_MY_HTTPS_APP=test-password",
-  "server.ssl.enabled=false"
+    "CONFIG_SERVER_PASSWORD=test-server-password",
+    "CLOUD_CONFIG_CLIENT_PASSWORD=test-client-password"
 })
+@ActiveProfiles("development")
 class ServerApplicationTests {
 
   @Test
   void contextLoads() {
   }
-
 }

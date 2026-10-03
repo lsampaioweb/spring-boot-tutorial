@@ -1,3 +1,11 @@
 server:
+  port: 8888
   error:
     include-stacktrace: "always"
+  ssl:
+    enabled: false
+
+management:
+  endpoint:
+    health:
+      show-details: "always"
