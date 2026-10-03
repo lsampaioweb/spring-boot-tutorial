@@ -12,9 +12,9 @@
   </parent>
 
   <groupId>br.com.lsampaioweb</groupId>
-  <artifactId>websocket-server</artifactId>
+  <artifactId>websocket-basics-server</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>websocket-server</name>
+  <name>websocket-basics-server</name>
   <description>WebSocket server tutorial project</description>
 
   <properties>
