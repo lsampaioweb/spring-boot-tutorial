@@ -83,7 +83,7 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 1. [Security](documentation/spring/advanced/security.md)
     - Securing your Spring Boot application. Sample: `samples/18-security`.
 1. [Cloud Config](documentation/spring/advanced/cloud-config.md)
-    - Externalized configuration using Spring Cloud Config. Sample: `samples/19-cloud-config`.
+    - Config Server + client with a local Git backend. Runbook: `samples/19-cloud-config/README.md`. Sample: `samples/19-cloud-config`.
 1. [K6](documentation/spring/tests/k6.md)
     - Performance testing with K6. Catalog: `samples/20-k6`. App-shaped scripts: `samples/16-virtual-threads/src/test/k6`.
 
@@ -178,6 +178,8 @@ The following samples expose Swagger UI when running with the `development` prof
 - `samples/25-websocket/server` → `http://localhost:8090/swagger-ui/index.html`
 - `samples/26-traefik` → `http://localhost:8080/swagger-ui/index.html`
 - `samples/27-async/basics` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/28-tracing/caller` → `http://localhost:8080/swagger-ui/index.html`
+- `samples/28-tracing/callee` → `http://localhost:8081/swagger-ui/index.html`
 
 Run each sample from its own folder:
 
