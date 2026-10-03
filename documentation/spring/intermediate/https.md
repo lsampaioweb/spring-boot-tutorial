@@ -1,58 +1,85 @@
-Enabling HTTPS in a Spring Boot application ensures that the data transmitted between the client and server is encrypted, enhancing the security of your application.
+# HTTPS
 
-1. Prepare the Certificate for your application.
+Working sample: [`samples/14-https`](../../../samples/14-https). Runbook:
+[`samples/14-https/README.md`](../../../samples/14-https/README.md).
 
-    Follow the instructions in [Create, Verify and Import OpenSSL Certificates](https://github.com/lsampaioweb/openssl-certificates) to create a certificate for this application. After creating the certificate, copy the `.p12` file to the `resources/ssl` directory in your Spring Boot project.
+Serve a small status API over TLS so browsers and clients use HTTPS locally.
 
-1. Save the password of the Private Key in the Secret Manager.
+## Before you start
 
-    ```bash
-    secret-tool store --label="ssl.jump-server-01.lan.homelab" password "ssl.jump-server-01.lan.homelab"
-    ```
+- Previous: [Thymeleaf](../basic/thymeleaf.md)
+- Java 25, Maven 3.9+, `keytool` (from the JDK)
 
-1. Confirm the password was correctly saved.
-    ```bash
-    secret-tool lookup password "ssl.jump-server-01.lan.homelab"
-    ```
+## Why this exists
 
-1. Add the Environmente variable in the `~/.bashrc` file.
+HTTP sends traffic in clear text. HTTPS encrypts the channel with TLS. This sample
+shows Spring Boot SSL settings with a PKCS12 keystore — without requiring a
+homelab CA or desktop secret manager.
 
-    To avoid conflicts with other applications, name the environment variable uniquely, e.g: `KEY_STORE_PASSWORD_MY_HTTPS_APP`.
-    ```bash
-    nano ~/.bashrc
-    export KEY_STORE_PASSWORD_MY_HTTPS_APP=$(secret-tool lookup password "ssl.jump-server-01.lan.homelab")
-    ```
+## What you will see
 
-1. Reload your bash to load the new environment variable.
-    ```bash
-    source ~/.bashrc
-    ```
+- App listens on `https://localhost:9443`
+- `GET /api/v1/https/status` returns JSON (use `curl -k` for the self-signed cert)
 
-1. Add the configuration in the `application.yml` file.
+## Run
 
-    This configuration sets up your Spring Boot application to use the `.p12` certificate for HTTPS on port `9443`, with `TLS 1.3` and `HTTP/2` enabled.
-    ```yml
-    # My custom environment variables.
-    KEY_STORE_PASSWORD: "${KEY_STORE_PASSWORD_MY_HTTPS_APP}"
+```bash
+cd samples/14-https
+./generate-keystore.sh
+export KEY_STORE_PASSWORD_MY_HTTPS_APP=change-me
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    server:
-      port: 9443
-      ssl:
-        enabled: true
-        enabled-protocols: "TLSv1.3"
-        key-store-type: "PKCS12"
-        key-store: "classpath:ssl/my-cert.p12"
-        key-store-password: ${KEY_STORE_PASSWORD}
-      http2:
-        enabled: true
-    ```
+The script writes `src/main/resources/ssl/my-cert.p12` (gitignored).
 
-    After the server starts, check the localized status endpoint:
+## Try it
 
-    ```bash
-    curl -k https://localhost:9443/api/v1/https/status
-    curl -k -H "Accept-Language: pt-BR" https://localhost:9443/api/v1/https/status
-    ```
+```bash
+curl -k -i https://localhost:9443/api/v1/https/status
+curl -k -H "Accept-Language: pt-BR" https://localhost:9443/api/v1/https/status
+```
+
+Expected: `HTTP/1.1 200` and a localized status payload.
+
+## How the sample is shaped
+
+`application.yml` maps the env password into Spring SSL settings:
+
+```yml
+KEY_STORE_PASSWORD: "${KEY_STORE_PASSWORD_MY_HTTPS_APP}"
+
+server:
+  port: 9443
+  ssl:
+    enabled: true
+    enabled-protocols: "TLSv1.3"
+    key-store-type: "PKCS12"
+    key-store: "classpath:ssl/my-cert.p12"
+    key-store-password: ${KEY_STORE_PASSWORD}
+  http2:
+    enabled: true
+```
+
+## Tests
+
+```bash
+cd samples/14-https && mvn test
+```
+
+## Stop
+
+`Ctrl+C`. Delete `src/main/resources/ssl/my-cert.p12` if you want a fresh cert later.
+
+## Optional: homelab / real CA
+
+If you already use a private CA (for example an openssl-certificates workflow) or
+store keystore passwords with `secret-tool`, you can replace the generated `.p12`
+and point `KEY_STORE_PASSWORD_MY_HTTPS_APP` at that password. That path is
+optional — the local `generate-keystore.sh` script is enough for this lesson.
+
+## Next
+
+[Events](events.md) — `samples/15-events`.
 
 [Go Back](../../../README.md)
 
