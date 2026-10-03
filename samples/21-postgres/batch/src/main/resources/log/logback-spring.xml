@@ -7,12 +7,15 @@
   <springProperty scope="context" source="logging.logback.rollingpolicy.max-history" name="LOG_FILE_MAX_HISTORY" defaultValue="7" />
   <springProperty scope="context" source="logging.logback.rollingpolicy.total-size-cap" name="LOG_FILE_TOTAL_SIZE_CAP" defaultValue="1GB" />
 
-  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
-    <target>System.out</target>
-    <encoder>
-      <pattern>%black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%logger{60}): %msg%n%throwable</pattern>
-    </encoder>
-  </appender>
+  <springProfile name="default | debug | development">
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+      <target>System.out</target>
+      <encoder>
+        <pattern>%black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%logger{60}): %msg%n%throwable</pattern>
+      </encoder>
+    </appender>
+  </springProfile>
+
 
   <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${LOG_DIR}/${APPLICATION_NAME}.log</file>
@@ -48,10 +51,19 @@
     </root>
   </springProfile>
 
-  <springProfile name="default | production">
+  <springProfile name="default">
+    <root level="INFO">
+      <appender-ref ref="Console" />
+      <appender-ref ref="File" />
+    </root>
+  </springProfile>
+
+
+  <springProfile name="production">
     <root level="INFO">
       <appender-ref ref="File" />
     </root>
   </springProfile>
+
 
 </configuration>
