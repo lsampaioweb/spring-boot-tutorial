@@ -37,6 +37,13 @@ This guide explains how to install Maven on Ubuntu for desktop or server environ
     mvn --version
     ```
 
+## Gate (required)
+
+The output of `mvn --version` must show Maven **3.9** or newer. If apt installs
+an older Maven, install a 3.9+ distribution from the
+[Apache Maven download page](https://maven.apache.org/download.cgi) and put it
+on your `PATH` before continuing.
+
 [Go Back](../../README.md)
 
 #

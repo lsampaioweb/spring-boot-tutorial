@@ -1,24 +1,86 @@
-Use the current tutorial baseline values when generating the template:
+# Topic / sample documentation template
 
-curl -o project.zip https://start.spring.io/starter.zip \
-    -d dependencies=devtools,lombok,actuator,web,jdbc \
-    -d type=maven-project -d language=java -d bootVersion=4.1.1 \
-    -d name=spring-boot-base -d groupId=com.learning -d artifactId=spring-boot-base \
-    unzip project.zip -d spring-boot-base
+Use this shape for every topic page under `documentation/spring/**` and every
+`samples/**/README.md`. Sample READMEs may omit "Build it yourself" when the
+topic page already covers recreation.
 
-mvn clean install
+## Required sections
 
-mvn archetype:create-from-project -DpropertyFile=archetype.properties
+### Title
 
-cd spring-boot-base/target/generated-sources/archetype
+`# NN — Short title`
 
-mvn clean install
+One sentence: what you will be able to do after this lesson.
 
-mvn archetype:generate \
-  -DarchetypeGroupId=com.learning \
-  -DarchetypeArtifactId=spring-boot-base \
-  -DarchetypeVersion=1.0.0 \
-  -DgroupId=com.learning \
-  -DartifactId=my-new-project \
-  -Dpackage=com.learning.myapp \
-  -Dversion=1.0-SNAPSHOT
+### Before you start
+
+- Previous topic: link (or "none — start here")
+- You need: Java 25 (`java --version`), Maven 3.9+, Docker/Podman if any
+- Working sample: `samples/NN-name` (clone and run)
+- Time: ~N minutes
+
+### Why this exists
+
+3–6 sentences. When to use it vs the previous sample.
+
+### What you will see
+
+Bullet list of observable outcomes (log line, HTTP status, UI).
+
+### Run
+
+From the sample folder, with profile and env vars. Example:
+
+~~~bash
+cd samples/NN-name
+export SOME_PASSWORD=change-me
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+~~~
+
+Infra first, if any: link to `samples/infrastructure/{service}/README.md`.
+
+### Try it
+
+Show `curl` (or UI steps) and **Expected** status/body/log line.
+
+Optional: Swagger URL, second locale (`Accept-Language: pt-BR`).
+
+### How the sample is shaped
+
+Table: class/file → role. Link into the repo; do not paste large classes.
+
+### Build it yourself (optional)
+
+Minimal pom/YAML/Java diffs that match the sample.
+
+### Tests
+
+~~~bash
+mvn test
+~~~
+
+What the tests prove in one sentence.
+
+### Stop
+
+`Ctrl+C`; `docker compose down` if infra was started.
+
+### Troubleshooting
+
+Only failures this sample actually hits.
+
+### Next
+
+Link to the next catalog item.
+
+## Rule
+
+If a motivated new hire cannot finish Run + Try it without opening Java sources,
+the page is not done.
+
+[Go Back](../../../README.md)
+
+#
+### Created by:
+
+1. Luciano Sampaio.

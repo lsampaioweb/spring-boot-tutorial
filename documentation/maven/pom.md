@@ -1,110 +1,118 @@
-Maven commands.
+# Maven commands for this tutorial
 
-## pom.xml conventions
+Working sample: `samples/01-pom`
 
-1. `groupId` is always `br.com.lsampaioweb`.
-1. `version` keeps the `-SNAPSHOT` suffix during development (standard Maven convention).
-   Only drop it when an actual release is cut via `mvn release:prepare` (see below).
-1. Add the `<scm>` block from the start, in every module, since every sample belongs to
-   this git repository - do not wait until release time to add it.
+## Before you start
+
+- Java 25 and Maven 3.9+ ([install Java](../java/install.md), [install Maven](install.md))
+- Clone this repository
+
+## Gate
+
+```bash
+mvn --version
+```
+
+The output must show Maven **3.9** or newer.
+
+## Run the first sample
+
+```bash
+cd samples/01-pom
+mvn compile
+mvn test
+mvn spring-boot:run
+```
+
+Expected: the application starts and exits cleanly when you press `Ctrl+C`
+(this sample has no web server). Tests pass with `BUILD SUCCESS`.
+
+## Everyday commands
+
+| Command | Purpose |
+| --- | --- |
+| `mvn compile` | Compile main sources |
+| `mvn test` | Run unit/integration tests |
+| `mvn package` | Build the jar under `target/` |
+| `mvn spring-boot:run` | Run the Spring Boot app |
+| `mvn spring-boot:run -Dspring-boot.run.profiles=development` | Run with the development profile |
+| `mvn clean` | Delete `target/` |
+
+## pom.xml conventions (this repository)
+
+1. `groupId` is `br.com.lsampaioweb` in sample POMs. Application packages often use
+   `com.learning.*` — that is intentional and fine.
+1. `version` keeps the `-SNAPSHOT` suffix during development.
+1. Add the `<scm>` block in every module:
     ```xml
     <scm>
       <developerConnection>scm:git:https://github.com/lsampaioweb/spring-boot-tutorial.git</developerConnection>
       <tag>HEAD</tag>
     </scm>
     ```
-1. Every dependency has a one-line `<!-- purpose -->` comment placed directly above the
-   `<dependency>` tag explaining why it's there.
-1. Dependencies are grouped and ordered as:
-    1. Spring Boot / Spring Cloud / Spring Security starters (framework-provided). Within
-       this group, `spring-boot-devtools` goes last since it is a dev-only convenience,
-       not a feature starter.
-    1. Third-party libraries (non-Spring groupIds), ordered alphabetically by artifactId.
-    1. Internal/project-owned dependencies (multi-module projects).
-    1. Test-scoped dependencies, always last, regardless of groupId.
-1. Do not leave empty `<url />` / `<licenses><license /></licenses>` stubs. If there is
-   no real project URL or license decided yet, omit the tags entirely rather than leaving
-   them empty.
-1. Cumulative topics: once a cross-cutting dependency (Lombok, devtools, etc.) is
-   introduced in an earlier sample, later samples reuse it only if that sample's own code
-   actually needs it - never add a dependency "just because" a previous sample had it.
+1. Every dependency has a one-line `<!-- purpose -->` comment above the tag.
+1. Dependency order: Spring Boot / Cloud / Security starters (devtools last among
+   them) → third-party (alphabetical by artifactId) → internal → test-scoped last.
+1. Do not leave empty `<url />` / `<licenses>` stubs; omit them if unused.
+1. Later samples add dependencies only when that sample's code needs them.
 
-1. Compile the application to make sure everything is working.
+## Install into the local repository (optional)
 
-    ```bash
-    mvn compile
-    ```
+```bash
+mvn install
+```
 
-1. Update the version of the library/application in the pom after each new feature.
+Artifacts land under `~/.m2/repository/`.
 
-    ```bash
-    mvn release:update-versions
-    ```
+## Next
 
-    Before:
+[DevTools](../spring/basic/devtools.md) — `samples/02-devtools`.
 
-    ![02-version-0-0-1-snapshot](../images/maven/02-version-0-0-1-snapshot.png "02-version-0-0-1-snapshot")
+## Maintainer appendix: version bumps and releases
 
-    Enter the new version:
+Learners do **not** need this section. It mutates git history and can push tags.
 
-    ![01-choose-version](../images/maven/01-choose-version.png "01-choose-version")
+### Update the SNAPSHOT version
 
-    Maven build success message:
+```bash
+mvn release:update-versions
+```
 
-    ![04-version-0-0-2-snapshot-build](../images/maven/04-version-0-0-2-snapshot-build.png "04-version-0-0-2-snapshot-build")
+Before:
 
-    After:
+![02-version-0-0-1-snapshot](../images/maven/02-version-0-0-1-snapshot.png "02-version-0-0-1-snapshot")
 
-    ![03-version-0-0-2-snapshot](../images/maven/03-version-0-0-2-snapshot.png "03-version-0-0-2-snapshot")
+Enter the new version:
 
-1. Prepare the next release.
+![01-choose-version](../images/maven/01-choose-version.png "01-choose-version")
 
-    The `scm` tag should already be present in the pom.xml from creation (see conventions
-    above), so no need to add it here.
+Maven build success message:
 
-    Add the `maven-surefire-plugin` plugin.
-    ```xml
-    <build>
-      <plugins>
-        ...
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-        </plugin>
-              ...
-      </plugins>
-    </build>
-    ```
+![04-version-0-0-2-snapshot-build](../images/maven/04-version-0-0-2-snapshot-build.png "04-version-0-0-2-snapshot-build")
 
-    Create and publish a new version:
+After:
 
-    ```bash
-    mvn release:prepare
-    ```
+![03-version-0-0-2-snapshot](../images/maven/03-version-0-0-2-snapshot.png "03-version-0-0-2-snapshot")
 
-    Maven will remove the `SNAPSHOT` from the version.
+### Prepare a release (commits and pushes)
 
-    ![05-new-release](../images/maven/05-new-release.png "05-new-release")
+Ensure `maven-surefire-plugin` is present, then:
 
+```bash
+mvn release:prepare
+```
 
-    Maven will commit and push the new release to the repository.
+Maven removes `SNAPSHOT`, commits, pushes, bumps the next SNAPSHOT, and creates a tag:
 
-    ![06-commits](../images/maven/06-commits.png "06-commits")
+![05-new-release](../images/maven/05-new-release.png "05-new-release")
 
-    Maven will increase the version in the pom.xml.
+![06-commits](../images/maven/06-commits.png "06-commits")
 
-    ![07-commits-new-version](../images/maven/07-commits-new-version.png "07-commits-new-version")
+![07-commits-new-version](../images/maven/07-commits-new-version.png "07-commits-new-version")
 
-    Maven will create a tag in the repository.
+![08-new-tag](../images/maven/08-new-tag.png "08-new-tag")
 
-    ![08-new-tag](../images/maven/08-new-tag.png "08-new-tag")
-
-
-1. Install the package in the local maven repository, so other applications can use it.
-
-    The path where the application will be installed is: `~/.m2/repository/`
-    ```bash
-    mvn install
-    ```
+To keep all sample POMs on the same Boot train, see [Upgrade Process](upgrade.md).
 
 [Go Back](../../README.md)
 

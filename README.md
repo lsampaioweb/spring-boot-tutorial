@@ -8,6 +8,24 @@ Documentation and working samples for building Java libraries and Spring Boot pr
 - **Java:** 25
 - **Maven:** 3.9+
 
+## How to follow this tutorial
+
+1. Clone this repository and work from the sample folders under `samples/`.
+1. Confirm the gates before the first lesson:
+   ```bash
+   java --version   # must show 25
+   mvn --version    # must show 3.9 or newer
+   ```
+1. For each topic: open the topic page, then `cd` into the listed sample and run it. Do **not** recreate the project from scratch unless a topic has an optional "Build it yourself" section.
+1. Default run command (from the sample folder):
+   ```bash
+   mvn spring-boot:run -Dspring-boot.run.profiles=development
+   ```
+1. Integration samples may need Docker or Podman first — follow the linked infrastructure runbook before starting the app.
+1. Topic and sample pages follow the same learner shape: [documentation/spring/template/basic.md](documentation/spring/template/basic.md).
+
+Early samples (01–07) are intentionally small. The architecture conventions below apply fully once REST and later topics introduce those patterns.
+
 ## Project Guidelines & Conventions
 
 This project follows standardized Spring Boot architecture and code conventions:
@@ -36,12 +54,12 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 ### Setup:
 1. [Create a Spring Boot Project](documentation/setup/project.md):
     - Guide to set up a Spring Boot project using VS Code or CLI.
+1. [Containers (Docker / Podman)](documentation/setup/containers.md):
+    - Shared network, Compose start/stop, and credential / rootless troubleshooting.
 
 ### Spring Boot Basics:
 1. [Maven Commands](documentation/maven/pom.md):
     - Common Maven commands and usage. Sample: `samples/01-pom`.
-1. [Upgrade Process](documentation/maven/upgrade.md):
-    - Practical workflow to keep all sample POMs updated.
 1. [DevTools](documentation/spring/basic/devtools.md):
     - Enabling and using Spring Boot DevTools. Sample: `samples/02-devtools`.
 1. [Profile](documentation/spring/basic/profile.md)
@@ -51,13 +69,13 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 1. [Lombok](documentation/spring/basic/lombok.md)
     - Integrating Lombok into your Spring Boot project. Sample: `samples/05-lombok`.
 1. [i18n](documentation/spring/intermediate/i18n.md)
-    - MessageSource bundles first, then HTTP locale on REST. Samples: `samples/06-i18n`, `samples/08-restapi`.
+    - MessageSource bundles first, then HTTP locale on REST. Samples: `samples/06-i18n`, `samples/08-restapi`. (Doc path: `intermediate/`.)
 1. [Actuator](documentation/spring/basic/actuator.md)
     - Monitoring and managing your Spring Boot application. Sample: `samples/07-actuator`.
 
 ### Spring Boot Intermediate:
 1. [REST](documentation/spring/basic/rest.md)
-    - Creating RESTful web services, pagination, sorting, and OpenAPI. Sample: `samples/08-restapi`.
+    - Creating RESTful web services, pagination, sorting, and OpenAPI. Sample: `samples/08-restapi`. (Doc path: `basic/`.)
 1. [Validation](documentation/spring/intermediate/validation.md)
     - Input validation for REST APIs and web forms. Sample: `samples/09-validation`.
 1. [Exception Handling](documentation/spring/intermediate/exception-handling.md)
@@ -67,7 +85,7 @@ For detailed conventions, see the instruction files in: `https://github.com/lsam
 1. [HTTP Client](documentation/spring/intermediate/http-client.md)
     - Making HTTP requests with RestClient. Sample: `samples/12-http-client`.
 1. [Thymeleaf](documentation/spring/basic/thymeleaf.md)
-    - Server-side HTML rendering with form binding and i18n support. Sample: `samples/13-thymeleaf`.
+    - Server-side HTML rendering with form binding and i18n support. Sample: `samples/13-thymeleaf`. (Doc path: `basic/`.)
 1. [HTTPS](documentation/spring/intermediate/https.md)
     - Securing your application with HTTPS. Sample: `samples/14-https`.
 1. [Events](documentation/spring/intermediate/events.md)
@@ -115,42 +133,11 @@ All integration samples use containerized infrastructure defined in `samples/inf
 
 Each service runs in Compose with security hardening (dropped capabilities and no-new-privileges).
 
-To use any integration:
-1. Create shared network once if it does not exist (Docker): `docker network create tutorial-network`. Starting Traefik, Vault, Redis, PostgreSQL, RabbitMQ, or the OpenTelemetry Collector also creates it.
-2. Open the service folder: `cd samples/infrastructure/{service}`.
-3. If available, copy secret defaults: `cp .env.example .env`.
-4. Start infrastructure: `docker compose up -d`.
-5. Stop infrastructure: `docker compose down`.
+Shared start/stop, network, and Docker/Podman troubleshooting:
+[documentation/setup/containers.md](documentation/setup/containers.md).
 
-If you use Podman, replace step 1 with `podman network exists tutorial-network || podman network create tutorial-network`, then replace `docker compose` with `podman compose`.
-
-If `docker compose up` fails with `docker-credential-secretservice` missing, install Docker credential helpers or remove the `credsStore` setting from `~/.docker/config.json`.
-
-If `podman compose up` fails with errors like `potentially insufficient UIDs or GIDs available in user namespace`, your user is missing rootless mappings in `/etc/subuid` and `/etc/subgid`. Ask an administrator to provision subuid/subgid ranges for your user, then run `podman system migrate` and retry.
-
-Podman rootless preflight check:
-
-```bash
-whoami
-grep "^$(whoami):" /etc/subuid
-grep "^$(whoami):" /etc/subgid
-```
-
-If either grep returns no line, Podman rootless mappings are not configured for your user.
-
-Administrator remediation example (run as root, with unique ranges):
-
-```bash
-usermod --add-subuids 100000-165535 --add-subgids 100000-165535 <username>
-```
-
-Then the developer should run:
-
-```bash
-podman system migrate
-```
-
-See individual integration documentation for detailed setup steps.
+See individual integration documentation and `samples/infrastructure/*/README.md` for
+service-specific steps.
 
 ### Swagger UI (Development Profile)
 The following samples expose Swagger UI when running with the `development` profile:
@@ -187,6 +174,13 @@ Run each sample from its own folder:
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
+
+## Maintainer
+
+1. [Upgrade Process](documentation/maven/upgrade.md):
+    - Keep all sample POMs on the same Boot / dependency train.
+1. [Maven archetype](documentation/spring/extra/archetype.md):
+    - Optional archetype generation (not part of the learner path).
 
 ## Links:
 
