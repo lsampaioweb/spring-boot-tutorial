@@ -48,6 +48,12 @@
     docker run hello-world
     ```
 
+## Next
+
+[Container sample](container.md) — `samples/17-container`.
+
+Shared Compose troubleshooting: [containers.md](../../setup/containers.md).
+
 [Go Back](container.md)
 
 #

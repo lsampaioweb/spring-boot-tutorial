@@ -1,64 +1,108 @@
-Spring Boot Actuator provides production-ready endpoints to monitor and manage an application.
+# Actuator
 
-Working sample: `samples/07-actuator`
+Expose health, info, and metrics under `/actuator` without a domain REST API.
 
-This lesson adds Actuator over HTTP. `spring-boot-starter-web` is included only so `/actuator/*` is reachable in a browser or with curl. REST controllers are the next lesson. Do not add Spring Security here; that is `samples/18-security`.
+Working sample: [`samples/07-actuator`](../../../samples/07-actuator). Runbook:
+[`samples/07-actuator/README.md`](../../../samples/07-actuator/README.md).
 
-1. Add dependencies.
+## Before you start
 
-    ```xml
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+- Previous: [i18n](../intermediate/i18n.md) — `samples/06-i18n`
+- Java 25, Maven 3.9+
+- Time: ~10 minutes
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    ```
+## Why this exists
 
-1. Expose a small set of endpoints.
+Operators and orchestrators need a standard health signal. Actuator adds
+management endpoints separately from your business API. This sample exposes
+`health`, `info`, and `metrics` only.
 
-    `application.yml` in the sample:
+## What you will see
 
-    ```yml
-    management:
-      endpoints:
-        web:
-          exposure:
-            include: "health,info,metrics"
-      endpoint:
-        health:
-          probes:
-            enabled: true
-          show-details: "when-authorized"
-    ```
+- App listens on **8080** with the `development` profile
+- `GET /actuator/health` returns JSON with `"status":"UP"`
+- Startup log mentions exposing endpoints under `/actuator`
 
-    Common endpoints:
+## Run
 
-    - `/actuator/health` — application health (and liveness/readiness when probes are enabled)
-    - `/actuator/info` — application information
-    - `/actuator/metrics` — metrics
+```bash
+cd samples/07-actuator
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    `management.endpoint.health.show-details`:
+Base exposure (see `application.yml`):
 
-    - `never` — never include component details
-    - `when-authorized` — details only for an authorized caller
-    - `always` — always include details (fine for local debugging, noisy or sensitive in production)
+```yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+```
 
-    The development profile in this sample can set `show-details: "always"`. Production keeps details hidden.
+Development sets `management.endpoint.health.show-details: always` and
+`server.port: 8080`. Default production uses port **9443** and hides details.
 
-    Do not expose `include: "*"`. Leave sensitive endpoints (`env`, `beans`, `heapdump`, and similar) off unless you need them and protect them. Spring Security for Actuator comes later (`samples/18-security`, `samples/26-traefik`).
+## Try it
 
-1. Test the endpoints.
+```bash
+curl -i http://localhost:8080/actuator/health
+```
 
-    ```bash
-    cd samples/07-actuator
-    mvn spring-boot:run -Dspring-boot.run.profiles=development
-    ```
+Expected: `HTTP/1.1 200`, `Content-Type` includes
+`application/vnd.spring-boot.actuator.v3+json`, and a body like:
 
-    Then open `http://localhost:8080/actuator` and `http://localhost:8080/actuator/health`.
+```json
+{
+  "status": "UP",
+  "groups": ["liveness", "readiness"],
+  "components": {
+    "diskSpace": { "status": "UP" },
+    "livenessState": { "status": "UP" },
+    "ping": { "status": "UP" },
+    "readinessState": { "status": "UP" },
+    "ssl": { "status": "UP" }
+  }
+}
+```
+
+Exact component keys can vary slightly by Boot version; `"status":"UP"` and the
+`groups` array are the stable signals for this lesson.
+
+Optional:
+
+```bash
+curl -i http://localhost:8080/actuator/info
+curl -i http://localhost:8080/actuator/metrics
+```
+
+## How the sample is shaped
+
+| File / class | Role |
+| --- | --- |
+| `ActuatorApplication` | Entry point (no domain controllers) |
+| `pom.xml` | `spring-boot-starter-web` + `spring-boot-starter-actuator` |
+| `application.yml` / profile YAML | Exposure, probes, ports, health details |
+
+## Tests
+
+```bash
+cd samples/07-actuator && mvn test
+```
+
+Loads the Spring context.
+
+## Stop
+
+`Ctrl+C`.
+
+## Next
+
+[REST](rest.md) — `samples/08-restapi`.
 
 [Go Back](../../../README.md)
 

@@ -1,249 +1,99 @@
-## HTTP Client
+# HTTP Client
 
-Working sample: `samples/12-http-client`. Point `external.api.users` at a running `samples/08-restapi` instance (`http://localhost:8080/api/v1/users`).
+Call another Spring Boot API with `RestClient` (upstream on 8080, client on 8081).
 
-Spring Boot 3.1 and later include `RestClient`. Use a named bean with connect and read timeouts. Call it from a repository, not from a controller.
+Working sample: [`samples/12-http-client`](../../../samples/12-http-client). Runbook:
+[`samples/12-http-client/README.md`](../../../samples/12-http-client/README.md).
 
-1. Add Dependencies.
+Upstream: [`samples/08-restapi`](../../../samples/08-restapi) —
+[`README`](../../../samples/08-restapi/README.md).
 
-    Add the following dependencies to your `pom.xml` file:
+## Before you start
 
-    ```xml
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+- Previous: [MapStruct](mapstruct.md) — `samples/11-mapstruct`
+- Java 25, Maven 3.9+
+- Free ports **8080** (upstream) and **8081** (client)
+- Time: ~20 minutes
 
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-commons</artifactId>
-    </dependency>
-    ```
+## Why this exists
 
-    `spring-data-commons` is only for `Pageable` / `Page`. Do not add JPA or HATEOAS for this client.
+Services often need outbound HTTP. This sample configures a `RestClient` bean
+against `external.api.base-url` and re-exposes a Users API that proxies to
+`08-restapi`.
 
-1. Exclude the Auto Configuration of a Datasource.
+## What you will see
 
-    Because we are not using a database, add the following to your `application.yml` file:
+- Terminal 1: `08-restapi` on **8080**
+- Terminal 2: `12-http-client` on **8081**
+- Client `GET /api/v1/users/1` returns the same user JSON as the upstream
 
-    ```yml
-    spring:
-      autoconfigure:
-        exclude: "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
-    ```
+## Run
 
-1. Add HTTP Client Configuration.
+Terminal 1 — upstream:
 
-    Run this app on `8081` in development so it can sit next to `08-restapi` on `8080`.
+```bash
+cd samples/08-restapi
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    ```yml
-    external:
-      api:
-        base-url: "http://localhost:8080/api/v1"
-        users: "${external.api.base-url}/users"
-        connect-timeout: "2s"
-        read-timeout: "5s"
-    ```
+Terminal 2 — client:
 
-    Bind those values to a `@ConfigurationProperties` record and build a named `RestClient` bean:
+```bash
+cd samples/12-http-client
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    ```java
-    @ConfigurationProperties(prefix = "external.api")
-    public record ExternalApiProperties(
-        String users,
-        Duration connectTimeout,
-        Duration readTimeout) {
-    }
+Client YAML (defaults):
 
-    @Configuration
-    @EnableConfigurationProperties(ExternalApiProperties.class)
-    public class HttpClientConfiguration {
+```yml
+external:
+  api:
+    base-url: "http://localhost:8080/api/v1"
+    users: "${external.api.base-url}/users"
+```
 
-      @Bean
-      RestClient usersRestClient(ExternalApiProperties properties) {
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(properties.connectTimeout());
-        requestFactory.setReadTimeout(properties.readTimeout());
+## Try it
 
-        return RestClient.builder()
-            .requestFactory(requestFactory)
-            .baseUrl(properties.users())
-            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-            .build();
-      }
-    }
-    ```
+```bash
+curl -i http://localhost:8081/api/v1/users/1
+```
 
-1. Create the Model Class.
+Expected: `HTTP/1.1 200` and
+`{"id":1,"name":"user-01","email":"user-01@example.com"}` fetched from upstream
+`8080`.
 
-    Use a Java record. The remote JSON is Spring `Page`, so the repository deserializes into a small `PageImpl` subtype.
+Optional check that upstream is alive:
 
-    ```java
-    public record User(Long id, String name, String email) {
-    }
-    ```
+```bash
+curl -i http://localhost:8080/api/v1/users/1
+```
 
-1. Create the Repository class.
+Swagger for the client (development): `http://localhost:8081/swagger-ui/index.html`
 
-    Keep `RestClient` in the repository. Forward `page`, `size`, and `sort` as query parameters.
+## How the sample is shaped
 
-    ```java
-    @Repository
-    class UserRepositoryImpl implements UserRepository {
+| File / class | Role |
+| --- | --- |
+| `HttpClientConfiguration` | Builds `RestClient` with base URL + timeouts |
+| `ExternalApiProperties` | Binds `external.api.*` |
+| `UserRepositoryImpl` | Outbound HTTP calls |
+| `UserRestController` / `UserServiceImpl` | Local API that delegates to the repository |
 
-      private static final String ID_PATH = "/{id}";
+## Tests
 
-      private final RestClient usersRestClient;
+```bash
+cd samples/12-http-client && mvn test
+```
 
-      UserRepositoryImpl(RestClient usersRestClient) {
-        this.usersRestClient = usersRestClient;
-      }
+Context load + i18n consistency (no live WireMock in the default suite).
 
-      @Override
-      public Page<User> findAll(Pageable pageable) {
-        RestPage<User> page = usersRestClient
-            .get()
-            .uri(uriBuilder -> {
-              uriBuilder.queryParam("page", pageable.getPageNumber())
-                  .queryParam("size", pageable.getPageSize());
-              pageable.getSort().forEach(order -> uriBuilder.queryParam("sort",
-                  order.getProperty() + "," + order.getDirection().name().toLowerCase(Locale.ROOT)));
-              return uriBuilder.build();
-            })
-            .retrieve()
-            .body(new ParameterizedTypeReference<RestPage<User>>() {
-            });
+## Stop
 
-        if (page == null) {
-          return Page.empty(pageable);
-        }
+`Ctrl+C` in both terminals.
 
-        return page;
-      }
+## Next
 
-      @Override
-      public Optional<User> findById(Long id) {
-        return usersRestClient
-            .get()
-            .uri(ID_PATH, id)
-            .exchange((request, response) -> {
-              if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                return Optional.empty();
-              }
-
-              return Optional.ofNullable(response.bodyTo(User.class));
-            });
-      }
-
-      @Override
-      public User create(User user) {
-        return usersRestClient
-            .post()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(user)
-            .retrieve()
-            .body(User.class);
-      }
-    }
-    ```
-
-    The service maps `User` to `UserResponse` with MapStruct and does not call `RestClient` itself. Create mappings use `@Mapping(target = "id", constant = "0L")` because `User.id` is a `Long`.
-
-1. Create the REST Controller.
-
-    Expose the same `/api/v1/users` contract as the upstream API.
-
-    ```java
-    @RestController
-    @RequestMapping("/api/v1/users")
-    @RequiredArgsConstructor
-    @Tag(name = "{openapi.users.tag}")
-    class UserRestController {
-
-      private final UserService userService;
-
-      @GetMapping
-      @Operation(summary = "{openapi.users.findAll.summary}")
-      public ResponseEntity<Page<UserResponse>> findAll(
-          @PageableDefault(size = 20, sort = "id") Pageable pageable) {
-        return ResponseEntity.ok(userService.findAll(pageable));
-      }
-
-      @GetMapping("/{id}")
-      @Operation(summary = "{openapi.users.findById.summary}")
-      public ResponseEntity<UserResponse> findById(@PathVariable @Positive Long id) {
-        Optional<UserResponse> user = userService.findById(id);
-
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-      }
-
-      @PostMapping
-      @Operation(summary = "{openapi.users.create.summary}")
-      public ResponseEntity<UserResponse> create(@Valid @RequestBody UserRequest request,
-          UriComponentsBuilder uriBuilder) {
-        UserResponse createdUser = userService.create(request);
-        URI location = uriBuilder.path("/{id}").buildAndExpand(createdUser.id()).toUri();
-
-        return ResponseEntity.created(location).body(createdUser);
-      }
-
-      @PutMapping("/{id}")
-      @Operation(summary = "{openapi.users.update.summary}")
-      public ResponseEntity<UserResponse> update(@PathVariable @Positive Long id,
-          @Valid @RequestBody UserRequest request) {
-        Optional<UserResponse> updatedUser = userService.update(id, request);
-
-        return updatedUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-      }
-
-      @DeleteMapping("/{id}")
-      @Operation(summary = "{openapi.users.delete.summary}")
-      public ResponseEntity<Void> delete(@PathVariable @Positive Long id) {
-        if (userService.delete(id)) {
-          return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.notFound().build();
-      }
-    }
-    ```
-
-1. Test the Endpoints.
-
-    You can use tools like `Postman` or `curl` to test the endpoints:
-
-    1. Start your Spring Boot API Rest application (`samples/08-restapi` on port `8080`).
-    1. Start your Spring Boot HTTP Client application (`samples/12-http-client` on port `8081`).
-
-    - Get all users.
-      ```bash
-      curl -X GET http://localhost:8081/api/v1/users
-      ```
-
-    - Get paginated and sorted users.
-      ```bash
-      curl -X GET "http://localhost:8081/api/v1/users?page=1&size=3&sort=name,asc"
-      ```
-
-    - Get a user by ID.
-      ```bash
-      curl -X GET http://localhost:8081/api/v1/users/1
-      ```
-
-    - Create a user.
-      ```bash
-      curl -X POST http://localhost:8081/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
-      ```
-
-    - Update a user.
-      ```bash
-      curl -X PUT http://localhost:8081/api/v1/users/11 -H "Content-Type: application/json" -d '{"name":"Jane Doe","email":"jane.doe@example.com"}'
-      ```
-
-    - Delete a user.
-      ```bash
-      curl -X DELETE http://localhost:8081/api/v1/users/11
-      ```
+[Thymeleaf](../basic/thymeleaf.md) — `samples/13-thymeleaf`.
 
 [Go Back](../../../README.md)
 

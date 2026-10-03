@@ -1,40 +1,76 @@
-## Spring Application Events
+# Events
 
-This guide shows how to use Spring Application Events to decouple cross-package communication and avoid circular service dependencies.
+Publish an in-process Spring application event and handle it in an async listener.
 
-### Why use internal events?
+Working sample: [`samples/15-events`](../../../samples/15-events). Runbook:
+[`samples/15-events/README.md`](../../../samples/15-events/README.md).
 
-Use events when one feature must react to another feature without direct service injection.
+## Before you start
 
-Example:
+- Previous: [HTTPS](https.md) — `samples/14-https`
+- Java 25, Maven 3.9+
+- Time: ~15 minutes
 
-1. Message endpoint receives a payload.
-1. Service publishes `MessagePublishedEvent` through `ApplicationEventPublisher`.
-1. Async listener handles audit logging independently.
+## Why this exists
 
-This keeps endpoint logic focused and removes direct coupling to audit infrastructure.
+Sometimes work should continue after the HTTP response is accepted — audit,
+notifications, side effects — without a message broker yet. Spring’s
+`ApplicationEventPublisher` keeps that coupling inside one JVM. For broker-based
+messaging, see RabbitMQ later in the catalog.
 
-### Where to see a working sample
+## What you will see
 
-Path: `samples/15-events`
+- `POST /api/v1/messages` → **202 Accepted**
+- JSON body with `sender` and `status: "accepted"`
+- Console audit log from the async listener
 
-Relevant classes:
+## Run
 
-1. `message/MessageEventPublisher.java`
-1. `message/MessagePublishedEvent.java`
-1. `message/MessageAuditListener.java`
+```bash
+cd samples/15-events
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-### Event payload rules
+Port: `8080`. Swagger: `http://localhost:8080/swagger-ui/index.html`
 
-1. Use immutable records for event payloads.
-1. Extract thread-local values before publish (for example `LocaleContextHolder`).
-1. Pass extracted values inside the event payload.
+## Try it
 
-### @Async listener rules
+```bash
+curl -i -X POST http://localhost:8080/api/v1/messages \
+  -H 'Content-Type: application/json' \
+  -d '{"sender":"ada","content":"hello"}'
+```
 
-1. Add `@EnableAsync` when async listeners exist (see also [async.md](async.md) and `samples/27-async/basics`).
-1. Use `@Async` only for blocking I/O listeners where latency is significant.
-1. Keep simple in-memory listeners synchronous for ordering and immediate visibility.
+Expected: `HTTP/1.1 202` and a body like
+`{"sender":"ada","status":"accepted"}`.
+
+Expected log (English): a line such as
+`Audit recorded for sender=ada, contentLength=5, publishedAt=...`.
+
+## How the sample is shaped
+
+| File / class | Role |
+| --- | --- |
+| `MessageRestController` | Accepts the POST, returns 202 |
+| `MessageServiceImpl` / publisher | Publishes the domain event |
+| `MessagePublishedEvent` | Event payload |
+| `MessageAuditListener` | Async `@EventListener` audit log |
+
+## Tests
+
+```bash
+cd samples/15-events && mvn test
+```
+
+Context load + i18n consistency.
+
+## Stop
+
+`Ctrl+C`.
+
+## Next
+
+[Async](async.md) — `samples/27-async/basics`.
 
 [Go Back](../../../README.md)
 

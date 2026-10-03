@@ -1,179 +1,88 @@
-Lombok is a Java library that provides annotations to simplify Java development by automating the generation of boilerplate code. Key features include automatic generation of getters, setters, equals, hashCode, and toString methods, as well as a facility for automatic resource management.
+# Lombok
 
-1. Add the dependency in your `pom.xml`.
+Generate getters, builders, and logger fields with Lombok annotations (Java 25-safe setup).
 
-    ```xml
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    ```
+Working sample: [`samples/05-lombok`](../../../samples/05-lombok). Runbook:
+[`samples/05-lombok/README.md`](../../../samples/05-lombok/README.md).
 
-1. Exclude it from the final packaged application.
+## Before you start
 
-    This configuration ensures that the Lombok dependency, which is only needed at compile time, is not included in the final packaged application (JAR or WAR).
-    ```xml
-    <scope>provided</scope>
-    ```
+- Previous: [Logs](logs.md) — `samples/04-logs`
+- Java 25, Maven 3.9+
+- IDE: Extension Pack for Java + Lombok annotation support
+- Time: ~15 minutes
 
-1. Annotation processing on Java 23+.
+## Why this exists
 
-    Java 23 deprecated and Java 25 removed implicit annotation processor discovery from the classpath. Any project using Lombok on Java 23 or later requires an explicit `annotationProcessorPaths` entry in `maven-compiler-plugin`, otherwise `@Slf4j`, `@Data`, and other annotations produce "cannot find symbol" errors.
+Entity and DTO demos still need accessors, `toString`, and constructors. Lombok
+generates that at compile time. On Java 23+, you must declare Lombok on
+`annotationProcessorPaths` or the compiler will not see generated members.
 
-    Add this block to the `<build><plugins>` section of the `pom.xml`:
+## What you will see
 
-    ```xml
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-compiler-plugin</artifactId>
-      <configuration>
-        <annotationProcessorPaths>
-          <path>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-          </path>
-        </annotationProcessorPaths>
-      </configuration>
-    </plugin>
-    ```
+Stdout section headers and demo values from ordered `CommandLineRunner` beans:
 
-    No version is needed; Spring Boot's parent POM manages it.
+- `Demo GetSet`, `Demo ToString`, `Demo EqualsAndHashCode`, …
+- Example values such as `Luciano Sampaio`, `UserBuilder(name=Luciano, age=41)`
+- `@Slf4j` lines from `UserService` when root logging is DEBUG (development)
 
-1. VS Code Integration.
+## Run
 
-    Install the Lombok extension using the UI.
-      - Name: `Lombok Annotations Support for VS Code`
+```bash
+cd samples/05-lombok
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    or
+POM essentials (match the sample): `lombok` with `provided` scope, and
+`maven-compiler-plugin` → `annotationProcessorPaths` → `lombok` (version from the
+Spring Boot parent).
 
-    ```bash
-    code --install-extension vscjava.vscode-lombok
-    ```
+## Try it
 
-1. @Getter and @Setter.
+Watch the console after startup.
 
-    Generate getter and setter methods for class fields.
-    ```java
-    import lombok.Getter;
-    import lombok.Setter;
+Expected: seven demo blocks (`Demo GetSet` through `Demo UserService`) and SLF4J
+messages from `UserService` (`This is a debug/info/error log message.`).
 
-    @Getter @Setter
-    public class User {
-      private String name;
-      private int age;
-    }
-    ```
+## How the sample is shaped
 
-    For Spring configuration binding (`@ConfigurationProperties`), prefer immutable Java records instead of mutable `@Getter`/`@Setter` classes.
+| File / class | Role |
+| --- | --- |
+| `LombokApplication` | Ordered runners that exercise each annotation |
+| `UserGetSet` | `@Getter` / `@Setter` |
+| `UserToString` | `@ToString` |
+| `UserEqualsAndHashCode` | `@EqualsAndHashCode` |
+| `UserWithConstructors` | `@NoArgsConstructor`, `@AllArgsConstructor`, `@RequiredArgsConstructor` |
+| `UserData` | `@Data` |
+| `UserBuilder` | `@Builder` |
+| `UserService` | `@Slf4j` |
 
-1. @ToString.
+Snippet that matches `UserGetSet` in the sample:
 
-    Generate a `toString()` method that includes all fields of the class.
-    ```java
-    import lombok.ToString;
+```java
+@Getter
+@Setter
+public class UserGetSet {
+  private String name;
+  private int age;
+}
+```
 
-    @ToString
-    public class User {
-      private String name;
-      private int age;
-    }
-    ```
+## Tests
 
-1. @EqualsAndHashCode.
+```bash
+cd samples/05-lombok && mvn test
+```
 
-    Generate `equals()` and `hashCode()` methods based on the fields of the class.
-    ```java
-    import lombok.EqualsAndHashCode;
+Loads the Spring context (compile proves annotation processing).
 
-    @EqualsAndHashCode
-    public class User {
-      private String name;
-      private int age;
-    }
-    ```
+## Stop
 
-1. @NoArgsConstructor, @AllArgsConstructor, @RequiredArgsConstructor.
+`Ctrl+C`.
 
-    Generate constructors:
-    - `@NoArgsConstructor`: No-argument constructor.
-    - `@AllArgsConstructor`: Constructor with all fields.
-    - `@RequiredArgsConstructor`: Constructor for final fields and fields marked with `@NonNull`.
-    ```java
-    import lombok.NoArgsConstructor;
-    import lombok.AllArgsConstructor;
-    import lombok.RequiredArgsConstructor;
-    import lombok.NonNull;
+## Next
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @RequiredArgsConstructor
-    public class User {
-      private String name;
-      @NonNull private int age;
-    }
-    ```
-
-1. @Data.
-
-    Combines `@Getter`, `@Setter`, `@ToString`, `@EqualsAndHashCode`, and `@RequiredArgsConstructor` into a single annotation.
-    ```java
-    import lombok.Data;
-
-    @Data
-    public class User {
-      private String name;
-      private int age;
-    }
-    ```
-
-1. @Value.
-
-    Generates an immutable class. It is a variant of `@Data` that creates all fields as `private final` and does not generate setters.
-    ```java
-    import lombok.Value;
-
-    @Value
-    public class User {
-      private String name;
-      private int age;
-    }
-    ```
-
-1. @Builder.
-
-    Implements the Builder pattern for object creation.
-    ```java
-    import lombok.Builder;
-
-    @Builder
-    public class User {
-      private String name;
-      private int age;
-    }
-
-    User user = User.builder()
-                    .name("Luciano")
-                    .age(41)
-                    .build();
-    ```
-
-1. @Slf4j and other logging annotations.
-
-    Generate a log field using various logging frameworks (e.g., SLF4J, Log4j, Log4j2).
-    ```java
-    import lombok.extern.slf4j.Slf4j;
-
-    @Slf4j
-    public class UserService {
-
-      private static final String LOG_USER_MESSAGE = "log.user.message";
-
-      public void logMessage() {
-        log.info(logMessages.get(LOG_USER_MESSAGE));
-      }
-    }
-    ```
+[i18n](../intermediate/i18n.md) — `samples/06-i18n`.
 
 [Go Back](../../../README.md)
 

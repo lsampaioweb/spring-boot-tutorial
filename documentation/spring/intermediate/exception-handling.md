@@ -1,229 +1,98 @@
-This guide demonstrates centralized exception handling for a Spring Boot REST API. Working sample: `samples/10-exception-handling`.
+# Exception Handling
 
-The real-app contract is: one `@RestControllerAdvice`, domain errors as `AppException` (message key + `errorCode` + status), one JSON envelope (including validation), and i18n for user-facing messages.
+Return a structured JSON error body from a centralized `@RestControllerAdvice`.
 
-1. Enable or disable the stack trace in error responses.
+Working sample: [`samples/10-exception-handling`](../../../samples/10-exception-handling).
+Runbook: [`samples/10-exception-handling/README.md`](../../../samples/10-exception-handling/README.md).
 
-    `application.yml`:
+## Before you start
 
-    ```yml
-    server:
-      error:
-        include-stacktrace: "never"
-    ```
+- Previous: [Validation](validation.md) — `samples/09-validation`
+- Java 25, Maven 3.9+
+- Time: ~15 minutes
 
-    `application-development.yml`:
+## Why this exists
 
-    ```yml
-    server:
-      error:
-        include-stacktrace: "always"
-    ```
+Without advice, missing entities often become empty 404s or raw stack traces.
+This sample maps domain exceptions to an `ErrorResponse` (`errorCode`, `message`,
+`path`, …) for **Users** and **Products** APIs in the same app.
 
-1. Define message properties.
+## What you will see
 
-    Put bundles under `resources/i18n` (`messages.properties`, `messages_pt_BR.properties`).
+- Both feature APIs: `/api/v1/users` and `/api/v1/products`
+- Missing resource → **404** with a stable `errorCode`
+- Swagger UI in development
 
-    ```properties
-    user.notfound=User with id "{0}" was not found.
-    user.exists=User with name "{0}" and email "{1}" already exists.
-    error.internal.server=Internal server error.
-    error.resource.not.found=The requested resource was not found.
-    error.validation.failed=Validation failed.
-    ```
+## Run
 
-1. Create `AppException` and feature exceptions.
+```bash
+cd samples/10-exception-handling
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    Domain misses and conflicts throw subclasses of `AppException`. The handler resolves the message key through `MessageSource`.
+Port: `8080`.
 
-    ```java
-    public abstract class AppException extends RuntimeException {
+## Try it
 
-      private final String messageKey;
-      private final String errorCode;
-      private final transient Object[] args;
-      private final HttpStatus status;
+Missing user:
 
-      protected AppException(String messageKey, String errorCode, Object[] args, HttpStatus status) {
-        super(messageKey);
-        this.messageKey = messageKey;
-        this.errorCode = errorCode;
-        this.args = args;
-        this.status = status;
-      }
+```bash
+curl -i http://localhost:8080/api/v1/users/999
+```
 
-      public String getMessageKey() {
-        return messageKey;
-      }
+Expected: `HTTP/1.1 404` and a body like:
 
-      public String getErrorCode() {
-        return errorCode;
-      }
+```json
+{
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with id \"999\" was not found.",
+  "path": "/api/v1/users/999",
+  "fields": null
+}
+```
 
-      public Object[] getArgs() {
-        return args;
-      }
+(Development may also include a `trace` field.)
 
-      public HttpStatus getStatus() {
-        return status;
-      }
-    }
+Missing product (second API in this sample):
 
-    public class EntityNotFoundException extends AppException {
+```bash
+curl -i http://localhost:8080/api/v1/products/999
+```
 
-      public EntityNotFoundException(String prefix, Object[] objects) {
-        super(prefix + ".notfound", prefix.toUpperCase(Locale.ROOT) + "_NOT_FOUND", objects, HttpStatus.NOT_FOUND);
-      }
-    }
+Expected: `HTTP/1.1 404` with `"errorCode":"PRODUCT_NOT_FOUND"`.
 
-    public class UserNotFoundException extends EntityNotFoundException {
+Known seed (ids `1`–`10` for each API):
 
-      public UserNotFoundException(Long id) {
-        super("user", new Object[] { id });
-      }
-    }
-    ```
+```bash
+curl -i http://localhost:8080/api/v1/users/1
+```
 
-1. Create the error envelope.
+Expected: `HTTP/1.1 200` user JSON.
 
-    Use a record. Validation failures share the same shape and fill `fields`.
+## How the sample is shaped
 
-    ```java
-    public record ErrorResponse(
-        OffsetDateTime timestamp,
-        int status,
-        String error,
-        String errorCode,
-        String message,
-        String path,
-        String trace,
-        List<ValidationError> fields) {
-    }
+| File / class | Role |
+| --- | --- |
+| `UserRestController` / `ProductRestController` | Feature HTTP APIs |
+| `GlobalExceptionHandler` | `@RestControllerAdvice` |
+| `ErrorResponse` / `ValidationError` | Error payload shape |
+| `UserNotFoundException` / product equivalent | Domain → i18n key → `errorCode` |
 
-    public record ValidationError(String field, String message) {
-    }
-    ```
+## Tests
 
-1. Create one `@RestControllerAdvice`.
+```bash
+cd samples/10-exception-handling && mvn test
+```
 
-    ```java
-    @Slf4j
-    @RestControllerAdvice
-    public class GlobalExceptionHandler {
+Context load + i18n consistency.
 
-      private static final String SERVER_ERROR_INCLUDE_STACKTRACE = "server.error.include-stacktrace";
-      private static final String STACKTRACE_ALWAYS = "always";
-      private static final String ERR_INTERNAL = "error.internal.server";
-      private static final String ERR_RESOURCE_NOT_FOUND = "error.resource.not.found";
-      private static final String ERR_VALIDATION_FAILED = "error.validation.failed";
-      private static final String LOG_UNHANDLED = "log.exception.unhandled";
-      private static final String CODE_INTERNAL = "INTERNAL_ERROR";
-      private static final String CODE_RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND";
-      private static final String CODE_VALIDATION = "VALIDATION_ERROR";
+## Stop
 
-      private final Environment environment;
-      private final MessageSource messageSource;
+`Ctrl+C`.
 
-      public GlobalExceptionHandler(Environment environment, MessageSource messageSource) {
-        this.environment = environment;
-        this.messageSource = messageSource;
-      }
+## Next
 
-      @ExceptionHandler(NoResourceFoundException.class)
-      @ResponseStatus(HttpStatus.NOT_FOUND)
-      public @ResponseBody ErrorResponse handleNoResourceFoundException(NoResourceFoundException ex,
-          HttpServletRequest request) {
-        String message = messageSource.getMessage(ERR_RESOURCE_NOT_FOUND, null, LocaleContextHolder.getLocale());
-
-        return newErrorResponse(CODE_RESOURCE_NOT_FOUND, message, ex, request, HttpStatus.NOT_FOUND, null);
-      }
-
-      @ExceptionHandler(AppException.class)
-      public ResponseEntity<ErrorResponse> handleAppException(AppException ex, HttpServletRequest request) {
-        String message = messageSource.getMessage(ex.getMessageKey(), ex.getArgs(), LocaleContextHolder.getLocale());
-        ErrorResponse body = newErrorResponse(ex.getErrorCode(), message, ex, request, ex.getStatus(), null);
-
-        return ResponseEntity.status(ex.getStatus()).body(body);
-      }
-
-      @ExceptionHandler(MethodArgumentNotValidException.class)
-      @ResponseStatus(HttpStatus.BAD_REQUEST)
-      public @ResponseBody ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
-          HttpServletRequest request) {
-        List<ValidationError> fields = ex.getBindingResult().getFieldErrors().stream()
-            .map(error -> new ValidationError(error.getField(), error.getDefaultMessage()))
-            .toList();
-        String message = messageSource.getMessage(ERR_VALIDATION_FAILED, null, LocaleContextHolder.getLocale());
-
-        return newErrorResponse(CODE_VALIDATION, message, ex, request, HttpStatus.BAD_REQUEST, fields);
-      }
-
-      @ExceptionHandler(Exception.class)
-      @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-      public @ResponseBody ErrorResponse handleGenericException(Exception ex, HttpServletRequest request) {
-        log.error(messageSource.getMessage(LOG_UNHANDLED, null, Locale.ENGLISH), ex);
-        String message = messageSource.getMessage(ERR_INTERNAL, null, LocaleContextHolder.getLocale());
-
-        return newErrorResponse(CODE_INTERNAL, message, ex, request, HttpStatus.INTERNAL_SERVER_ERROR, null);
-      }
-
-      private ErrorResponse newErrorResponse(String errorCode, String message, Exception ex, HttpServletRequest request,
-          HttpStatus httpStatus, List<ValidationError> fields) {
-        return new ErrorResponse(
-            OffsetDateTime.now(ZoneOffset.UTC),
-            httpStatus.value(),
-            httpStatus.getReasonPhrase(),
-            errorCode,
-            message,
-            request.getRequestURI(),
-            shouldIncludeStackTrace() ? getStackTraceAsString(ex) : null,
-            fields);
-      }
-
-      private boolean shouldIncludeStackTrace() {
-        String includeStackTrace = environment.getProperty(SERVER_ERROR_INCLUDE_STACKTRACE, "never").toLowerCase();
-
-        return STACKTRACE_ALWAYS.equals(includeStackTrace);
-      }
-
-      private String getStackTraceAsString(Exception ex) {
-        StringWriter sw = new StringWriter();
-        ex.printStackTrace(new PrintWriter(sw));
-
-        return sw.toString();
-      }
-    }
-    ```
-
-1. Throw from the service, not the controller.
-
-    Controllers return `ResponseEntity` and call the service. Domain misses throw `UserNotFoundException` / `UserAlreadyExistsException`. Collection GETs use Spring `Pageable` / `Page`. Domain and DTOs are records.
-
-1. Test the endpoints.
-
-    1. Start `samples/10-exception-handling`.
-
-    - Missing resource:
-      ```bash
-      curl -X GET http://localhost:8080/api/v1/users/1111
-      curl -X GET http://localhost:8080/api/v1/wrongpage
-      ```
-
-    - Conflict on duplicate create:
-      ```bash
-      curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
-      curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com"}'
-      ```
-
-    - Validation failure:
-      ```bash
-      curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"","email":"bad"}'
-      ```
-
-    - Locale:
-      ```bash
-      curl -X GET http://localhost:8080/api/v1/users/1111 -H "Accept-Language: pt-BR"
-      ```
+[MapStruct](mapstruct.md) — `samples/11-mapstruct`.
 
 [Go Back](../../../README.md)
 

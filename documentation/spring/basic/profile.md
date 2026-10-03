@@ -1,107 +1,88 @@
-Spring Boot profiles provide a way to segregate parts of your application configuration and make it available only in certain environments. For example, you can have different configurations for development, testing, and production environments.
+# Profile
 
-1. Define Profile-Specific Configuration Files.
+Activate environment-specific YAML and print `app.environment` for the active profile.
 
-    You can define multiple configuration files for different profiles. The default configuration file is `application.yml`. You can create additional configuration files for each profile:
+Working sample: [`samples/03-profiles`](../../../samples/03-profiles). Runbook:
+[`samples/03-profiles/README.md`](../../../samples/03-profiles/README.md).
 
-    - `application.yml`
-    - `application-development.yml`
-    - `application-production.yml`
+## Before you start
 
-    **Common settings for all profiles can be added to the default file.**
+- Previous: [DevTools](devtools.md) — `samples/02-devtools`
+- Java 25, Maven 3.9+
+- Time: ~10 minutes
 
-    `application.yml`:
-    ```yml
-    spring:
-      application:
-        name: "learning-about-profiles"
-    ```
+## Why this exists
 
-    `application-development.yml`:
-    ```yml
-    logging:
-      level:
-        root: "DEBUG"
-    spring:
-      datasource:
-        url: "jdbc:mysql://dev-server:3306/dev-db"
-        username: "dev-user"
-        password: "******"
-    ```
+The same app often needs different settings for development and production. Spring
+profiles load `application-{profile}.yml` on top of the base file. This sample
+only toggles `app.environment` — no database or other infra fiction.
 
-    `application-production.yml`:
-    ```yml
-    logging:
-      level:
-        root: "INFO"
-    spring:
-      datasource:
-        url: "jdbc:mysql://prod-server:3306/prod-db"
-        username: "prod-user"
-        password: "******"
-    ```
+## What you will see
 
-1. Activate a Profile.
+Stdout from a `CommandLineRunner`:
 
-    You can activate a profile in several ways:
+- `Active profiles: development` and `app.environment: development`, or
+- `Active profiles: production` and `app.environment: production`
 
-    - Using `application.yml`:
-    ```yml
-    spring:
-      profiles:
-        # active: "default"
-        active: "development"
-        # active: "production"
-    ```
+## Run
 
-    - Using Environment Variable:
-    ```bash
-    export SPRING_PROFILES_ACTIVE=development
-    # or
-    export SPRING_PROFILES_ACTIVE=production
-    ```
+Development:
 
-    - Using Command Line:
-    ```bash
-    java -jar -Dspring.profiles.active=development myapp.jar
-    # or
-    java -jar -Dspring.profiles.active=production myapp.jar
-    ```
+```bash
+cd samples/03-profiles
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-1. Setup multiple Profiles in VSCode.
+Production (default in `application.yml` if you omit `-D`):
 
-    This setup allows you to easily switch between different profiles and run your Spring Boot application with the desired configuration directly from VSCode.
+```bash
+mvn spring-boot:run
+```
 
-    1. Open your project in VSCode.
+You can also set `SPRING_PROFILES_ACTIVE=development` (or `production`) in the shell.
 
-    1. Create a folder named `.vscode` in the root of your project if it doesn't already exist.
+## Try it
 
-    1. Inside the this folder, create a new file named `launch.json`.
+Run once with `development`, then once with the default production profile.
 
-    1. Add the following configuration to the `launch.json` file:
-    ```json
-    {
-      "version": "0.2.0",
-      "configurations": [
-        {
-          "type": "java",
-          "name": "Profiles - Development",
-          "request": "launch",
-          "mainClass": "com.example.YourSpringBootApplication",
-          "args": "--spring.profiles.active=development",
-          "projectName": "your-project-name"
-        },
-        {
-          "type": "java",
-          "name": "Profiles - Production",
-          "request": "launch",
-          "mainClass": "com.example.YourSpringBootApplication",
-          "args": "--spring.profiles.active=production",
-          "projectName": "your-project-name"
-        }
-      ]
-    }
-    ```
+Expected stdout (development):
+
+```text
+Active profiles: development
+app.environment: development
+```
+
+Expected stdout (production):
+
+```text
+Active profiles: production
+app.environment: production
+```
+
+## How the sample is shaped
+
+| File / class | Role |
+| --- | --- |
+| `ProfilesApplication` | `CommandLineRunner` that prints profile + `app.environment` |
+| `application.yml` | Default `spring.profiles.active: production`, base `app.environment` |
+| `application-development.yml` | `app.environment: development` |
+| `application-production.yml` | `app.environment: production` |
+
+## Tests
+
+```bash
+cd samples/03-profiles && mvn test
+```
+
+Loads the Spring context.
+
+## Stop
+
+`Ctrl+C` if the process is still running.
+
+## Next
+
+[Logs](logs.md) — `samples/04-logs`.
 
 [Go Back](../../../README.md)
 

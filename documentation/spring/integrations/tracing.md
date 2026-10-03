@@ -23,6 +23,19 @@ The hands-on runbook (start Collector, run caller/callee, verify `traceId`, read
 
 Jaeger/Tempo UI, Brave/Zipkin, JDBC/messaging instrumentation, JSON log formats.
 
+## Run / Try it
+
+Follow [`samples/28-tracing/README.md`](../../../samples/28-tracing/README.md):
+
+1. Start the Collector
+1. Start callee (`8081`) then caller (`8080`) with `TRACING_USER_PASSWORD`
+1. `curl` the caller demo endpoint
+1. Confirm the same `traceId` in caller logs, callee logs, and Collector stdout
+
+## Next
+
+Catalog complete for integrations — return to the [root README](../../../README.md).
+
 [Go Back](../../../README.md)
 
 #

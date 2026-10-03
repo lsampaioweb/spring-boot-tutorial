@@ -1,105 +1,118 @@
-This guide will walk you through setting up a Spring Boot application with `Thymeleaf`, demonstrating how to use `CSS` and `JavaScript` with separate files.
+# Thymeleaf
 
-## Working Samples
+Render HTML with server-side templates, form binding, and fragment AJAX.
 
-Three sample projects demonstrate different Thymeleaf patterns and features:
+Working samples under [`samples/13-thymeleaf`](../../../samples/13-thymeleaf)
+(catalog: [`README.md`](../../../samples/13-thymeleaf/README.md)):
 
-- **crud-pages** (`samples/13-thymeleaf/crud-pages/`) — Page navigation, message rendering via MessageSource, form binding with Thymeleaf's `th:object` and `th:field` directives, and i18n support (English + Portuguese).
-- **form-validation** (`samples/13-thymeleaf/form-validation/`) — Server-side form validation with Bean Validation constraints (`@NotBlank`, `@Size`, etc.), inline field error display via `th:errors`, and field-level error styling.
-- **ajax-interactions** (`samples/13-thymeleaf/ajax-interactions/`) — AJAX-driven fragment updates using Thymeleaf fragments (`th:fragment`), client-side JavaScript to submit and replace DOM sections without full page reloads, and real-time list synchronization.
+| Module | Runbook | Focus |
+| --- | --- | --- |
+| `crud-pages` | [`crud-pages/README.md`](../../../samples/13-thymeleaf/crud-pages/README.md) | Pages + ops form |
+| `form-validation` | [`form-validation/README.md`](../../../samples/13-thymeleaf/form-validation/README.md) | Field errors |
+| `ajax-interactions` | [`ajax-interactions/README.md`](../../../samples/13-thymeleaf/ajax-interactions/README.md) | Fragment / `fetch` |
 
-Each sample is fully configured with Spring Boot 4.1.1, Java 25, profile-based settings (development port 8080, production port 9443), actuator endpoints, and i18n support.
+Run **one module at a time** — each uses port **8080** in development.
 
-## Setup Guide
+## Before you start
 
-1. Add Dependencies.
+- Previous: [HTTP Client](../intermediate/http-client.md) — `samples/12-http-client`
+- Java 25, Maven 3.9+, a browser
+- Time: ~30 minutes (all three modules)
 
-    Add the following dependencies to your `pom.xml` file:
-    ```xml
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+## Why this exists
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency>
-    ```
+Not every UI is a SPA. Thymeleaf keeps HTML on the server with Spring MVC form
+binding and the same i18n keys as REST samples. The three modules grow from
+static pages → validated forms → HTML fragments over AJAX.
 
-1. Create Thymeleaf Templates.
+## What you will see
 
-    The files should be created in the `src/main/resources/templates/*` directory.
-    1. index.html.
-        ```html
-        <!DOCTYPE html>
-        <html xmlns:th="http://www.thymeleaf.org">
-        <head>
-          <title>Thymeleaf Example</title>
-          <link rel="stylesheet" th:href="@{/css/style.css}">
-          <script th:src="@{/js/script.js}"></script>
-        </head>
-        <body>
-          <h1>Hello, Thymeleaf!</h1>
-          <button onclick="showAlert()">Click Me</button>
-        </body>
-        </html>
-        ```
+- HTML pages at `/`, `/message`, `/collection`, `/ops`, `/tasks`
+- Form validation error text in the page (not only JSON)
+- AJAX create returning a table-row fragment; delete returning **204**
 
-    1. Add CSS.
-        ```css
-        body {
-          font-family: Arial, sans-serif;
-          background-color: #f0f0f0;
-          text-align: center;
-          padding: 50px;
-        }
+## Run
 
-        h1 {
-          color: #333;
-        }
+### 1) crud-pages
 
-        button {
-          padding: 10px 20px;
-          background-color: #007BFF;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
+```bash
+cd samples/13-thymeleaf/crud-pages
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-        button:hover {
-          background-color: #0056b3;
-        }
-        ```
+### 2) form-validation
 
-    1. Add JavaScript.
-        ```js
-        function showAlert() {
-          alert("Button Clicked!");
-        }
-        ```
+```bash
+cd samples/13-thymeleaf/form-validation
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-1. Create a Controller.
-    ```java
-    package com.learning.thymeleaf;
+### 3) ajax-interactions
 
-    import org.springframework.stereotype.Controller;
-    import org.springframework.web.bind.annotation.GetMapping;
+```bash
+cd samples/13-thymeleaf/ajax-interactions
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    @Controller
-    public class HomePageController {
-      @GetMapping("/")
-      public String index() {
-        return "index";
-      }
-    }
-    ```
+## Try it
 
-1. Test the Application.
+**crud-pages** — open in a browser:
 
-    After configuring your application, you can test it at:
-    - http://localhost:8080/
+- `http://localhost:8080/`
+- `http://localhost:8080/message`
+- `http://localhost:8080/collection`
+- `http://localhost:8080/ops`
+
+Expected: `200` HTML for each GET; posting the ops form returns the message view.
+
+**form-validation** — `http://localhost:8080/tasks`
+
+Submit empty fields. Expected: page re-rendered with errors such as
+“Title is required.”
+
+**ajax-interactions** — `http://localhost:8080/tasks`
+
+Or with curl:
+
+```bash
+curl -i -X POST http://localhost:8080/tasks \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'title=TestTask'
+```
+
+Expected: `HTTP/1.1 200` and an HTML `<tr>` fragment (not a full page).
+
+```bash
+curl -i -X DELETE http://localhost:8080/tasks/1
+```
+
+Expected: `HTTP/1.1 204`.
+
+## How the sample is shaped
+
+| Module | Controllers / assets |
+| --- | --- |
+| `crud-pages` | `HomePageController` (`/`, `/message`, `/collection`), `OpsPageController` (`/ops`) |
+| `form-validation` | `TaskPageController` + `@Valid` / `BindingResult`, `templates/task/form.html` |
+| `ajax-interactions` | `TaskPageController` fragment return, `static/js/tasks.js`, `th:fragment="task-row"` |
+
+## Tests
+
+From each module folder:
+
+```bash
+mvn test
+```
+
+Context load (form-validation also runs i18n consistency).
+
+## Stop
+
+`Ctrl+C` before starting the next module.
+
+## Next
+
+[HTTPS](../intermediate/https.md) — `samples/14-https`.
 
 [Go Back](../../../README.md)
 

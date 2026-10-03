@@ -1,116 +1,92 @@
-This guide walks through a versioned REST API with pagination, sorting, and OpenAPI.
+# REST
 
-Working sample: `samples/08-restapi`
+Build an in-memory Users CRUD API with OpenAPI (Swagger UI in development).
 
-With the `development` profile, Swagger UI is at `http://localhost:8080/swagger-ui/index.html`. Production disables it.
+Working sample: [`samples/08-restapi`](../../../samples/08-restapi). Runbook:
+[`samples/08-restapi/README.md`](../../../samples/08-restapi/README.md).
 
-1. Add dependencies.
+## Before you start
 
-    ```xml
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+- Previous: [Actuator](actuator.md) — `samples/07-actuator`
+- Java 25, Maven 3.9+
+- Time: ~20 minutes
 
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-commons</artifactId>
-    </dependency>
+## Why this exists
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
+REST is the main HTTP boundary for later samples (validation, exceptions,
+MapStruct, HTTP client). This module seeds users in memory and maps
+`/api/v1/users` with DTOs and a manual mapper — no database yet.
 
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>${springdoc.version}</version>
-    </dependency>
-    ```
+## What you will see
 
-    Validation is the next lesson (`samples/09-validation`). This sample does not add `spring-boot-starter-validation`.
+- App on **8080** (`development`)
+- Seeded users with ids `1`–`10`
+- Swagger UI at `http://localhost:8080/swagger-ui/index.html`
+- `GET /api/v1/users/{id}` returns JSON or 404
 
-1. Enable OpenAPI in development.
+## Run
 
-    `application-development.yml`:
+```bash
+cd samples/08-restapi
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    ```yml
-    springdoc:
-      swagger-ui:
-        enabled: true
-    ```
+## Try it
 
-    `application-production.yml` sets `springdoc.swagger-ui.enabled: false`.
+```bash
+curl -i http://localhost:8080/api/v1/users/1
+```
 
-    An `OpenAPI` bean can resolve title and description from `MessageSource`.
+Expected: `HTTP/1.1 200` and a body like:
 
-1. Use records for the model and DTOs.
+```json
+{"id":1,"name":"user-01","email":"user-01@example.com"}
+```
 
-    ```java
-    public record User(Long id, String name, String email) {
-    }
+Missing id:
 
-    public record UserRequest(String name, String email) {
-    }
+```bash
+curl -i http://localhost:8080/api/v1/users/999
+```
 
-    public record UserResponse(Long id, String name, String email) {
-    }
-    ```
+Expected: `HTTP/1.1 404` (empty body in this sample — structured errors come in
+[Exception Handling](../intermediate/exception-handling.md)).
 
-1. Keep HTTP types out of the service.
+Controller surface (also in Swagger):
 
-    `UserService` returns `Page<UserResponse>` and `UserResponse`. Pagination uses Spring Data `Pageable`. Invalid `sort` properties are resolved through `MessageSource`.
+| Method | Path | Typical status |
+| --- | --- | --- |
+| `GET` | `/api/v1/users` | paginated list |
+| `GET` | `/api/v1/users/{id}` | 200 / 404 |
+| `POST` | `/api/v1/users` | 201 |
+| `PUT` | `/api/v1/users/{id}` | 200 / 404 |
+| `DELETE` | `/api/v1/users/{id}` | 204 / 404 |
 
-    The in-memory implementation lives in `UserServiceImpl`. A small `UserMapper` copies domain records to response DTOs. MapStruct is introduced later in `samples/11-mapstruct`.
+## How the sample is shaped
 
-1. Expose `/api/v1/users`.
+| File / class | Role |
+| --- | --- |
+| `UserRestController` | HTTP mapping, `@PageableDefault` on list |
+| `UserService` / `UserServiceImpl` | In-memory CRUD |
+| `UserMapper` | Manual DTO mapping (`@Component`) |
+| `OpenApiConfig` | springdoc / Swagger (development) |
+| `i18n/messages*.properties` | Message keys for later error/validation reuse |
 
-    ```java
-    @RestController
-    @RequestMapping("/api/v1/users")
-    class UserRestController {
+## Tests
 
-      private final UserService userService;
+```bash
+cd samples/08-restapi && mvn test
+```
 
-      @GetMapping
-      public ResponseEntity<Page<UserResponse>> findAll(
-          @PageableDefault(size = 20, sort = "id") Pageable pageable) {
-        return ResponseEntity.ok(userService.findAll(pageable));
-      }
+Context load plus `I18nConsistencyTest` for message key parity.
 
-      @PostMapping
-      public ResponseEntity<UserResponse> create(@RequestBody UserRequest request,
-          UriComponentsBuilder uriBuilder) {
-        UserResponse createdUser = userService.create(request);
-        URI location = uriBuilder.path("/{id}").buildAndExpand(createdUser.id()).toUri();
+## Stop
 
-        return ResponseEntity.created(location).body(createdUser);
-      }
-    }
-    ```
+`Ctrl+C`.
 
-    `GET /{id}`, `PUT /{id}`, and `DELETE /{id}` follow the same pattern. Missing users return `404`.
+## Next
 
-1. Resolve HTTP locale from `Accept-Language`.
-
-    See `samples/08-restapi` `I18nLocaleResolverConfig` and the i18n guide. Sort error messages use `LocaleContextHolder`.
-
-1. Test the endpoints.
-
-    Start the sample, then:
-
-    ```bash
-    curl -X GET http://localhost:8080/api/v1/users
-    curl -X GET "http://localhost:8080/api/v1/users?page=1&size=3&sort=name,asc"
-    curl -X GET http://localhost:8080/api/v1/users/1
-    curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" \
-      -d '{"name":"John Doe","email":"john.doe@example.com"}'
-    curl -X PUT http://localhost:8080/api/v1/users/11 -H "Content-Type: application/json" \
-      -d '{"name":"Jane Doe","email":"jane.doe@example.com"}'
-    curl -X DELETE http://localhost:8080/api/v1/users/11
-    curl -X GET http://localhost:8080/v3/api-docs
-    ```
+[Validation](../intermediate/validation.md) — `samples/09-validation`.
 
 [Go Back](../../../README.md)
 

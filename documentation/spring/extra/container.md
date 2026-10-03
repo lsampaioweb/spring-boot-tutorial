@@ -1,107 +1,86 @@
-Docker Compose is a tool for defining and running multi-container Docker applications. With Compose, you use a YAML file to configure your application’s services. Then, with a single command, you create and start all the services from your configuration.
+# Container
 
-1. Install Docker, Docker-Compose and other required packages.
+Working sample: [`samples/17-container`](../../../samples/17-container). Runbook:
+[`samples/17-container/README.md`](../../../samples/17-container/README.md).
 
-    [Docker](docker.md).
+Package a Spring Boot app as a Docker image and run it with Compose.
 
-1. Create a Dockerfile file.
+## Before you start
 
-    Create a `Dockerfile` in the root of your Spring Boot project. This file will define the Docker image for your application.
+- Previous: [Virtual Threads](../advanced/virtual-threads.md)
+- Docker or Podman ([docker.md](docker.md))
+- Java 25, Maven 3.9+
 
-    See this [Dockerfile](../../../samples/17-container/Dockerfile).
+## Why this exists
 
-1. Fixing Log Directory Permissions (If Needed):
+Running the same jar in a container matches how many teams deploy services.
+This sample shows a hardened Compose service and a simple hello endpoint.
 
-    By default, the **Docker image runs as the `app` user with UID 1112**. If the log directory on the host has incorrect ownership, the application may fail to write logs.
+## What you will see
 
-    If you cloned this repository and the setting was lost, **ensure the logs directory has the correct owner** by running:
+- `GET /api/v1/users/hello` returns JSON on port `8080`
 
-    ```bash
-    sudo chown -R 1112:1112 ./logs
-    ```
+## Run locally (no container)
 
-1. Build the Application as a Docker Image.
+```bash
+cd samples/17-container
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+curl -i http://localhost:8080/api/v1/users/hello
+```
 
-    ```bash
-    docker build --tag=lsampaioweb/container:latest .
-    ```
+## Run with Docker / Compose
 
-1. Run the container.
+Create the **external** network declared in the sample Compose file:
 
-    ```bash
-    docker run --name my-container -p 8080:8080 lsampaioweb/container:latest
+```bash
+docker network create spring-boot-container-network
+```
 
-    # -d to run in the background.
-    docker run --name my-container -p 8080:8080 -d lsampaioweb/container:1.0
+Build and start (from `samples/17-container`):
 
-    # -e to pass extra arguments as the port.
-    docker run --name my-container -e SERVER_PORT=8081 -p 8080:8081 -d lsampaioweb/container:1.0
-    ```
+```bash
+mvn -q package -DskipTests
+docker build --tag=lsampaioweb/spring-boot-container:1.0 .
+docker compose up -d
+```
 
-1. Test if everything is working.
+Image name and tag must match
+[`docker-compose.yml`](../../../samples/17-container/docker-compose.yml)
+(`lsampaioweb/spring-boot-container:1.0`).
 
-    ```bash
-    curl http://localhost:8080/api/v1/hello
-    ```
+### Try it
 
-1. See the logs.
-    ```bash
-    docker logs my-container
+```bash
+curl -i http://localhost:8080/api/v1/users/hello
+```
 
-    # -f to keep watching.
-    docker logs -f my-container
-    ```
+Expected: `HTTP/1.1 200` with a hello payload.
 
-1. Enter in the container.
-    ```bash
-    docker exec -it my-container sh
-    ```
+### Logs and shell
 
-1. Stop the container.
-    ```bash
-    docker stop my-container
-    ```
+```bash
+docker compose logs -f spring-boot-container
+docker exec -it spring-boot-container sh
+```
 
-1. Start the container again.
-    ```bash
-    docker start my-container
-    ```
+### Stop
 
-1. Remove the container.
-    ```bash
-    docker rm my-container
-    ```
+```bash
+docker compose down
+```
 
-1. Create a Docker Compose file.
+## Notes
 
-    Create a `docker-compose.yml` file in the root of your project. This file will define the services (containers) that make up your application.
+- Dockerfile: [`samples/17-container/Dockerfile`](../../../samples/17-container/Dockerfile)
+- The image runs as user `app` (UID `1112`). If bind-mounted logs fail with
+  permission errors: `sudo chown -R 1112:1112 ./logs`
+- Compose uses logging driver `k8s-file` (common with Podman). On Docker Engine,
+  if that driver is missing, comment out the `logging:` block in
+  `docker-compose.yml` or switch to the default `json-file` driver.
 
-    See this [docker-compose.yml](../../../samples/17-container/docker-compose.yml).
+## Next
 
-1. Build the docker image.
-    ```bash
-    docker compose build
-    ```
-
-1. Run the Application.
-    ```bash
-    docker compose up -d
-
-    # -p, --project-name
-    docker compose -p my-app up -d
-
-    # Or
-    docker compose -f my-container-development.yml up -d
-    docker compose -f my-container-production.yml up -d
-    ```
-
-1. See the logs.
-    ```bash
-    docker compose logs my-container
-
-    # -f to keep watching.
-    docker compose logs -f my-container
-    ```
+[Security](../advanced/security.md) — `samples/18-security`.
 
 [Go Back](../../../README.md)
 

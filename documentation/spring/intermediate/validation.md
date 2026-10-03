@@ -1,72 +1,89 @@
-<!-- filepath: documentation/spring/intermediate/validation.md -->
+# Validation
 
-## Validation
+Reject invalid request bodies with Bean Validation (`@Valid`) and i18n messages.
 
-This guide shows how to validate REST payloads using `spring-boot-starter-validation` and `@Valid`.
+Working sample: [`samples/09-validation`](../../../samples/09-validation). Runbook:
+[`samples/09-validation/README.md`](../../../samples/09-validation/README.md).
 
-Working sample: `samples/09-validation`
+## Before you start
 
-Validation messages live in `i18n/messages.properties`, using the `{error.validation.*}` keys taught in i18n.
+- Previous: [REST](../basic/rest.md) — `samples/08-restapi`
+- Java 25, Maven 3.9+
+- Time: ~15 minutes
 
-1. Add dependency.
+## Why this exists
 
-    Add the validation starter to your `pom.xml`:
+Controllers should not trust client JSON. `spring-boot-starter-validation` plus
+`@Valid` on the DTO stops bad payloads before the service layer. Messages come
+from the same `messages.properties` style as i18n.
 
-    ```xml
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-    ```
+## What you will see
 
-1. Define request constraints.
+- Valid `POST` → **201** with a created user body and a `Location` header
+- Invalid `POST` → **400** with field errors (for example “Name is required”, “Email is invalid”)
 
-    Add Jakarta Bean Validation annotations to the request DTO.
+## Run
 
-    ```java
-    package com.learning.validation.user;
+```bash
+cd samples/09-validation
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
 
-    import jakarta.validation.constraints.Email;
-    import jakarta.validation.constraints.NotBlank;
+Port: `8080`. Swagger (development): `http://localhost:8080/swagger-ui/index.html`
 
-    public record UserRequest(
-        @NotBlank(message = "{error.validation.name.required}") String name,
-        @NotBlank(message = "{error.validation.email.required}") @Email(message = "{error.validation.email.invalid}") String email) {
-    }
-    ```
+## Try it
 
-1. Trigger validation in controller methods.
+Valid create:
 
-    Apply `@Valid` on `@RequestBody` parameters:
+```bash
+curl -i -X POST http://localhost:8080/api/v1/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Ada","email":"ada@example.com"}'
+```
 
-    ```java
-    @PostMapping
-    public ResponseEntity<UserResponse> create(
-        @Valid @RequestBody UserRequest request,
-        UriComponentsBuilder uriBuilder) {
-      ...
-    }
+Expected: `HTTP/1.1 201`, body includes `"name":"Ada"`, and a `Location` header
+(sample builds it with `uriBuilder.path("/{id}")`).
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> update(
-        @PathVariable Long id,
-        @Valid @RequestBody UserRequest request) {
-      ...
-    }
-    ```
+Invalid create:
 
-1. Test invalid payloads.
+```bash
+curl -i -X POST http://localhost:8080/api/v1/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"","email":"not-an-email"}'
+```
 
-    Send invalid data to confirm validation is active:
+Expected: `HTTP/1.1 400` with Spring Boot’s validation error JSON (`status`,
+`error`, `message`, `errors`, …). This sample has **no**
+`@RestControllerAdvice` yet — that arrives in the next topic.
 
-    ```bash
-    curl -X POST http://localhost:8080/api/v1/users -H "Content-Type: application/json" -d '{"name":"","email":"invalid-email"}'
-    ```
+## How the sample is shaped
 
-    Expected behavior: API returns `400 Bad Request` when constraints are violated.
+| File / class | Role |
+| --- | --- |
+| `UserRestController` | `@Valid` on POST/PUT |
+| `UserRequest` | `@NotBlank`, `@Email` with i18n message keys |
+| `UserServiceImpl` | Same in-memory Users CRUD pattern as 08 |
+| `i18n/messages*.properties` | Constraint messages |
+
+## Tests
+
+```bash
+cd samples/09-validation && mvn test
+```
+
+Context load + i18n consistency.
+
+## Stop
+
+`Ctrl+C`.
+
+## Next
+
+[Exception Handling](exception-handling.md) — `samples/10-exception-handling`.
 
 [Go Back](../../../README.md)
 
 #
 ### Created by:
+
 1. Luciano Sampaio.

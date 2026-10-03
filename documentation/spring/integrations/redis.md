@@ -48,12 +48,44 @@ spring:
 
 ## 3. Run a sample
 
+Runbooks: [`samples/23-redis/README.md`](../../../samples/23-redis/README.md).
+
+### datastore / pubsub-events (Redis only)
+
 ```bash
 cd samples/23-redis/datastore
 mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 
-Same command from `cache-layer` or `pubsub-events`. Swagger UI (development): `http://localhost:8080/swagger-ui/index.html`
+Swagger UI (development): `http://localhost:8080/swagger-ui/index.html`
+
+### cache-layer (Redis + PostgreSQL)
+
+`cache-layer` needs Postgres credentials. Start both infra stacks, then map
+`POSTGRES_*` from the postgres `.env` onto `DB_*`:
+
+```bash
+cd samples/infrastructure/postgres
+cp .env.example .env
+set -a && source .env && set +a
+docker compose up -d
+
+cd ../redis
+docker compose up -d
+
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_NAME="$POSTGRES_DB"
+export DB_USER="$POSTGRES_USER"
+export DB_PASSWORD="$POSTGRES_PASSWORD"
+
+cd ../../23-redis/cache-layer
+mvn spring-boot:run -Dspring-boot.run.profiles=development
+```
+
+Spring runs classpath `sql/schema.sql` (`spring.sql.init.mode=always`). Optional
+DBA script: `sql/db/schema.sql` via `psql` from the **repo root** (see the
+cache-layer README).
 
 ## 4. Redis as a datastore
 
@@ -119,7 +151,8 @@ docker exec tutorial-redis redis-cli DEL products
 
 ## 5. Redis as a cache
 
-`cache-layer` uses Spring's cache abstraction in front of PostgreSQL:
+`cache-layer` uses Spring's cache abstraction in front of PostgreSQL (see run
+steps above for Postgres + Redis).
 
 1. Add `spring-boot-starter-data-redis` and `spring-boot-starter-cache`.
 1. `@EnableCaching` on a configuration class (sample: `CacheConfiguration`), with a `RedisCacheManager` and `JacksonJsonRedisSerializer` for the cached response type.
@@ -130,11 +163,22 @@ docker exec tutorial-redis redis-cli DEL products
 
 Primary persistence stays in the JDBC repository; Redis is cache only.
 
+```bash
+curl -i http://localhost:8080/api/v1/products
+```
+
 ## 6. Redis Pub/Sub
 
 `pubsub-events` publishes JSON payloads on a Redis channel (`product-events`) with `RedisTemplate.convertAndSend`, and subscribes with `RedisMessageListenerContainer` + `MessageListenerAdapter`.
 
 Context-load tests disable the listener with `redis.pubsub.listener.enabled=false` so they do not require a live subscription.
+
+```bash
+curl -i -X POST http://localhost:8080/api/v1/product-events \
+  -H 'Content-Type: application/json' \
+  -d '{"productId":1,"productName":"Book"}'
+curl -i http://localhost:8080/api/v1/product-events/received
+```
 
 ## 7. Stop Redis
 
@@ -147,28 +191,15 @@ Data remains in `samples/infrastructure/redis/volumes` unless you delete that di
 
 ### Troubleshooting
 
-Infrastructure failures (port 6379, bind-mount permissions, `NOAUTH`) are in [`samples/infrastructure/redis/README.md`](../../../samples/infrastructure/redis/README.md).
+Infrastructure failures (port 6379, bind-mount permissions, `NOAUTH`) are in
+[`samples/infrastructure/redis/README.md`](../../../samples/infrastructure/redis/README.md).
 
-If startup fails with `docker-credential-secretservice` missing while using Docker Compose, install Docker credential helpers or remove `credsStore` from `~/.docker/config.json`.
+Docker/Podman credential and rootless issues:
+[containers.md](../../setup/containers.md).
 
-If `podman compose up` fails with `potentially insufficient UIDs or GIDs available in user namespace`, your rootless Podman user is missing subuid/subgid mappings. Ask an administrator to add ranges for your user in `/etc/subuid` and `/etc/subgid`, then run:
+## Next
 
-```bash
-podman system migrate
-```
-
-Preflight check:
-
-```bash
-grep "^$(whoami):" /etc/subuid
-grep "^$(whoami):" /etc/subgid
-```
-
-If either command returns no line, ask an administrator to add unique ranges, for example:
-
-```bash
-usermod --add-subuids 100000-165535 --add-subgids 100000-165535 <username>
-```
+[Vault](vault.md) — `samples/24-vault`.
 
 [Go Back](../../../README.md)
 

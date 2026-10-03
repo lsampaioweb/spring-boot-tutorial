@@ -1,52 +1,82 @@
-## Virtual Threads
+# Virtual Threads
 
-Working sample: `samples/16-virtual-threads`.
+Enable Spring Boot virtual threads and call a blocking external delay endpoint.
 
-Virtual threads (Project Loom) let a servlet/MVC app keep blocking I/O — JDBC
-and `RestClient` — without one platform thread per request. Spring Boot
-turns them on with a YAML flag. No extra dependency is required; this tutorial
-already uses Java 25.
+Working sample: [`samples/16-virtual-threads`](../../../samples/16-virtual-threads).
+Runbook: [`samples/16-virtual-threads/README.md`](../../../samples/16-virtual-threads/README.md).
 
-### Enable virtual threads
+## Before you start
 
-Put the flag in shared `application.yml`, not only in one profile:
+- Previous: [Async](../intermediate/async.md) — `samples/27-async/basics`
+- Java 25, Maven 3.9+
+- Outbound HTTPS to `https://httpbin.org`
+- Time: ~15 minutes
 
-```yml
-spring:
-  threads:
-    virtual:
-      enabled: true
+## Why this exists
+
+Blocking I/O on platform threads limits concurrency. With
+`spring.threads.virtual.enabled: true`, Spring can run request handling on
+virtual threads so a slow outbound call does not monopolize a scarce carrier
+thread pool. This sample blocks on httpbin’s delay API and returns the thread
+name in JSON.
+
+## What you will see
+
+- App on **8080**
+- `GET /api/v1/httpbins/block/1` waits ~1s then returns **200**
+- Response includes `statusCode` and a `thread` string (often a virtual thread)
+- Optional k6 script under `src/test/k6/`
+
+## Run
+
+```bash
+cd samples/16-virtual-threads
+mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 
-Do not add a custom `TaskExecutor` or `Executors.newVirtualThreadPerTaskExecutor()`
-bean. Boot already uses virtual threads for request handling when this flag is
-on.
+## Try it
 
-Do not lower `server.tomcat.threads.max` as a virtual-thread trick. The sample
-keeps that knob commented only so you can experiment.
+```bash
+curl -i http://localhost:8080/api/v1/httpbins/block/1
+```
 
-### What the sample demonstrates
+Expected: `HTTP/1.1 200` after about one second, body like
+`{"statusCode":200,"thread":"..."}` (exact thread string varies).
 
-1. `HttpBinRestController` is a thin REST controller at `/api/v1/httpbins`.
-1. `GET /api/v1/httpbins/block/{seconds}` delegates to `HttpBinService`.
-1. The service makes a **blocking** `RestClient` call to a delay endpoint, then
-   returns a `DelayResponse` with the HTTP status and `Thread.currentThread()`.
-1. The controller logs that result through an i18n log key.
+Logs may include `HttpBin delay request completed. status=200, thread=...`.
 
-With virtual threads enabled, the logged thread looks like a virtual thread
-(for example `VirtualThread[#…]`). With the flag set to `false`, it is a
-platform Tomcat worker.
+Optional load script (install k6 first — see [K6](../tests/k6.md)):
 
-### Try it
+```bash
+k6 run samples/16-virtual-threads/src/test/k6/01-block-3.js
+```
 
-1. Run the sample with the `development` profile (port `8080`).
-1. Call `http://localhost:8080/api/v1/httpbins/block/3`.
-1. Check the response `thread` field and the application log.
-1. Set `spring.threads.virtual.enabled` to `false`, restart, and call the same
-   URL again to compare.
+That script calls `/api/v1/httpbins/block/3` (default `BASE_URL=http://localhost:8080`).
 
-Load scripts for this endpoint live under `src/test/k6/` in the sample. The k6
-topic covers how to run them.
+## How the sample is shaped
+
+| File / class | Role |
+| --- | --- |
+| `application.yml` | `spring.threads.virtual.enabled: true` |
+| `HttpBinRestController` | `/api/v1/httpbins/block/{seconds}` |
+| `HttpBinServiceImpl` | Blocking call to `https://httpbin.org/delay/...` |
+| `src/test/k6/01-block-3.js` | Optional load check |
+
+## Tests
+
+```bash
+cd samples/16-virtual-threads && mvn test
+```
+
+Context load + i18n consistency (k6 is separate).
+
+## Stop
+
+`Ctrl+C`.
+
+## Next
+
+[Container](../extra/container.md) — `samples/17-container`.
 
 [Go Back](../../../README.md)
 

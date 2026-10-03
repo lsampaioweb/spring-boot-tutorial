@@ -1,167 +1,74 @@
-## MapStruct
+# MapStruct
 
-MapStruct is a Java annotation processor that generates object-to-object mapping code at compile time.
+Generate DTO mappers at compile time instead of hand-written mapping beans.
 
-It is useful when you need to convert between:
+Working sample: [`samples/11-mapstruct`](../../../samples/11-mapstruct). Runbook:
+[`samples/11-mapstruct/README.md`](../../../samples/11-mapstruct/README.md).
 
-- Request DTO -> Domain object
-- Domain object -> Response DTO
+## Before you start
 
-### Why use it
+- Previous: [Exception Handling](exception-handling.md) — `samples/10-exception-handling`
+- Java 25, Maven 3.9+
+- Time: ~15 minutes
 
-1. Less boilerplate code for repetitive field mapping.
-1. Compile-time validation for mapping issues.
-1. Generated code is plain Java and usually fast.
+## Why this exists
 
-### Add dependencies
+Manual mappers grow verbose and drift from fields. MapStruct generates
+implementations during `mvn compile` (`@Mapper(componentModel = "spring")`). The
+Users API still looks familiar, but list returns a plain JSON array (not a page).
 
-In `pom.xml`, add `mapstruct` and the annotation processor:
+## What you will see
 
-```xml
-<properties>
-  <mapstruct.version>1.6.3</mapstruct.version>
-  <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-</properties>
+- App on **8080**
+- `GET /api/v1/users` → **200** with three seeded users
+- Generated sources under `target/generated-sources/annotations` after compile
 
-<dependencies>
-  <dependency>
-    <groupId>org.mapstruct</groupId>
-    <artifactId>mapstruct</artifactId>
-    <version>${mapstruct.version}</version>
-  </dependency>
-</dependencies>
+## Run
 
-<build>
-  <plugins>
-    <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-compiler-plugin</artifactId>
-      <configuration>
-        <annotationProcessorPaths>
-          <path>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-          </path>
-          <path>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok-mapstruct-binding</artifactId>
-            <version>${lombok-mapstruct-binding.version}</version>
-          </path>
-          <path>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>${mapstruct.version}</version>
-          </path>
-        </annotationProcessorPaths>
-      </configuration>
-    </plugin>
-  </plugins>
-</build>
+```bash
+cd samples/11-mapstruct
+mvn spring-boot:run -Dspring-boot.run.profiles=development
 ```
 
-Always include `lombok-mapstruct-binding` when the module also uses Lombok, even if
-DTOs are records today. That keeps MapStruct working if you later add Lombok
-accessors on mapped types.
-### Basic mapper
+## Try it
 
-```java
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
-interface UserMapper {
-
-  UserResponse toResponse(User user);
-
-  @Mapping(target = "id", constant = "0L")
-  User toNewEntity(UserRequest request);
-
-  @Mapping(target = "id", source = "id")
-  User toEntity(Long id, UserRequest request);
-}
+```bash
+curl -i http://localhost:8080/api/v1/users
 ```
 
-What this means:
+Expected: `HTTP/1.1 200` and a JSON **array** of user DTOs (for example
+`user-01` … `user-03`), produced via MapStruct `toResponse` / entity methods.
 
-- `@Mapper`: marks this interface for MapStruct code generation.
-- `componentModel = "spring"`: generated implementation becomes a Spring bean, so you can inject it.
-- `unmappedTargetPolicy = ERROR`: fail the build if a destination field is forgotten.
-- `toResponse`: same field names are mapped automatically.
-- `toNewEntity`: `constant = "0L"` fills a `Long` id (use `"0"` only for `int`/`Integer`).
-- `toEntity(Long id, UserRequest request)`: two sources; `id` comes from the method argument, `name` and `email` come from the request.
+Swagger (development): `http://localhost:8080/swagger-ui/index.html`
 
-### Understanding @Mapping
+## How the sample is shaped
 
-Example:
+| File / class | Role |
+| --- | --- |
+| `UserMapper` | MapStruct `@Mapper(componentModel = "spring")` |
+| `UserServiceImpl` | Calls `toNewEntity` / `toEntity` / `toResponse` |
+| `UserRestController` | CRUD under `/api/v1/users` (list is `List`, not `Page`) |
+| `pom.xml` | MapStruct dependency + annotation processor path |
 
-```java
-@Mapping(target = "id", constant = "0L")
-User toNewEntity(UserRequest request);
+## Tests
+
+```bash
+cd samples/11-mapstruct && mvn test
 ```
 
-Meaning:
+Context load + i18n consistency. Compile also proves the generated mapper exists.
 
-- `target = "id"`: map to the `id` field in the destination object.
-- `constant = "0L"`: always assign `0L` to a `Long` destination `id`, ignoring source input.
+## Stop
 
-The MapStruct sample then replaces that placeholder id in the service before storing the user. The HTTP Client sample sends `0L` to the remote create API.
+`Ctrl+C`.
 
-### Other common @Mapping options
+## Next
 
-1. Ignore a field:
+[HTTP Client](http-client.md) — `samples/12-http-client`.
 
-```java
-@Mapping(target = "id", ignore = true)
-Product toEntity(ProductRequest request);
-```
+[Go Back](../../../README.md)
 
-Use this when destination `id` should not come from request input.
+#
+### Created by:
 
-1. Rename source field:
-
-```java
-@Mapping(source = "fullName", target = "name")
-User toEntity(UserRequest request);
-```
-
-Use this when source and destination field names are different.
-
-1. Fallback value when source is null:
-
-```java
-@Mapping(target = "status", defaultValue = "ACTIVE")
-AccountResponse toResponse(Account account);
-```
-
-### Where generated code is placed
-
-MapStruct generates implementations under:
-
-- `target/generated-sources/annotations`
-
-You normally do not edit generated classes manually.
-
-### Troubleshooting
-
-1. Error: `Unmapped target property`
-
-Cause: destination has a field not mapped from source.
-
-Fix options:
-
-- Add an explicit mapping with `@Mapping(...)`.
-- Ignore the field with `@Mapping(target = "field", ignore = true)`.
-
-1. Mapper bean is not found by Spring
-
-Cause: `componentModel = "spring"` is missing.
-
-Fix:
-
-- Add `@Mapper(componentModel = "spring")`.
-
-### Samples using MapStruct in this project
-
-- `samples/11-mapstruct`
-- `samples/12-http-client`
+1. Luciano Sampaio.
