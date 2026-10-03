@@ -60,15 +60,16 @@ Optional: open `./logs/logs.log` (app name `logs`) for the same messages on disk
 | File / class | Role |
 | --- | --- |
 | `LogsApplication` | Logs TRACE–ERROR via SLF4J |
-| `src/main/resources/log/logback-spring.xml` | Console + async file; `springProfile` for `development` vs `default \| production` |
+| `src/main/resources/log/logback-spring.xml` | Console scoped to console-enabled profiles; async file; separate roots for `default` vs `production` |
 | `application.yml` | `logging.config` + rolling policy keys |
 | `application-development.yml` | `logging.level.root: DEBUG` |
 
 Real Logback profile names in the sample:
 
-- `development` → Console + File
-- `default | production` → File only
 - `debug` → DEBUG root with Console + File
+- `development` → INFO root with Console + File
+- `default` → INFO root with Console + File
+- `production` → INFO root with File only
 
 ## Tests
 

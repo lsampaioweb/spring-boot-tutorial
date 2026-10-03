@@ -71,6 +71,8 @@ The sample:
 1. Uses `SessionCreationPolicy.STATELESS`.
 1. Enables HTTP Basic.
 1. Allows `/api/v1/security/public` without authentication.
+1. Allows `/actuator/health` (and health probes) without authentication on the management port.
+1. Requires authentication for every other `/actuator/**` path.
 1. Requires authentication for `/api/v1/security/profile`.
 1. Requires `ADMIN` for `/api/v1/security/admin`.
 1. Opens Swagger only when the development profile enables `springdoc`.
@@ -88,6 +90,12 @@ curl -i -u user:change-me http://localhost:8080/api/v1/security/profile
 curl -i -u user:change-me http://localhost:8080/api/v1/security/admin
 
 curl -i -u admin:change-me http://localhost:8080/api/v1/security/admin
+
+curl -i http://localhost:8081/actuator/health
+
+curl -i http://localhost:8081/actuator/info
+
+curl -i -u user:change-me http://localhost:8081/actuator/info
 ```
 
 Expected results:
@@ -96,6 +104,9 @@ Expected results:
 1. Profile as `user`: `200` and the username in the body.
 1. Admin as `user`: `403`.
 1. Admin as `admin`: `200`.
+1. Actuator health (anonymous): `200`.
+1. Actuator info (anonymous): `401`.
+1. Actuator info as `user`: `200`.
 
 Pass `Accept-Language: pt-BR` to resolve messages from `i18n/messages_pt_BR.properties`.
 

@@ -76,7 +76,8 @@ Unauthenticated calls to the job API return **401**.
 cd samples/27-async/basics && mvn test
 ```
 
-Controller, lifecycle, and service tests use `application-test.yml` credentials
+Controller, lifecycle, and service tests activate the `development` profile and
+supply credentials through `@SpringBootTest(properties = { ... })`
 (`async-test-user` / `async-test-password`).
 
 ## Stop

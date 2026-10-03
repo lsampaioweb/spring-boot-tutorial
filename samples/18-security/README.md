@@ -46,6 +46,24 @@ curl -i -u admin:change-me http://localhost:8080/api/v1/security/admin
 
 Expected: `HTTP/1.1 200`.
 
+```bash
+curl -i http://localhost:8081/actuator/health
+```
+
+Expected: `HTTP/1.1 200` (anonymous).
+
+```bash
+curl -i http://localhost:8081/actuator/info
+```
+
+Expected: `HTTP/1.1 401` without credentials.
+
+```bash
+curl -i -u user:change-me http://localhost:8081/actuator/info
+```
+
+Expected: `HTTP/1.1 200`.
+
 ## Tests
 
 ```bash

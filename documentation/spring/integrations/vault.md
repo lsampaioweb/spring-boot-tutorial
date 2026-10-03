@@ -29,6 +29,10 @@ Spring Cloud Vault to read KV v2 path `secret/spring-boot-tutorial` into an
 in-memory registry. `secret-rotation` reloads on a schedule; the other two load
 once at startup.
 
+Development imports Vault with `optional:vault://…` so local runs and
+`mvn test` can start without a live Vault when secrets are supplied another way.
+Production keeps a mandatory Vault import.
+
 ## What you will see
 
 - Vault on **8200**
@@ -98,6 +102,8 @@ For rotation, watch logs every ~15s for refresh lines while
 | --- | --- |
 | Secret cache | `VaultSecretRegistry` (rotation variant refreshes on a schedule) |
 | Required keys | `app.vault.required-secrets` / secrets list in `application.yml` |
+| Development import | `optional:vault:///…` in `application-development.yml` |
+| Production import | mandatory `vault:///…` in `application-production.yml` |
 | Ports | 8091 / 8092 / 8093 per module |
 
 ## Tests
