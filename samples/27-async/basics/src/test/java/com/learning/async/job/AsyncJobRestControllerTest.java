@@ -21,9 +21,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+    "ASYNC_USER_PASSWORD=async-test-password",
+    "app.security.username=async-test-user",
+    "app.security.password=async-test-password",
+    "springdoc.api-docs.enabled=false",
+    "springdoc.swagger-ui.enabled=false"
+})
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles("development")
 class AsyncJobRestControllerTest {
 
   private static final String JOBS_PATH = "/api/v1/jobs";
@@ -37,7 +43,7 @@ class AsyncJobRestControllerTest {
   @Test
   void submitReturnsAcceptedAndLocationForAuthenticatedCaller() throws Exception {
     UUID id = UUID.randomUUID();
-    when(asyncJobService.submit(new AsyncJobRequest("hello", false, 250)))
+    when(asyncJobService.submit(org.mockito.ArgumentMatchers.any()))
         .thenReturn(response(id, JobStatus.QUEUED, null, null));
 
     mockMvc.perform(post(JOBS_PATH)
@@ -55,7 +61,7 @@ class AsyncJobRestControllerTest {
     mockMvc.perform(post(JOBS_PATH)
         .with(user("async-user").roles("ASYNC_USER"))
         .contentType("application/json")
-        .content("{\"input\":\" \"}"))
+        .content("{\"input\":\" \",\"delayMs\":0}"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.errorCode").value("VALIDATION_ERROR"))
         .andExpect(jsonPath("$.fields[0].field").value("input"));

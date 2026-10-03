@@ -17,7 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(BatchUserRestController.class)
-@ActiveProfiles("test")
+@ActiveProfiles("development")
 class BatchUserRestControllerTest {
 
   @Autowired

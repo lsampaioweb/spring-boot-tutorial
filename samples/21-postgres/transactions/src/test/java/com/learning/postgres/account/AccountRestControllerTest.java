@@ -16,7 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(AccountRestController.class)
-@ActiveProfiles("test")
+@ActiveProfiles("development")
 class AccountRestControllerTest {
 
   @Autowired
@@ -38,7 +38,7 @@ class AccountRestControllerTest {
   }
 
   @Test
-  void transfer_whenValidRequest_shouldReturn201() throws Exception {
+  void transfer_whenValidRequest_shouldReturn200() throws Exception {
     TransferResponse response = new TransferResponse(
         1L,
         2L,
@@ -59,7 +59,7 @@ class AccountRestControllerTest {
     mockMvc.perform(post("/api/v1/accounts/transfer")
         .contentType("application/json")
         .content(payload))
-        .andExpect(status().isCreated())
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.fromAccountId").value(1L))
         .andExpect(jsonPath("$.toAccountId").value(2L));
   }

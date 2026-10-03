@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
     "app.vault.secrets.api-secret=test-api-secret",
     "app.vault.secrets.db-password=test-db-password"
 })
-@ActiveProfiles("test")
+@ActiveProfiles("development")
 class VaultApplicationTests {
 
   @Autowired
