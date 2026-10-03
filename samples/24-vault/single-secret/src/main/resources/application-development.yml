@@ -1,6 +1,6 @@
 spring:
   config:
-    import: "vault:///spring-boot-tutorial?prefix=app.vault.secrets."
+    import: "optional:vault:///spring-boot-tutorial?prefix=app.vault.secrets."
   cloud:
     vault:
       uri: "${VAULT_URI:http://localhost:8200}"
