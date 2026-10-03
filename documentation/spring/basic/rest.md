@@ -66,11 +66,15 @@ Controller surface (also in Swagger):
 
 | File / class | Role |
 | --- | --- |
+| `RestapiApplication` | `@EnableSpringDataWebSupport` so `Pageable` binds from query params |
 | `UserRestController` | HTTP mapping, `@PageableDefault` on list |
 | `UserService` / `UserServiceImpl` | In-memory CRUD |
 | `UserMapper` | Manual DTO mapping (`@Component`) |
 | `OpenApiConfig` | springdoc / Swagger (development) |
 | `i18n/messages*.properties` | Message keys for later error/validation reuse |
+
+Without `@EnableSpringDataWebSupport` (or a Spring Data starter that registers it),
+`GET /api/v1/users` fails with a 500 about constructing the `Pageable` interface.
 
 ## Tests
 
@@ -84,8 +88,11 @@ Context load plus `I18nConsistencyTest` for message key parity.
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[Actuator](actuator.md).
+
+## Next
 [Validation](../intermediate/validation.md) — `samples/09-validation`.
 
 [Go Back](../../../README.md)
