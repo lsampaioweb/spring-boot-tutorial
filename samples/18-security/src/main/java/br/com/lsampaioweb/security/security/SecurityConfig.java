@@ -50,6 +50,8 @@ class SecurityConfig {
         .httpBasic(Customizer.withDefaults())
         .authorizeHttpRequests(authorize -> {
           authorize.requestMatchers("/api/v1/security/public").permitAll();
+          authorize.requestMatchers("/actuator/health", "/actuator/health/**").permitAll();
+          authorize.requestMatchers("/actuator/**").authenticated();
           if (apiDocsEnabled || swaggerUiEnabled) {
             authorize.requestMatchers("/api-docs/**", "/v3/api-docs/**").permitAll();
             authorize.requestMatchers("/swagger-ui.html", "/swagger-ui/**").permitAll();
