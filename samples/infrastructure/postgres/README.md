@@ -83,7 +83,7 @@ export DB_USER="$POSTGRES_USER"
 export DB_PASSWORD="$POSTGRES_PASSWORD"
 ```
 
-How the apps use the database is in [postgresql.md](../../../../documentation/spring/integrations/postgresql.md).
+How the apps use the database is in [postgresql.md](../../../documentation/spring/integrations/postgresql.md).
 
 ## Stop
 

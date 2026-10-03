@@ -46,7 +46,7 @@ docker exec tutorial-redis redis-cli ping
 | Cache layer | `samples/23-redis/cache-layer` |
 | Pub/Sub | `samples/23-redis/pubsub-events` |
 
-No extra `.env` is required for Redis. How the apps use it is in [redis.md](../../../../documentation/spring/integrations/redis.md).
+No extra `.env` is required for Redis. How the apps use it is in [redis.md](../../../documentation/spring/integrations/redis.md).
 
 Inspect data the datastore sample writes:
 

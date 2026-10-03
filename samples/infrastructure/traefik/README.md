@@ -62,7 +62,7 @@ If this machine is not already `app.lan.home` in DNS:
 127.0.0.1 app.lan.home
 ```
 
-How to put a Spring Boot container behind Traefik, including `samples/26-traefik`, is in [traefik.md](../../../../documentation/spring/integrations/traefik.md).
+How to put a Spring Boot container behind Traefik, including `samples/26-traefik`, is in [traefik.md](../../../documentation/spring/integrations/traefik.md).
 
 ## Enable HTTPS (optional)
 

@@ -89,7 +89,7 @@ UI: `http://localhost:8200/ui/` — log in with the Initial Root Token.
 
 Put the Initial Root Token in each sub-project `.env` as `VAULT_TOKEN`. `VAULT_URI` stays `http://localhost:8200`.
 
-How the apps load secrets is in [vault.md](../../../../documentation/spring/integrations/vault.md).
+How the apps load secrets is in [vault.md](../../../documentation/spring/integrations/vault.md).
 
 ## Traefik hostname (optional)
 

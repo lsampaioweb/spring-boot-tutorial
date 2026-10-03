@@ -6,7 +6,7 @@ Sample Spring Boot application demonstrating CRUD operations with PostgreSQL and
 
 This project showcases:
 - **REST API**: HTTP-based user management (create, read, update, delete)
-- **Spring JDBC**: Using Spring JDBC Template for database access without ORM
+- **Spring JDBC**: Using `JdbcClient` / Spring JDBC for database access without ORM
 - **PostgreSQL**: PostgreSQL database for persistent storage
 - **Input Validation**: Form validation with Bean Validation (`@NotBlank`, `@Email`)
 - **Exception Handling**: Custom domain exceptions and global exception handler

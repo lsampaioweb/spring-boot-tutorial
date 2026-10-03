@@ -58,7 +58,7 @@ cd samples/infrastructure/rabbitmq
 set -a && source .env && set +a
 ```
 
-Then run a sub-project (`direct`, `fanout`, `topic`, or `headers`). The apps read `RABBITMQ_DEFAULT_USER` and `RABBITMQ_DEFAULT_PASS`. How they use exchanges is in [rabbitmq.md](../../../../documentation/spring/integrations/rabbitmq.md).
+Then run a sub-project (`direct`, `fanout`, `topic`, or `headers`). The apps read `RABBITMQ_DEFAULT_USER` and `RABBITMQ_DEFAULT_PASS`. How they use exchanges is in [rabbitmq.md](../../../documentation/spring/integrations/rabbitmq.md).
 
 ## Stop
 

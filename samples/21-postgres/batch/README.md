@@ -8,7 +8,7 @@ Sample Spring Boot application demonstrating batch operations with PostgreSQL an
 
 This project showcases:
 - **Batch Operations**: Bulk insert/update using `NamedParameterJdbcTemplate`
-- **Spring JDBC**: Using Spring JDBC Template for database access without ORM
+- **Spring JDBC**: Using `JdbcClient` for reads and `NamedParameterJdbcTemplate` for batch writes
 - **PostgreSQL**: PostgreSQL database for persistent storage
 - **Input Validation**: Form validation with Bean Validation (`@NotBlank`, `@Email`, `@NotEmpty`)
 - **Exception Handling**: Custom domain exceptions and global exception handler
