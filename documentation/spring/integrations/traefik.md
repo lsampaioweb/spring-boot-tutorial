@@ -119,8 +119,11 @@ cd samples/26-traefik && docker compose down
 cd samples/infrastructure/traefik && docker compose down
 ```
 
-## Next
+## Previous
 
+[WebSocket](../advanced/websocket.md).
+
+## Next
 [Tracing](tracing.md) — `samples/28-tracing`.
 
 [Go Back](../../../README.md)

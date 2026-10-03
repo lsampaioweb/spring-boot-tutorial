@@ -107,8 +107,11 @@ Swagger UI (development profile): `http://localhost:8080/swagger-ui/index.html`
 
 Runbook: [`samples/18-security/README.md`](../../../samples/18-security/README.md).
 
-## Next
+## Previous
 
+[Container](../extra/container.md).
+
+## Next
 [Cloud Config](cloud-config.md) — `samples/19-cloud-config`.
 
 [Go Back](../../../README.md)

@@ -77,8 +77,11 @@ Loads the Spring context (`contextLoads`).
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[Maven commands](../../maven/pom.md).
+
+## Next
 [Profile](profile.md) — `samples/03-profiles`.
 
 [Go Back](../../../README.md)

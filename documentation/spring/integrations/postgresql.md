@@ -120,8 +120,11 @@ bind-mount permissions) are in
 Docker/Podman credential and rootless issues:
 [containers.md](../../setup/containers.md).
 
-## Next
+## Previous
 
+[K6](../tests/k6.md).
+
+## Next
 [RabbitMQ](rabbitmq.md) — `samples/22-rabbitmq`.
 
 [Go Back](../../../README.md)

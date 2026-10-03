@@ -83,8 +83,11 @@ Controller, lifecycle, and service tests use `application-test.yml` credentials
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[Traefik](../integrations/traefik.md).
+
+## Next
 [Virtual Threads](../advanced/virtual-threads.md) — `samples/16-virtual-threads`.
 
 [Go Back](../../../README.md)

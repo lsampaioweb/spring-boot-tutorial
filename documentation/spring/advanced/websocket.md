@@ -68,8 +68,11 @@ Runbook: [`samples/25-websocket/session-lifecycle/README.md`](../../../samples/2
 Allowed origins are never `*`. Development lists the local client origin explicitly.
 Production loads `WEBSOCKET_ALLOWED_ORIGIN`. An empty or wildcard origin list fails startup.
 
-## Next
+## Previous
 
+[Vault](../integrations/vault.md).
+
+## Next
 [Traefik](../integrations/traefik.md) — `samples/26-traefik`.
 
 [Go Back](../../../README.md)

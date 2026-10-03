@@ -48,6 +48,10 @@
     docker run hello-world
     ```
 
+## Previous
+
+[Containers setup](../../setup/containers.md).
+
 ## Next
 
 [Container sample](container.md) — `samples/17-container`.

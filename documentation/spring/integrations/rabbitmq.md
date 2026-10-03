@@ -128,8 +128,11 @@ cd samples/infrastructure/rabbitmq
 docker compose down
 ```
 
-## Next
+## Previous
 
+[PostgreSQL](postgresql.md).
+
+## Next
 [Redis](redis.md) — `samples/23-redis`.
 
 [Go Back](../../../README.md)

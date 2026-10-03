@@ -80,8 +80,11 @@ Loads the Spring context (compile proves annotation processing).
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[Logs](logs.md).
+
+## Next
 [i18n](../intermediate/i18n.md) — `samples/06-i18n`.
 
 [Go Back](../../../README.md)

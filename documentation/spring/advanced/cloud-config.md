@@ -125,8 +125,11 @@ Swagger UI (development): `http://localhost:8080/swagger-ui/index.html`
 With server and client running (see the runbook), call the client hello endpoint and
 expect `user.role` / `app.hello.role` to reflect `development` from the Git backend.
 
-## Next
+## Previous
 
+[Security](security.md).
+
+## Next
 [K6](../tests/k6.md) — `samples/20-k6`.
 
 [Go Back](../../../README.md)

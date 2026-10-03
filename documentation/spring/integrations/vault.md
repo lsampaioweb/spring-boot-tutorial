@@ -121,8 +121,11 @@ docker compose down
 Next start still needs unseal. Losing the unseal key means wiping `volumes/file`
 and re-init (update `VAULT_TOKEN` afterward).
 
-## Next
+## Previous
 
+[Redis](redis.md).
+
+## Next
 [WebSocket](../advanced/websocket.md) — `samples/25-websocket`.
 
 [Go Back](../../../README.md)

@@ -91,8 +91,11 @@ Context load + i18n consistency (no live WireMock in the default suite).
 
 `Ctrl+C` in both terminals.
 
-## Next
+## Previous
 
+[MapStruct](mapstruct.md).
+
+## Next
 [Thymeleaf](../basic/thymeleaf.md) — `samples/13-thymeleaf`.
 
 [Go Back](../../../README.md)

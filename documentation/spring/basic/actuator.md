@@ -100,8 +100,11 @@ Loads the Spring context.
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[i18n](../intermediate/i18n.md).
+
+## Next
 [REST](rest.md) — `samples/08-restapi`.
 
 [Go Back](../../../README.md)

@@ -77,8 +77,11 @@ Context load + i18n consistency.
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[REST](../basic/rest.md).
+
+## Next
 [Exception Handling](exception-handling.md) — `samples/10-exception-handling`.
 
 [Go Back](../../../README.md)

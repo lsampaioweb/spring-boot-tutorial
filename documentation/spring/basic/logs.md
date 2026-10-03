@@ -82,8 +82,11 @@ Loads the Spring context.
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[Profile](profile.md).
+
+## Next
 [Lombok](lombok.md) — `samples/05-lombok`.
 
 [Go Back](../../../README.md)

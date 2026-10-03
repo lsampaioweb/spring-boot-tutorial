@@ -77,8 +77,11 @@ store keystore passwords with `secret-tool`, you can replace the generated `.p12
 and point `KEY_STORE_PASSWORD_MY_HTTPS_APP` at that password. That path is
 optional — the local `generate-keystore.sh` script is enough for this lesson.
 
-## Next
+## Previous
 
+[Thymeleaf](../basic/thymeleaf.md).
+
+## Next
 [Events](events.md) — `samples/15-events`.
 
 [Go Back](../../../README.md)

@@ -78,8 +78,11 @@ docker compose down
   if that driver is missing, comment out the `logging:` block in
   `docker-compose.yml` or switch to the default `json-file` driver.
 
-## Next
+## Previous
 
+[Virtual Threads](../advanced/virtual-threads.md).
+
+## Next
 [Security](../advanced/security.md) — `samples/18-security`.
 
 [Go Back](../../../README.md)

@@ -74,8 +74,11 @@ Context load + i18n consistency (k6 is separate).
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[Events](../intermediate/events.md).
+
+## Next
 [Container](../extra/container.md) — `samples/17-container`.
 
 [Go Back](../../../README.md)

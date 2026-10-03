@@ -62,8 +62,11 @@ Context load + i18n consistency. Compile also proves the generated mapper exists
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[Exception Handling](exception-handling.md).
+
+## Next
 [HTTP Client](http-client.md) — `samples/12-http-client`.
 
 [Go Back](../../../README.md)

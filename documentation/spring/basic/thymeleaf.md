@@ -110,8 +110,11 @@ Context load (form-validation also runs i18n consistency).
 
 `Ctrl+C` before starting the next module.
 
-## Next
+## Previous
 
+[HTTP Client](../intermediate/http-client.md).
+
+## Next
 [HTTPS](../intermediate/https.md) — `samples/14-https`.
 
 [Go Back](../../../README.md)

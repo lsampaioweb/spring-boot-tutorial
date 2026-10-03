@@ -90,8 +90,11 @@ Context load + i18n consistency.
 
 `Ctrl+C`.
 
-## Next
+## Previous
 
+[Validation](validation.md).
+
+## Next
 [MapStruct](mapstruct.md) — `samples/11-mapstruct`.
 
 [Go Back](../../../README.md)

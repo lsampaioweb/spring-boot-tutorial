@@ -80,8 +80,11 @@ Loads the Spring context.
 
 `Ctrl+C` if the process is still running.
 
-## Next
+## Previous
 
+[DevTools](devtools.md).
+
+## Next
 [Logs](logs.md) — `samples/04-logs`.
 
 [Go Back](../../../README.md)

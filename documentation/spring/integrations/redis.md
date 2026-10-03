@@ -197,8 +197,11 @@ Infrastructure failures (port 6379, bind-mount permissions, `NOAUTH`) are in
 Docker/Podman credential and rootless issues:
 [containers.md](../../setup/containers.md).
 
-## Next
+## Previous
 
+[RabbitMQ](rabbitmq.md).
+
+## Next
 [Vault](vault.md) — `samples/24-vault`.
 
 [Go Back](../../../README.md)

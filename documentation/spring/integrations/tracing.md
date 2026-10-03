@@ -32,8 +32,11 @@ Follow [`samples/28-tracing/README.md`](../../../samples/28-tracing/README.md):
 1. `curl` the caller demo endpoint
 1. Confirm the same `traceId` in caller logs, callee logs, and Collector stdout
 
-## Next
+## Previous
 
+[Async](../intermediate/async.md).
+
+## Next
 Catalog complete for integrations — return to the [root README](../../../README.md).
 
 [Go Back](../../../README.md)
